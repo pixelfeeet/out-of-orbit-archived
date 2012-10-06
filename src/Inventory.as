@@ -5,6 +5,7 @@ package {
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import net.flashpunk.Graphic;
 
 	public class Inventory extends Entity {
 		
@@ -14,7 +15,7 @@ package {
 			inventory = new Array(10);
 		}
 		
-		private function findOpenSlot():int{
+		public function findOpenSlot():int{
 			for (var i:int = 0; i < inventory.length; i++){
 				if (inventory[i] == null || inventory[i] == undefined){
 					trace("slot#" + i + " is free");
@@ -38,25 +39,22 @@ package {
 			return -1;
 		}
 		
-		public function addItemToInventory():void{
+		public function addItemToInventory(_e:Entity = null):void{
 			var slot:int = findOpenSlot();
-			
+			var e:Entity = new Entity();
 			if (slot != -1){
-				inventory[slot] = new Entity();
+				if (_e) e.graphic = _e.graphic;
+				inventory[slot] = e;
 			}
 		}
 		
 		public function removeItemFromInventory(_slot:int):void {
-			if (inventory[_slot] != null){
-				inventory[_slot] = null;
-			}
+			if (inventory[_slot] != null) inventory[_slot] = null;
 		}
 		
 		public function removeLastItemFromInventory():void {
 			var slot:int = findLastInventoryItem();
-			if (slot != -1){
-				removeItemFromInventory(slot);
-			}
+			if (slot != -1) removeItemFromInventory(slot);
 		}
 	}
 }

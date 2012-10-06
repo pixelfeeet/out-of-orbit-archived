@@ -9,6 +9,7 @@ package {
 	import net.flashpunk.tweens.*;
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 	
 	public class InteractionItem extends Entity {
 		private var rocketImage:Image;
@@ -46,10 +47,11 @@ package {
 			updateCollision();
 			super.update();
 			
-			if (Input.mousePressed){
-				//GameWorld.player.getInventory().addItemToInventory();
-				//world.remove(this);
-				//trace(GameWorld.hud);
+			if (Input.pressed(Key.DIGIT_3)){
+				if(GameWorld.player.getInventory().findOpenSlot() != -1){
+					GameWorld.player.getInventory().addItemToInventory(this);
+					destroy();
+				}
 			}
 		}
 		
@@ -90,6 +92,10 @@ package {
 					y = Math.floor(y / 32) * 32 + 32;
 				}
 			}
+		}
+		
+		protected function destroy():void{
+			world.remove(this);
 		}
 		
 	}

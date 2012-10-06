@@ -90,20 +90,20 @@ package {
 		private function updateInventoryDisplay():void {
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				if (inventory[i] != null){
-					if (inventoryDisplay[i] == null) drawNewItem(i);
+					if (inventoryDisplay[i] == null) drawNewItem(i, inventory[i]);
 				} else {
 					if (inventoryDisplay[i] != null) removeItemFromInventory(i);
 				}
 			}
 		}
 		
-		private function drawNewItem(_slot:int):void{
-			var a:Entity = new Entity();
-			a.graphic = new Image(Assets.SPACEMAN_STANDING);
-			a.x = FP.camera.x + 10 + (_slot * 55);
-			a.y = FP.camera.y + FP.screen.height - 60;
-			inventoryDisplay[_slot] = a;
-			world.add(a);
+		private function drawNewItem(_slot:int, _e:Entity = null):void{
+			var e:Entity = _e;
+			if (!e.graphic) e.graphic = new Image(Assets.SPACEMAN_STANDING);
+			e.x = FP.camera.x + 10 + (_slot * 55);
+			e.y = FP.camera.y + FP.screen.height - 60;
+			inventoryDisplay[_slot] = e;
+			world.add(e);
 		}
 		
 		public function removeItemFromInventory(_slot:int):void {
