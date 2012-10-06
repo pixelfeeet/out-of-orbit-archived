@@ -38,13 +38,7 @@ package {
 			display = new Graphiclist(healthHUD, hungerHUD);
 			
 			inventoryDisplay = thePlayer.getInventory();
-			for (var i:int = 0; i < inventoryDisplay.length; i++) {
-				var item:Graphic = new Graphic;
-				item = Image.createRect(50, 50, 0x444444, 0.8);
-				item.x = 10 + (i * 55);
-				item.y = FP.screen.height - 60;
-				display.add(item);
-			}
+			initInventoryDisplay();
 			
 			graphic = display;
 		}
@@ -55,15 +49,25 @@ package {
 			
 
 			if (Input.pressed(Key.DIGIT_1)) {
-				addItemToInventory();
+				removeLastItemFromInventory();
 			}
 			
 			if (Input.pressed(Key.DIGIT_2)) {
-				removeLastItemFromInventory();
+				addItemToInventory();
 			}
 			
 			updateHealth();
 			updateInventory();
+		}
+		
+		private function initInventoryDisplay():void {
+			for (var i:int = 0; i < inventoryDisplay.length; i++) {
+				var item:Graphic = new Graphic;
+				item = Image.createRect(50, 50, 0x444444, 0.8);
+				item.x = 10 + (i * 55);
+				item.y = FP.screen.height - 60;
+				display.add(item);
+			}
 		}
 		
 		private function findOpenSlot():int{
