@@ -24,7 +24,7 @@ package {
 			player = new SpacemanPlayer(new Point(400, 100));
 			add(player);
 			add(new Level(DEFAULT_MAP))
-			add(new InteractionItem(300, 100));
+			add(new InteractionItem(new Point(300, 100)));
 			add(new Cursor());
 
 			var enemy:Enemy = new Enemy(new Point(200, 200), 60);

@@ -95,7 +95,7 @@ package {
 		}
 		
 		override protected function shoot():void {
-			if (Input.mousePressed) {
+			if (Input.mousePressed && !Input.check(Key.SHIFT)) {
 				var bullet_speed:int = 500;
 				var initX:int;
 				if (facingLeft) initX = x - 10;

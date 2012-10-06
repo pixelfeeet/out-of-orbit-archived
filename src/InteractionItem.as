@@ -10,6 +10,7 @@ package {
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import utilities.Settings;
 	
 	public class InteractionItem extends Entity {
 		private var rocketImage:Image;
@@ -21,22 +22,22 @@ package {
 		private var upTween:VarTween;
 		private var downTween:VarTween;
 		
-		public function InteractionItem(_x:Number=0, _y:Number=0) {
+		public function InteractionItem(_position:Point) {
 			
 			super();
 			
-			rocketImage = new Image(Assets.EXAMPLE_ITEM);
+			rocketImage = new Image(Assets.ROCKET_IMAGE);
 			graphic = rocketImage;
 			
-			x = _x;
-			y = _y;
+			x = _position.x;
+			y = _position.y;
 			
 			acceleration = new Point();
 			velocity = new Point();
 			
 			xSpeed = 0;
 			
-			this.setHitbox(10, 10, 0, 0);
+			setHitboxTo(graphic);
 			
 			
 		}
@@ -47,7 +48,14 @@ package {
 			updateCollision();
 			super.update();
 			
-			if (Input.pressed(Key.DIGIT_3)){
+			if (collidePoint(x, y, world.mouseX, world.mouseY)) {
+				if (Input.mouseReleased) click();
+			}
+
+		}
+		
+		protected function click():void {
+			if (Input.check(Key.SHIFT)){
 				if(GameWorld.player.getInventory().findOpenSlot() != -1){
 					GameWorld.player.getInventory().addItemToInventory(this);
 					destroy();
@@ -85,7 +93,8 @@ package {
 				if(FP.sign(velocity.y) > 0){
 					//moving down
 					velocity.y = 0;
-					y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
+					if (height > Settings.TILESIZE) y = Math.floor(y / 32) * 32;
+					else y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
 				} else {
 					//moving up
 					velocity.y = 0;
