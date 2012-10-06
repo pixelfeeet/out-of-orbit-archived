@@ -12,7 +12,7 @@ package
 		protected var JUMP:int;
 		
 		protected var acceleration:Point;
-		protected var velocity:Point;
+		public var velocity:Point;
 		
 		protected var health:int;
 		protected var maxHealth:int;
@@ -109,7 +109,7 @@ package
 			
 		}
 		
-		private function calcFallDamage(_v:int):void {
+		protected function calcFallDamage(_v:int):void {
 			var damageVelocity:int = 700;
 			if (_v - damageVelocity > 0 ) {
 				_v-= damageVelocity;

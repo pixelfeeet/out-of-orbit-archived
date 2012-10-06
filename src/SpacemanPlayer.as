@@ -6,6 +6,7 @@ package {
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
+	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
 	import net.flashpunk.tweens.misc.VarTween;
@@ -14,8 +15,10 @@ package {
 	import net.flashpunk.utils.Key;
 	
 	public class SpacemanPlayer extends Character {
+		
+		
 
-		private var player_speed:int = PLAYER_SPEED;
+		public var player_speed:int = PLAYER_SPEED;
 		
 		private var isCrouched:Boolean;
 		private var running:Boolean;
@@ -29,13 +32,19 @@ package {
 		
 		//ESSENTIALS
 		
-		private var inventory:Array;
-		
 		//STATS
 		private var strength:int;
 		private var intelligence:int;
 		private var dexterity:int;
 		private var agility:int;
+		
+		//INVENTORY
+		private var inventory:Array;
+		
+		[Embed(source = "sounds/land.mp3")] private const LAND_SOUND:Class;
+		
+		public var landSound:Sfx = new Sfx(LAND_SOUND);
+
 		
 		public function SpacemanPlayer(position:Point) {
 			x = position.x;
@@ -64,6 +73,9 @@ package {
 			running = false;
 			
 			animations = new Animations();
+			
+			inventory = [];
+			
 			super(position, health, hunger);
 
 		}
@@ -183,6 +195,53 @@ package {
 
 		}
 		
+		override protected function updateCollision():void {
+			
+			//TODO: don't let character move offscreen.
+			// or do?
+			
+			//HORIZONTAL MOVEMENT
+			x += velocity.x * FP.elapsed;
+			
+			if(collide("level", x, y)){
+				if(FP.sign(velocity.x) > 0){
+					//moving to the right
+					velocity.x = 0;
+					
+					x = Math.floor(x / 32) * 32;
+				} else {
+					//moving the left
+					velocity.x = 0;
+					x = Math.floor(x/32) * 32 + 32;
+				}
+			}
+			
+			// VERTICAL MOVEMENT
+			y += velocity.y * FP.elapsed;
+			
+			if(collide("level", x, y)){
+				if(FP.sign(velocity.y) > 0){
+					//moving down
+					
+					y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
+					land();
+				} else {
+					//moving up
+					velocity.y = 0;
+					y = Math.floor(y / 32) * 32 + 32;
+					onGround = false;
+				}
+			}
+			
+		}
+		
+		private function land():void {
+			calcFallDamage(velocity.y);
+			if(!onGround){
+				landSound.play(0.1);
+				onGround = true;
+			}
+		}
 		private function debug():void {
 			//DEBUG: increase hunger
 			if (Input.pressed(Key.U)) {
@@ -213,6 +272,11 @@ package {
 				damageTimer = 60;
 			}
 			//Jump up
+		}
+		
+		//INVENTORY
+		public function getInventory():Array {
+			return inventory;
 		}
 		
 	}

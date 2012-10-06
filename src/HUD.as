@@ -1,9 +1,12 @@
 package {
 	
+	import flash.display.Shape;
+	import flash.geom.Rectangle;
 	import flash.ui.Mouse;
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.Graphic;
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Text;
@@ -17,8 +20,11 @@ package {
 		private var thePlayer:SpacemanPlayer;
 		 
 		private var display:Graphiclist;
+		
+		private var inventoryDisplay:Array;
+		
 		public function HUD(player:SpacemanPlayer) {
-			layer = -1;
+			layer = 1;
 			thePlayer = player;
 			
 			healthHUD = new Text("Health: " + thePlayer.getHealth(), 10, 10, 200, 50)
@@ -30,6 +36,16 @@ package {
 			hungerHUD.size = 32;
 
 			display = new Graphiclist(healthHUD, hungerHUD);
+			
+			inventoryDisplay = [];
+			for (var i:int = 0; i < 10; i++) {
+				var item:Graphic = new Graphic;
+				item = Image.createRect(50, 50, 0x444444, 0.8);
+				item.x = 10 + (i * 55);
+				item.y = FP.screen.height - 60;
+				display.add(item);
+			}
+			
 			graphic = display;
 		}
 		
@@ -37,9 +53,18 @@ package {
 			display.x = FP.camera.x;
 			display.y = FP.camera.y;
 			
-			
+			updateHealth();
+		}
+		
+		private function updateHealth():void{
 			hungerHUD.text = "Hunger: " + thePlayer.getHunger();
 			healthHUD.text = "Health: " + thePlayer.getHealth();
 		}
+		
+		private function updateInventory():void{
+			
+		}
+		
+		
 	}
 }
