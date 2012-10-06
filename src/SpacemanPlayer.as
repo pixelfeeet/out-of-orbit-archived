@@ -38,11 +38,8 @@ package {
 		
 		//INVENTORY
 		public static var inventory:Inventory;
-		public var inventoryLength:int;
 		
-		[Embed(source = "sounds/land.mp3")] private const LAND_SOUND:Class;
-		
-		public var landSound:Sfx = new Sfx(LAND_SOUND);
+		public var landSound:Sfx = new Sfx(Assets.LAND_SOUND);
 
 		
 		public function SpacemanPlayer(position:Point) {
@@ -74,7 +71,6 @@ package {
 			animations = new Animations();
 			
 			inventory = new Inventory();
-			inventoryLength = 10;
 			
 			super(position, health, hunger);
 
@@ -260,6 +256,17 @@ package {
 			if (Input.pressed(Key.H)) {
 				changeHealth(10);
 			}
+			
+			//DEBUG: remove last item from inventory
+			if (Input.pressed(Key.DIGIT_1)) {
+				inventory.removeLastItemFromInventory();
+			}
+			
+			//DEBUG: addItemToInventory
+			if (Input.pressed(Key.DIGIT_2)) {
+				inventory.addItemToInventory();
+			}
+			
 		}
 		
 		//tentative idea: getHurt includes enemy-inflicted damage-

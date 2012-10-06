@@ -18,6 +18,9 @@ package {
 		[Embed(source = 'assets/example_item.png')] public static const EXAMPLE_ITEM:Class;		
 		[Embed(source = 'assets/interaction_radius.png')] public static const INTERACTION_RADIUS:Class;	
 		
+		//Sounds
+		[Embed(source = "sounds/land.mp3")] public static const LAND_SOUND:Class;
+		
 		public function Assets() { }
 	}
 }

@@ -38,8 +38,7 @@ package {
 			cameraXOffset = 200;
 			cameraYOffset = 150;
 		
-			followPlayer();
-			//adjustToPlayer();
+			adjustToPlayer();
 			
 			//UI
 			hud = new HUD(player);
@@ -48,7 +47,6 @@ package {
 		
 		override public function update():void {
 			followPlayer();
-			//adjustToPlayer();
 			super.update();
 		}
 		

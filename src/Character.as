@@ -66,6 +66,8 @@ package
 			updateCollision();
 			checkForDamage();
 			if (hunger != -1) updateHunger();
+			
+			
 			super.update();
 		}
 		

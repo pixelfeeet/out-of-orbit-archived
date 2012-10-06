@@ -9,7 +9,7 @@ package {
 		}
 		
 		override public function init():void {
-			trace("success!");
+			trace("successful loading!");
 		}
 	}
 }

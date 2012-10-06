@@ -47,8 +47,9 @@ package {
 			super.update();
 			
 			if (Input.mousePressed){
-				trace("Clickity");
-				trace(GameWorld.hud);
+				//GameWorld.player.getInventory().addItemToInventory();
+				//world.remove(this);
+				//trace(GameWorld.hud);
 			}
 		}
 		

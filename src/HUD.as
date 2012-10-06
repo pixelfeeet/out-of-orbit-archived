@@ -21,6 +21,7 @@ package {
 		 
 		private var display:Graphiclist;
 		
+		private var inventory:Array;
 		private var inventoryDisplay:Array;
 		
 		public function HUD(player:SpacemanPlayer) {
@@ -39,7 +40,7 @@ package {
 
 			display = new Graphiclist(healthHUD, hungerHUD);
 			
-			inventoryDisplay = thePlayer.getInventory().inventory;
+			inventoryDisplay = new Array(10);
 			initInventoryDisplay();
 			
 			graphic = display;
@@ -49,18 +50,15 @@ package {
 			display.x = FP.camera.x;
 			display.y = FP.camera.y;
 			
-			if (Input.pressed(Key.DIGIT_2)) {
-				inventoryDisplay = thePlayer.getInventory().inventory;
-				thePlayer.getInventory().addItemToInventory();
-			}
-			
-			if (Input.pressed(Key.DIGIT_1)) {
-				inventoryDisplay = thePlayer.getInventory().inventory;
-				thePlayer.getInventory().removeLastItemFromInventory();
-			}
-			
 			updateHealth();
-			updateInventory();
+			
+			getInventory();
+			updateInventoryPosition();
+			updateInventoryDisplay();
+		}
+		
+		private function getInventory():void {
+			inventory = thePlayer.getInventory().inventory;
 		}
 		
 		private function updateHealth():void{
@@ -79,14 +77,41 @@ package {
 		}
 		
 		
-		private function updateInventory():void{
-			inventoryDisplay = thePlayer.getInventory().inventory;
+		private function updateInventoryPosition():void{
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				var a:Entity = inventoryDisplay[i];
 				if (a != null){
 					a.x = FP.camera.x + 10 + (i * 55);
 					a.y = FP.camera.y + FP.screen.height - 60;
 				}
+			}
+		}
+		
+		private function updateInventoryDisplay():void {
+			for (var i:int = 0; i < inventoryDisplay.length; i++){
+				if (inventory[i] != null){
+					if (inventoryDisplay[i] == null) drawNewItem(i);
+				} else {
+					if (inventoryDisplay[i] != null) removeItemFromInventory(i);
+				}
+			}
+		}
+		
+		private function drawNewItem(_slot:int):void{
+			var a:Entity = new Entity();
+			a.graphic = new Image(Assets.SPACEMAN_STANDING);
+			a.x = FP.camera.x + 10 + (_slot * 55);
+			a.y = FP.camera.y + FP.screen.height - 60;
+			inventoryDisplay[_slot] = a;
+			world.add(a);
+		}
+		
+		public function removeItemFromInventory(_slot:int):void {
+			if (inventoryDisplay[_slot] != null){
+				var a:Entity = inventoryDisplay[_slot];
+				display.remove(a.graphic);
+				world.remove(a);	
+				inventoryDisplay[_slot] = null;
 			}
 		}
 		
