@@ -15,6 +15,7 @@ package {
 		
 		[Embed(source = 'assets/rocket.png')] public static const ROCKET_IMAGE:Class;
 		
+		[Embed(source = 'assets/example_item.png')] public static const EXAMPLE_ITEM:Class;		
 		[Embed(source = 'assets/interaction_radius.png')] public static const INTERACTION_RADIUS:Class;	
 		
 		public function Assets() { }

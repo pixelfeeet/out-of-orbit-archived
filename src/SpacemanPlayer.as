@@ -16,8 +16,6 @@ package {
 	
 	public class SpacemanPlayer extends Character {
 		
-		
-
 		public var player_speed:int = PLAYER_SPEED;
 		
 		private var isCrouched:Boolean;
@@ -29,7 +27,7 @@ package {
 		private var crouchingImg:Image;
 		
 		private var interactionRadius:Image;
-		
+	
 		//ESSENTIALS
 		
 		//STATS
@@ -39,7 +37,8 @@ package {
 		private var agility:int;
 		
 		//INVENTORY
-		private var inventory:Array;
+		public static var inventory:Inventory;
+		public var inventoryLength:int;
 		
 		[Embed(source = "sounds/land.mp3")] private const LAND_SOUND:Class;
 		
@@ -74,7 +73,8 @@ package {
 			
 			animations = new Animations();
 			
-			inventory = new Array(10);
+			inventory = new Inventory();
+			inventoryLength = 10;
 			
 			super(position, health, hunger);
 
@@ -275,7 +275,7 @@ package {
 		}
 		
 		//INVENTORY
-		public function getInventory():Array {
+		public function getInventory():Inventory {
 			return inventory;
 		}
 		

@@ -45,7 +45,7 @@ package
 			velocity = new Point();
 			
 			animations = new Animations;
-			
+
 			onGround = false;
 			
 			//ESSENTIALS
@@ -214,6 +214,8 @@ package
 				else health = minHealth;
 			}
 		}
+		
+		
 		
 		//GEOMETRY STUFF.  If enough of this amasses
 		//it should go in its own class.

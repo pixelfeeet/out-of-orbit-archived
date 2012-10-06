@@ -15,11 +15,8 @@ package {
 		private var cameraXOffset:int;
 		private var cameraYOffset:int;
 		
-		private var player:SpacemanPlayer;
-		
-		//UI
-		private var healthUI:Text;
-		private var hungerUI:Text;
+		public static var player:SpacemanPlayer;
+		public static var hud:HUD;
 		
 		public function GameWorld() {
 		
@@ -27,8 +24,9 @@ package {
 			player = new SpacemanPlayer(new Point(400, 100));
 			add(player);
 			add(new Level(DEFAULT_MAP))
+			add(new InteractionItem(300, 100));
 			add(new Cursor());
-			//add(new InteractionRadius(player));
+
 			var enemy:Enemy = new Enemy(new Point(200, 200), 60);
 			enemy.targetCharacter = player;
 			add(enemy);
@@ -40,12 +38,12 @@ package {
 			cameraXOffset = 200;
 			cameraYOffset = 150;
 		
-			//followPlayer();
-			adjustToPlayer();
+			followPlayer();
+			//adjustToPlayer();
 			
 			//UI
-			//add(new PunkTextArea("Health: 100", 10, 10, 100, 20));
-			add(new HUD(player));
+			hud = new HUD(player);
+			add(hud)
 		}
 		
 		override public function update():void {
