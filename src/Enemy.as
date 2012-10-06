@@ -19,9 +19,9 @@ package {
 			JUMP = 200;
 			hungerTimer = -1;
 			
-			graphic = new Image(ENEMY);
+			graphic = Image.createRect(24, 40, 0xee8877, 1);
 			type = "enemy";
-			setHitbox(Image(graphic).width, Image(graphic).height, 0, 0);
+			setHitboxTo(graphic);
 		}
 		
 		public function destroy():void {

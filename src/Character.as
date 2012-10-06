@@ -102,7 +102,7 @@ package
 				if(FP.sign(velocity.y) > 0){
 					//moving down
 					calcFallDamage(velocity.y);
-					if (height > Settings.TILESIZE) y = Math.floor(y/32) * 32;
+					if (height > Settings.TILESIZE * 2) y = Math.floor(y/32) * 32;
 					else y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
 					onGround = true;
 				} else {
