@@ -37,8 +37,8 @@ package {
 
 			display = new Graphiclist(healthHUD, hungerHUD);
 			
-			inventoryDisplay = [];
-			for (var i:int = 0; i < 10; i++) {
+			inventoryDisplay = thePlayer.getInventory();
+			for (var i:int = 0; i < inventoryDisplay.length; i++) {
 				var item:Graphic = new Graphic;
 				item = Image.createRect(50, 50, 0x444444, 0.8);
 				item.x = 10 + (i * 55);

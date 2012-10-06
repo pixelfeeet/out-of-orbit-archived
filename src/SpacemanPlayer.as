@@ -74,7 +74,7 @@ package {
 			
 			animations = new Animations();
 			
-			inventory = [];
+			inventory = new Array(10);
 			
 			super(position, health, hunger);
 
