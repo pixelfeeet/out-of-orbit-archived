@@ -53,7 +53,27 @@ package {
 			display.x = FP.camera.x;
 			display.y = FP.camera.y;
 			
+			if (Input.pressed(Key.DIGIT_1)) {
+				addItemToInventory();
+			}
+			
 			updateHealth();
+		}
+		
+		public function addItemToInventory():void{
+			inventoryDisplay = thePlayer.getInventory();
+			for (var i:int = 0; i < inventoryDisplay.length; i++){
+				if (inventoryDisplay[i] == null){
+					trace("slot#" + i + " is free");
+					var a:Entity = new Entity();
+					a.graphic = new Image(Assets.SPACEMAN_STANDING);
+					a.x = 10 + (i * 55);
+					a.y = FP.screen.height - 60;
+					inventoryDisplay[i] = a;
+					world.add(a);
+					return;
+				}
+			}
 		}
 		
 		private function updateHealth():void{
@@ -64,7 +84,6 @@ package {
 		private function updateInventory():void{
 			
 		}
-		
 		
 	}
 }
