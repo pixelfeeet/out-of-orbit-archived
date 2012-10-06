@@ -4,6 +4,7 @@ package
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import utilities.Settings;
 
 	public class Character extends Entity {
 		
@@ -64,7 +65,7 @@ package
 		override public function update():void {
 			updateMovement();
 			updateCollision();
-			checkForDamage();
+			if (health != -1) checkForDamage();
 			if (hunger != -1) updateHunger();
 			
 			
@@ -85,6 +86,8 @@ package
 					velocity.x = 0;
 					
 					x = Math.floor(x / 32) * 32;
+					if (width < Settings.TILESIZE) x = Math.floor(x/32) * 32;
+					else x = Math.floor(x / 32) * 32 + Math.abs((width % 32) - 32);
 				} else {
 					//moving the left
 					velocity.x = 0;
@@ -99,7 +102,8 @@ package
 				if(FP.sign(velocity.y) > 0){
 					//moving down
 					calcFallDamage(velocity.y);
-					y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
+					if (height > Settings.TILESIZE) y = Math.floor(y/32) * 32;
+					else y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
 					onGround = true;
 				} else {
 					//moving up

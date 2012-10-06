@@ -1,10 +1,11 @@
 package {
 	import net.flashpunk.Engine;
 	import net.flashpunk.FP;
+	import utilities.Settings;
 	
 	public class Main extends Engine {
 		public function Main() {
-			super(640, 480, 60, false);
+			super(Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, Settings.FRAMERATE, false);
 			FP.world = new GameWorld();
 		}
 		

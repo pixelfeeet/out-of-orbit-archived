@@ -5,6 +5,7 @@ package {
 	import net.flashpunk.FP;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Text;
+	import utilities.Settings;
 	
 	public class GameWorld extends World {
 		[Embed(source = 'assets/cave.tmx', mimeType = "application/octet-stream")] private static const DEFAULT_MAP:Class;
@@ -53,7 +54,7 @@ package {
 		private function followPlayer():void {
 
 			cameraXSpeed = player.velocity.x / 50;
-			cameraYSpeed = player.velocity.y / 50;
+			cameraYSpeed = player.velocity.y / 30;
 			
 			//HORIZONTAL SCROLLING
 			if(player.x - FP.camera.x < cameraXOffset) {
