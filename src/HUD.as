@@ -56,8 +56,13 @@ package {
 				addItemToInventory();
 			}
 			
+			if (Input.pressed(Key.DIGIT_2)) {
+				removeLastItemFromInventory();
+			}
+			
 			updateHealth();
 			updateInventory();
+<<<<<<< HEAD
 		}
 		
 		private function initInventoryDisplay():void {
