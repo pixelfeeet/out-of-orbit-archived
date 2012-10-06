@@ -53,6 +53,13 @@ package {
 			display.x = FP.camera.x;
 			display.y = FP.camera.y;
 			
+			for (var i:int = 0; i < inventoryDisplay.length; i++){
+				var a:Entity = inventoryDisplay[i];
+				if (a != null){
+					a.x = FP.camera.x + 10 + (i * 55);
+					a.y = FP.camera.y + FP.screen.height - 60;
+				}
+			}
 			if (Input.pressed(Key.DIGIT_1)) {
 				addItemToInventory();
 			}
@@ -60,20 +67,29 @@ package {
 			updateHealth();
 		}
 		
-		public function addItemToInventory():void{
+		private function findOpenSlot():int{
 			inventoryDisplay = thePlayer.getInventory();
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				if (inventoryDisplay[i] == null){
 					trace("slot#" + i + " is free");
+					return i;
+				}
+			}
+			return -1;
+		}
+		
+		public function addItemToInventory():void{
+			inventoryDisplay = thePlayer.getInventory();
+			var slot:int = findOpenSlot();
+				if (slot != -1){
 					var a:Entity = new Entity();
 					a.graphic = new Image(Assets.SPACEMAN_STANDING);
-					a.x = 10 + (i * 55);
-					a.y = FP.screen.height - 60;
-					inventoryDisplay[i] = a;
+					a.x = FP.camera.x + 10 + (slot * 55);
+					a.y = FP.camera.y + FP.screen.height - 60;
+					inventoryDisplay[slot] = a;
 					world.add(a);
 					return;
 				}
-			}
 		}
 		
 		private function updateHealth():void{
