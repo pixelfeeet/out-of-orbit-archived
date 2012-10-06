@@ -53,43 +53,73 @@ package {
 			display.x = FP.camera.x;
 			display.y = FP.camera.y;
 			
-			for (var i:int = 0; i < inventoryDisplay.length; i++){
-				var a:Entity = inventoryDisplay[i];
-				if (a != null){
-					a.x = FP.camera.x + 10 + (i * 55);
-					a.y = FP.camera.y + FP.screen.height - 60;
-				}
-			}
+
 			if (Input.pressed(Key.DIGIT_1)) {
 				addItemToInventory();
 			}
 			
+			if (Input.pressed(Key.DIGIT_2)) {
+				removeLastItemFromInventory();
+			}
+			
 			updateHealth();
+			updateInventory();
 		}
 		
 		private function findOpenSlot():int{
 			inventoryDisplay = thePlayer.getInventory();
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
-				if (inventoryDisplay[i] == null){
+				if (inventoryDisplay[i] == null || inventoryDisplay[i] == undefined){
 					trace("slot#" + i + " is free");
 					return i;
 				}
 			}
+			trace("last slot: " + inventoryDisplay[-1])
+			trace("no slots full");
+			return -1;
+		}
+		
+		private function findLastInventoryItem():int {
+			if (inventoryDisplay != null && inventoryDisplay.length > 0) {
+				for (var i:int = inventoryDisplay.length - 1; i > -1; i--){
+					if (inventoryDisplay[i] != null) {
+						trace("slot #" + i + " is not empty");
+						return i;
+					}
+				}
+			}
+			trace("Inventory is empty");
 			return -1;
 		}
 		
 		public function addItemToInventory():void{
 			inventoryDisplay = thePlayer.getInventory();
 			var slot:int = findOpenSlot();
-				if (slot != -1){
-					var a:Entity = new Entity();
-					a.graphic = new Image(Assets.SPACEMAN_STANDING);
-					a.x = FP.camera.x + 10 + (slot * 55);
-					a.y = FP.camera.y + FP.screen.height - 60;
-					inventoryDisplay[slot] = a;
-					world.add(a);
-					return;
-				}
+			
+			if (slot != -1){
+				var a:Entity = new Entity();
+				a.graphic = new Image(Assets.SPACEMAN_STANDING);
+				a.x = FP.camera.x + 10 + (slot * 55);
+				a.y = FP.camera.y + FP.screen.height - 60;
+				inventoryDisplay[slot] = a;
+				world.add(a);
+				return;
+			}
+		}
+		
+		public function removeLastItemFromInventory():void {
+			var slot:int = findLastInventoryItem();
+			if (slot != -1){
+				removeItemFromInventory(slot);
+			}
+		}
+		
+		public function removeItemFromInventory(_slot:int):void {
+			if (inventoryDisplay[_slot] != null){
+				var a:Entity = inventoryDisplay[_slot];
+				world.remove(a);	
+				inventoryDisplay[_slot] = null;
+			}
 		}
 		
 		private function updateHealth():void{
@@ -98,7 +128,13 @@ package {
 		}
 		
 		private function updateInventory():void{
-			
+			for (var i:int = 0; i < inventoryDisplay.length; i++){
+				var a:Entity = inventoryDisplay[i];
+				if (a != null){
+					a.x = FP.camera.x + 10 + (i * 55);
+					a.y = FP.camera.y + FP.screen.height - 60;
+				}
+			}
 		}
 		
 	}
