@@ -62,17 +62,7 @@ package {
 			if(!inventoryBoxesInitiated) initInventoryBoxes();
 			updateInventoryBoxes();
 			
-			if (Input.mouseReleased) click();
-		}
-		
-		private function click():void{
-			for (var i:int = 0; i < inventoryBoxes.length; i++) {
-				var b:InventoryBox = inventoryBoxes[i];
-				if (b.collidePoint(b.x, b.y, FP.world.mouseX, FP.world.mouseY)) {
-					b.click();
-					return;
-				}
-			}
+			
 		}
 		
 		private function getInventory():void {

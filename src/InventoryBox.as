@@ -3,8 +3,9 @@ package {
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.Graphic;
-	import net.flashpunk.Mask;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.FP;
+	import net.flashpunk.utils.Input;
 	
 	public class InventoryBox extends Entity {
 		
@@ -22,6 +23,9 @@ package {
 		}
 		
 		override public function update():void {
+			if (collidePoint(x, y, FP.world.mouseX, FP.world.mouseY))
+				if (Input.mouseReleased) click();
+			
 			if (selected) graphic = Image.createRect(50, 50, 0xffffff, 0.8);
 			else graphic = Image.createRect(50, 50, 0x444444, 0.8);
 		}
