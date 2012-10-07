@@ -6,17 +6,21 @@ package {
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
 	
+	import utilities.Settings;
+	
 	public class Level extends Entity {
 		private var tiles:Tilemap;
 		private var grid:Grid;
-		protected const TILESIZE:int = 32;
+		private var t:int; //Settings.TILESIZE
 		
 		public function Level(xml:Class) {
-			tiles = new Tilemap(Assets.CAVE_TILESET, 40 * TILESIZE, 40 * TILESIZE, TILESIZE, TILESIZE);
+			t = Settings.TILESIZE;
+			
+			tiles = new Tilemap(Assets.CAVE_TILESET, 40 * t, 40 * t, t, t);
 			graphic = tiles;
 			layer = 1;
 			
-			grid = new Grid(40 * TILESIZE, 40 * TILESIZE, TILESIZE, TILESIZE, 0, 0);
+			grid = new Grid(40 * t, 40 * t, t, t, 0, 0);
 			mask = grid;
 			
 			type = "level";

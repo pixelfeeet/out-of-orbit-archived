@@ -36,6 +36,8 @@ package
 		
 		protected var xSpeed:int;
 		
+		protected var t:int; //Settings.TILESIZE
+		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
 			
 			super();
@@ -60,6 +62,8 @@ package
 			maxHunger = hunger;
 			minHunger = 0;
 			hungerTimer = 0;
+			
+			t = Settings.TILESIZE;
 			
 		}
 		
@@ -86,13 +90,13 @@ package
 					//moving to the right
 					velocity.x = 0;
 					
-					x = Math.floor(x / 32) * 32;
-					if (width > Settings.TILESIZE * 2) x = Math.floor(x/32) * 32;
-					else x = Math.floor(x / 32) * 32 + Math.abs((width % 32) - 32);
+					x = Math.floor(x / t) * t;
+					if (width > t * 2) x = Math.floor(x / t) * t;
+					else x = Math.floor(x / t) * t + Math.abs((width % t) - t);
 				} else {
 					//moving the left
 					velocity.x = 0;
-					x = Math.floor(x/32) * 32 + 32;
+					x = Math.floor(x / t) * t + t;
 				}
 			}
 			
@@ -103,13 +107,13 @@ package
 				if(FP.sign(velocity.y) > 0){
 					//moving down
 					calcFallDamage(velocity.y);
-					if (height > Settings.TILESIZE * 2) y = Math.floor(y/32) * 32;
-					else y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
+					if (height > t * 2) y = Math.floor(y / t) * t;
+					else y = Math.floor(y / t) * t + Math.abs((height % t) - t);
 					onGround = true;
 				} else {
 					//moving up
 					velocity.y = 0;
-					y = Math.floor(y / 32) * 32 + 32;
+					y = Math.floor(y / t) * t + t;
 					onGround = false;
 				}
 			}

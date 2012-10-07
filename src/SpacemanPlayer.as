@@ -222,11 +222,11 @@ package {
 					//moving to the right
 					velocity.x = 0;
 					
-					x = Math.floor(x / 32) * 32;
+					x = Math.floor(x / t) * t;
 				} else {
 					//moving the left
 					velocity.x = 0;
-					x = Math.floor(x/32) * 32 + 32;
+					x = Math.floor(x / t) * t + t;
 				}
 			}
 			
@@ -237,12 +237,12 @@ package {
 				if(FP.sign(velocity.y) > 0){
 					//moving down
 					
-					y = Math.floor(y / 32) * 32 + Math.abs((height % 32) - 32);
+					y = Math.floor(y / t) * t + Math.abs((height % t) - t);
 					land();
 				} else {
 					//moving up
 					velocity.y = 0;
-					y = Math.floor(y / 32) * 32 + 32;
+					y = Math.floor(y / t) * t + t;
 					onGround = false;
 				}
 			}
