@@ -12,7 +12,6 @@ package {
 		public var targetCharacter:Entity;
 		public var viewDistance:int;
 		
-		[Embed(source = 'assets/player.png')] private const ENEMY:Class;
 		public function Enemy(_position:Point, _health:int = 100) {
 
 			super(_position, _health);

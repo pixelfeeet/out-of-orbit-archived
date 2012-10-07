@@ -40,6 +40,7 @@ package {
 		public static var inventory:Inventory;
 		public var landSound:Sfx = new Sfx(Assets.LAND_SOUND);
 		public var reachDistance:int;
+		public var inventoryLength:int;
 		
 		public function SpacemanPlayer(position:Point) {
 			x = position.x;
@@ -69,8 +70,11 @@ package {
 			
 			animations = new Animations();
 			
-			inventory = new Inventory();
+
+			inventoryLength = 14;
+			inventory = new Inventory(inventoryLength);
 			reachDistance = 100;
+			
 			
 			super(position, health, hunger);
 
@@ -234,7 +238,6 @@ package {
 		private function land():void {
 			calcFallDamage(velocity.y);
 			if(!onGround){
-				landSound.play(0.1);
 				onGround = true;
 			}
 		}

@@ -23,6 +23,7 @@ package {
 		
 		private var inventory:Array;
 		private var inventoryDisplay:Array;
+		private var inventoryBoxes:Array;
 		
 		public function HUD(player:SpacemanPlayer) {
 			layer = 1;
@@ -40,8 +41,8 @@ package {
 
 			display = new Graphiclist(healthHUD, hungerHUD);
 			
-			inventoryDisplay = new Array(10);
-			initInventoryDisplay();
+			inventoryDisplay = new Array(thePlayer.inventoryLength);
+			initInventoryBoxes();
 			
 			graphic = display;
 		}
@@ -66,13 +67,20 @@ package {
 			healthHUD.text = "Health: " + thePlayer.getHealth();
 		}
 		
-		private function initInventoryDisplay():void {
+		private function initInventoryBoxes():void {
+			inventoryBoxes = [];
+			//Populate inventoryBoxes
 			for (var i:int = 0; i < inventoryDisplay.length; i++) {
 				var item:Graphic = new Graphic;
 				item = Image.createRect(50, 50, 0x444444, 0.8);
 				item.x = 10 + (i * 55);
 				item.y = FP.screen.height - 60;
-				display.add(item);
+				inventoryBoxes.push(item);
+			}
+			
+			//iterate through inventoryBoxes and display each one.
+			for each (var g:Graphic in inventoryBoxes){
+				display.add(g);
 			}
 		}
 		

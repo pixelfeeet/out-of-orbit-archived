@@ -2,17 +2,17 @@ package {
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.Graphic;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-	import net.flashpunk.Graphic;
 
 	public class Inventory extends Entity {
 		
 		public var inventory:Array;
 		
-		public function Inventory() {
-			inventory = new Array(10);
+		public function Inventory(_inventoryLength:int) {
+			inventory = new Array(_inventoryLength);
 		}
 		
 		public function findOpenSlot():int{
