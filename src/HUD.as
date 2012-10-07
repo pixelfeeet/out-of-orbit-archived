@@ -89,7 +89,7 @@ package {
 		
 		private function updateInventoryPosition():void{
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
-				var a:Entity = inventoryDisplay[i];
+				var a:InventoryItem = inventoryDisplay[i];
 				if (a != null){
 					a.x = FP.camera.x + 10 + (i * 55);
 					a.y = FP.camera.y + FP.screen.height - 60;
@@ -114,9 +114,8 @@ package {
 			}
 		}
 		
-		private function drawNewItem(_slot:int, _e:Entity = null):void{
-			var e:Entity = _e;
-			if (!e.graphic) e.graphic = new Image(Assets.SPACEMAN_STANDING);
+		private function drawNewItem(_slot:int, _e:InventoryItem = null):void{
+			var e:InventoryItem = _e;
 			e.x = FP.camera.x + 10 + (_slot * 55);
 			e.y = FP.camera.y + FP.screen.height - 60;
 			inventoryDisplay[_slot] = e;
@@ -125,9 +124,9 @@ package {
 		
 		public function removeItemFromInventory(_slot:int):void {
 			if (inventoryDisplay[_slot] != null){
-				var a:Entity = inventoryDisplay[_slot];
+				var a:InventoryItem = inventoryDisplay[_slot];
 				display.remove(a.graphic);
-				world.remove(a);	
+				FP.world.remove(a);	
 				inventoryDisplay[_slot] = null;
 			}
 		}

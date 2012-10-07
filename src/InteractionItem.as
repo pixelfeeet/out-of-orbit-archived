@@ -18,6 +18,7 @@ package {
 		
 		private var isInventoryItem:Boolean;
 		private var inventoryImage:Graphic;
+		private var inventoryItem:InventoryItem;
 		
 		public function InteractionItem(_position:Point) {
 			
@@ -38,6 +39,8 @@ package {
 			
 			isInventoryItem = true;
 			inventoryImage = graphic;
+			inventoryItem = new InventoryItem(inventoryImage);
+			
 		}
 
 		

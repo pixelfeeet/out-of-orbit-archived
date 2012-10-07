@@ -41,7 +41,7 @@ package {
 		
 		public function addItemToInventory(_e:Entity = null):void{
 			var slot:int = findOpenSlot();
-			var e:Entity = new Entity();
+			var e:InventoryItem = new InventoryItem();
 			if (slot != -1){
 				if (_e) e.graphic = _e.graphic;
 				inventory[slot] = e;
