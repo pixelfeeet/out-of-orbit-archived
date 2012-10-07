@@ -10,6 +10,7 @@ package {
 		//the character this enemy will attack --usually
 		//the player.
 		public var targetCharacter:Entity;
+		public var viewDistance:int;
 		
 		[Embed(source = 'assets/player.png')] private const ENEMY:Class;
 		public function Enemy(_position:Point, _health:int = 100) {
@@ -18,7 +19,7 @@ package {
 			PLAYER_SPEED = 25;
 			JUMP = 200;
 			hungerTimer = -1;
-			
+			viewDistance = 500;
 			graphic = Image.createRect(24, 40, 0xee8877, 1);
 			type = "enemy";
 			setHitboxTo(graphic);
@@ -42,12 +43,16 @@ package {
 		}
 		
 		protected function behavior():void {
+				if (distanceFrom(GameWorld.player) <= viewDistance){
+					if (Math.abs(targetCharacter.x - x) <= 20) velocity.x = 0;
+					else if (targetCharacter.x > x) xSpeed = PLAYER_SPEED;
+					else xSpeed = -PLAYER_SPEED;
+					
+					if (velocity.x == 0) jump();
+				} else {
+					xSpeed = 0;
+				}
 			
-			if (Math.abs(targetCharacter.x - x) <= 20) velocity.x = 0;
-			else if (targetCharacter.x > x) xSpeed = PLAYER_SPEED;
-			else xSpeed = -PLAYER_SPEED; // (targetCharacter.x < x)
-			
-			if (velocity.x == 0) jump();
 		}
 
 		override protected function takeDamage(damage:int):void {

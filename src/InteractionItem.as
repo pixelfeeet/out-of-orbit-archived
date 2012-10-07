@@ -52,7 +52,10 @@ package {
 		
 		protected function click():void {
 			if (Input.check(Key.SHIFT)){
-				if(GameWorld.player.getInventory().findOpenSlot() != -1 && isInventoryItem){
+				if(GameWorld.player.getInventory().findOpenSlot() != -1
+					&& isInventoryItem
+					&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
+					trace(distanceFrom(GameWorld.player));
 					GameWorld.player.getInventory().addItemToInventory(this);
 					destroy();
 				}

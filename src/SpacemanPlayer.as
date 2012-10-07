@@ -38,9 +38,8 @@ package {
 		
 		//INVENTORY
 		public static var inventory:Inventory;
-		
 		public var landSound:Sfx = new Sfx(Assets.LAND_SOUND);
-
+		public var reachDistance:int;
 		
 		public function SpacemanPlayer(position:Point) {
 			x = position.x;
@@ -71,6 +70,7 @@ package {
 			animations = new Animations();
 			
 			inventory = new Inventory();
+			reachDistance = 100;
 			
 			super(position, health, hunger);
 

@@ -4,6 +4,7 @@ package
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	
 	import utilities.Settings;
 
 	public class Character extends Entity {
@@ -86,7 +87,7 @@ package
 					velocity.x = 0;
 					
 					x = Math.floor(x / 32) * 32;
-					if (width < Settings.TILESIZE) x = Math.floor(x/32) * 32;
+					if (width > Settings.TILESIZE * 2) x = Math.floor(x/32) * 32;
 					else x = Math.floor(x / 32) * 32 + Math.abs((width % 32) - 32);
 				} else {
 					//moving the left
@@ -233,8 +234,5 @@ package
 			return Math.sqrt(p.x * p.x + p.y * p.y);
 		}
 		
-		protected function getDistanceBetween(v:Vector):Number{
-			return 0;
-		}
 	}
 }
