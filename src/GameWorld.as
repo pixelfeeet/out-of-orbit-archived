@@ -15,7 +15,7 @@ package {
 	
 		
 		public static var player:SpacemanPlayer;
-		private var hud:HUD;
+		public static var hud:HUD;
 		private var cam:Camera;
 		
 		public function GameWorld() {

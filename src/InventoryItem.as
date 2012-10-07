@@ -13,7 +13,17 @@ package {
 		}
 		
 		public function onUse():void {
-			GameWorld.player.changeHealth(10);
+			GameWorld.player.changeHunger(10);
+			for (var i:int = 0; i < GameWorld.player.inventoryLength; i++){
+				if (GameWorld.player.getInventory().inventory[i] == this){
+					GameWorld.player.getInventory().removeItemFromInventory(i);
+					GameWorld.hud.deselectAll();
+					FP.world.remove(this);
+					return;
+				}
+			}
+			//remove from inventory and world
+			//AND/OR multiple uses.
 		}
 	}
 }

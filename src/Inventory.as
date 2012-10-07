@@ -15,6 +15,12 @@ package {
 			inventory = new Array(_inventoryLength);
 		}
 		
+		public function cleanUp():void{
+			for(var i:int = 0; i < inventory.length; i++){
+				
+			}
+		}
+		
 		public function findOpenSlot():int{
 			for (var i:int = 0; i < inventory.length; i++){
 				if (inventory[i] == null || inventory[i] == undefined){

@@ -1,9 +1,9 @@
 package {
 	
 	import flash.display.Shape;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.ui.Mouse;
-	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
@@ -60,6 +60,8 @@ package {
 			updateInventoryPosition();
 			updateInventoryDisplay();
 			
+			//for some reason if initInventoryBoxes is called in the
+			//constructor 
 			if(!inventoryBoxesInitiated) initInventoryBoxes();
 			updateInventoryBoxes();
 			
@@ -105,7 +107,7 @@ package {
 			}
 		}
 		
-		private function updateInventoryDisplay():void {
+		public function updateInventoryDisplay():void {
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				if (inventory[i] != null){
 					if (inventoryDisplay[i] == null) drawNewItem(i, inventory[i]);
@@ -129,6 +131,12 @@ package {
 				display.remove(a.graphic);
 				FP.world.remove(a);	
 				inventoryDisplay[_slot] = null;
+			}
+		}
+		
+		public function deselectAll():void{
+			for (var i:int = 0; i < inventoryBoxes.length; i++){
+				inventoryBoxes[i].deselect();
 			}
 		}
 		

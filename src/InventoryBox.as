@@ -42,5 +42,9 @@ package {
 		public function isSelected():Boolean {
 			return selected;
 		}
+		
+		public function deselect():void{
+			selected = false;
+		}
 	}
 }
