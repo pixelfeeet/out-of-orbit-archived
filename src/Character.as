@@ -133,6 +133,8 @@ package
 		}
 		
 		private function updateHunger():void {
+			//Todo: if hunger is at 100, stay there for a while
+			//and regenerate the players health
 			if (hungerTimer < 60 * 5) { //5 seconds
 				hungerTimer++;
 			} else {

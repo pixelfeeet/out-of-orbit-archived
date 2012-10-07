@@ -6,6 +6,7 @@ package {
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.FP;
 	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 	
 	public class InventoryBox extends Entity {
 		
@@ -31,11 +32,13 @@ package {
 		}
 		
 		public function click():void {
-			if (!selected) selected = true;
-			else selected = false;
-			
-			for (var i:int = 0; i < HUD.inventoryBoxes.length; i++){
-				if (HUD.inventoryBoxes[i] != this) HUD.inventoryBoxes[i].selected = false;
+			if (Input.check(Key.SHIFT)){
+				if (!selected) selected = true;
+				else selected = false;
+				
+				for (var i:int = 0; i < HUD.inventoryBoxes.length; i++){
+					if (HUD.inventoryBoxes[i] != this) HUD.inventoryBoxes[i].selected = false;
+				}
 			}
 		}
 		
