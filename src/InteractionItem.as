@@ -27,25 +27,17 @@ package {
 		
 		private var interactionItems:InteractionItems;
 		
-		public function InteractionItem(_position:Point) {
+		public function InteractionItem(_position:Point = null) {
 			
+			if (!_position) _position = new Point(0,0);
 			super(_position, -1, -1);
 			
-			rocketImage = new Image(Assets.ROCKET_IMAGE);
-			graphic = rocketImage;
 			
-			x = _position.x;
-			y = _position.y;
-			
-			acceleration = new Point();
-			velocity = new Point();
+			//default graphic
+			setGraphic(new Image(Assets.ROCKET_IMAGE));
 			
 			xSpeed = 0;
-			
-			//inventoryItems = GameWorld.inventoryItems;
-			
-			setHitboxTo(graphic);
-			
+
 		}
 
 		
@@ -77,6 +69,11 @@ package {
 		
 		protected function destroy():void{
 			world.remove(this);
+		}
+		
+		public function setGraphic(g:Graphic):void {
+			graphic = g;
+			setHitboxTo(graphic);
 		}
 		
 	}

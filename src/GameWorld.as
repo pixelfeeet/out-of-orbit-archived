@@ -26,25 +26,30 @@ package {
 		
 		public function GameWorld() {
 		
+			inventoryItems = new InventoryItems();
+			interactionItems = new InteractionItems();
+			enemies = new Enemies();
 			
 			player = new SpacemanPlayer(new Point(400, 100));
 			add(player);
 			add(new Level(DEFAULT_MAP))
-			add(new InteractionItem(new Point(300, 100)));
+			
+			var ii:InteractionItem = new InteractionItem(new Point(300, 100));
+			ii.setGraphic(interactionItems.mediPack.graphic);
+			add(ii);
+			
 			add(new Cursor());
 
 			var enemy:Enemy = new Enemy(new Point(200, 200), 60);
 			enemy.targetCharacter = player;
 			add(enemy);
-
-			cam = new Camera();
-			inventoryItems = new InventoryItems();
-			interactionItems = new InteractionItems();
-			enemies = new Enemies();
 			
 			//UI
 			hud = new HUD(player);
 			add(hud);
+			
+			//Camera
+			cam = new Camera();
 		}
 		
 		override public function update():void {
