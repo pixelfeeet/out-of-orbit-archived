@@ -23,9 +23,10 @@ package {
 		private var display:Graphiclist;
 		
 		private var inventory:Array;
-		private var inventoryDisplay:Array;
+		//this doesn't seem good.
+		public static var inventoryDisplay:Array;
 		public static var inventoryBoxes:Array;
-		private var inventoryBoxesInitiated:Boolean;
+		public static var inventoryBoxesInitiated:Boolean;
 		
 		public function HUD(player:SpacemanPlayer) {
 			layer = 1;

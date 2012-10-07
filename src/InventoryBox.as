@@ -38,5 +38,9 @@ package {
 				if (HUD.inventoryBoxes[i] != this) HUD.inventoryBoxes[i].selected = false;
 			}
 		}
+		
+		public function isSelected():Boolean {
+			return selected;
+		}
 	}
 }

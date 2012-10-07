@@ -62,6 +62,7 @@ package {
 			
 			Input.define("Jump", Key.SPACE, Key.W);
 			Input.define("Crouch", Key.S)
+			Input.define("Use", Key.E);
 			
 			this.setHitbox(Image(graphic).width, Image(graphic).height, 0, 0);
 		
@@ -88,7 +89,22 @@ package {
 				
 			if (damageTimer > 0) damageTimer--;
 
+			if (Input.pressed("Use")){
+				onUse();
+			}
 			super.update();
+		}
+		
+		private function onUse():void {
+			for (var i:int = 0; i < HUD.inventoryBoxes.length; i++){
+				if (HUD.inventoryBoxes[i].isSelected()) {
+					trace("#" + i + " is selected");
+					if (inventory.inventory[i] != null) inventory.inventory[i].onUse();
+					else trace("nothing to use");
+					return;
+				}
+			}
+			trace("no selected things");
 		}
 		
 		protected function checkForEnemyCollision():void {
