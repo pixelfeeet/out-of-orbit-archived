@@ -1,12 +1,12 @@
 package data {
 	import net.flashpunk.graphics.Image;
 
-	public class Items {
+	public class InventoryItems {
 		
 		public var food:InventoryItem;
 		public var mediPack:InventoryItem;
 		
-		public function Items() {
+		public function InventoryItems() {
 			food = new InventoryItem();
 			food.numOfUses = 2;
 			food.graphic = new Image(Assets.SPACEMAN_CROUCHING);

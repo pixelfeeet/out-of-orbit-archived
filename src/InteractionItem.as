@@ -1,5 +1,6 @@
 package {
-	import data.Items;
+	import data.InteractionItems;
+	import data.InventoryItems;
 	
 	import flash.geom.Point;
 	
@@ -20,8 +21,11 @@ package {
 		
 		private var isInventoryItem:Boolean;
 		private var inventoryImage:Graphic;
-		private var inventoryItem:InventoryItem;
-		private var items:Items;
+		
+		private var inventoryItem:InventoryItem; //corresponding inventoryItem;
+		private var inventoryItems:InventoryItems;
+		
+		private var interactionItems:InteractionItems;
 		
 		public function InteractionItem(_position:Point) {
 			
@@ -38,20 +42,20 @@ package {
 			
 			xSpeed = 0;
 			
+			//inventoryItems = GameWorld.inventoryItems;
+			
 			setHitboxTo(graphic);
-			
-			items = new Items();
-			
-			isInventoryItem = true;
-			inventoryImage = graphic;
-			inventoryItem = items.mediPack;
 			
 		}
 
 		
 		override public function update():void {
-
+			
 			super.update();
+			
+			//here's that declaring stuff in the constructor problem
+			//again.  I don't know of there's a better way of doing this.
+			if (!inventoryItem) inventoryItem = GameWorld.inventoryItems.mediPack;
 			
 			if (collidePoint(x, y, world.mouseX, world.mouseY)) {
 				if (Input.mouseReleased) click();
@@ -62,7 +66,7 @@ package {
 		protected function click():void {
 			if (Input.check(Key.SHIFT)){
 				if(GameWorld.player.getInventory().findOpenSlot() != -1
-				&& isInventoryItem
+				&& inventoryItem != null
 				&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
 				trace(distanceFrom(GameWorld.player));
 					GameWorld.player.getInventory().addItemToInventory(inventoryItem);

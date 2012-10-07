@@ -1,6 +1,7 @@
 package {
 	
-	import data.Items;
+	import data.InteractionItems;
+	import data.InventoryItems;
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
@@ -12,19 +13,21 @@ package {
 	public class Inventory extends Entity {
 		
 		public var inventory:Array;
-		private var items:Items;
+		private var inventoryItems:InventoryItems;
+		private var interactionItems:InteractionItems;
 		
 		public function Inventory(_inventoryLength:int) {
 			inventory = new Array(_inventoryLength);
-			items = new Items();
+			initItems();
 		}
-		
-		public function cleanUp():void{
-			for(var i:int = 0; i < inventory.length; i++){
-				
-			}
+ 
+		private function initItems():void{
+
 		}
-		
+		override public function update():void {
+			//if(!inventoryItems) inventoryItems = GameWorld.inventoryItems;
+			//if(!interactionItems) interactionItems = GameWorld.interactionItems;
+		}
 		public function findOpenSlot():int{
 			for (var i:int = 0; i < inventory.length; i++){
 				if (inventory[i] == null || inventory[i] == undefined){
@@ -53,9 +56,9 @@ package {
 			var slot:int = findOpenSlot();
 			var e:InventoryItem = new InventoryItem();
 			if (!_e){
-				e.behavior = items.food.behavior;
-				e.numOfUses = items.food.numOfUses;
-				e.graphic = items.food.graphic;
+				e.behavior = GameWorld.inventoryItems.food.behavior;
+				e.numOfUses = GameWorld.inventoryItems.food.numOfUses;
+				e.graphic = GameWorld.inventoryItems.food.graphic;
 			} else {
 				e.behavior = _e.behavior;
 				e.numOfUses = _e.numOfUses;

@@ -1,5 +1,7 @@
 package {
 	
+	import data.*;
+	
 	import flash.geom.Point;
 	
 	import net.flashpunk.FP;
@@ -18,6 +20,10 @@ package {
 		public static var hud:HUD;
 		private var cam:Camera;
 		
+		public static var inventoryItems:InventoryItems;
+		public static var interactionItems:InteractionItems;
+		public static var enemies:Enemies;
+		
 		public function GameWorld() {
 		
 			
@@ -32,6 +38,9 @@ package {
 			add(enemy);
 
 			cam = new Camera();
+			inventoryItems = new InventoryItems();
+			interactionItems = new InteractionItems();
+			enemies = new Enemies();
 			
 			//UI
 			hud = new HUD(player);
