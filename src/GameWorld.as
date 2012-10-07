@@ -15,7 +15,7 @@ package {
 	
 		
 		public static var player:SpacemanPlayer;
-		public static var hud:HUD;
+		private var hud:HUD;
 		private var cam:Camera;
 		
 		public function GameWorld() {
@@ -35,7 +35,7 @@ package {
 			
 			//UI
 			hud = new HUD(player);
-			add(hud)
+			add(hud);
 		}
 		
 		override public function update():void {

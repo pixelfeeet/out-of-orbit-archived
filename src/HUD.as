@@ -3,6 +3,7 @@ package {
 	import flash.display.Shape;
 	import flash.geom.Rectangle;
 	import flash.ui.Mouse;
+	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
@@ -23,7 +24,8 @@ package {
 		
 		private var inventory:Array;
 		private var inventoryDisplay:Array;
-		private var inventoryBoxes:Array;
+		public static var inventoryBoxes:Array;
+		private var inventoryBoxesInitiated:Boolean;
 		
 		public function HUD(player:SpacemanPlayer) {
 			layer = 1;
@@ -42,7 +44,7 @@ package {
 			display = new Graphiclist(healthHUD, hungerHUD);
 			
 			inventoryDisplay = new Array(thePlayer.inventoryLength);
-			initInventoryBoxes();
+			inventoryBoxesInitiated = false;
 			
 			graphic = display;
 		}
@@ -56,6 +58,21 @@ package {
 			getInventory();
 			updateInventoryPosition();
 			updateInventoryDisplay();
+			
+			if(!inventoryBoxesInitiated) initInventoryBoxes();
+			updateInventoryBoxes();
+			
+			if (Input.mouseReleased) click();
+		}
+		
+		private function click():void{
+			for (var i:int = 0; i < inventoryBoxes.length; i++) {
+				var b:InventoryBox = inventoryBoxes[i];
+				if (b.collidePoint(b.x, b.y, FP.world.mouseX, FP.world.mouseY)) {
+					b.click();
+					return;
+				}
+			}
 		}
 		
 		private function getInventory():void {
@@ -69,19 +86,14 @@ package {
 		
 		private function initInventoryBoxes():void {
 			inventoryBoxes = [];
-			//Populate inventoryBoxes
+			
 			for (var i:int = 0; i < inventoryDisplay.length; i++) {
-				var item:Graphic = new Graphic;
-				item = Image.createRect(50, 50, 0x444444, 0.8);
-				item.x = 10 + (i * 55);
-				item.y = FP.screen.height - 60;
+				var item:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60));
 				inventoryBoxes.push(item);
+				FP.world.add(item);
 			}
 			
-			//iterate through inventoryBoxes and display each one.
-			for each (var g:Graphic in inventoryBoxes){
-				display.add(g);
-			}
+			inventoryBoxesInitiated = true;
 		}
 		
 		
@@ -92,6 +104,13 @@ package {
 					a.x = FP.camera.x + 10 + (i * 55);
 					a.y = FP.camera.y + FP.screen.height - 60;
 				}
+			}
+		}
+		
+		private function updateInventoryBoxes():void{
+			for (var i:int = 0; i < inventoryBoxes.length; i++){
+				inventoryBoxes[i].x = FP.camera.x + 10 + (i * 55);
+				inventoryBoxes[i].y = FP.camera.y + FP.screen.height - 60;
 			}
 		}
 		

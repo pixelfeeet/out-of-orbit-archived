@@ -70,11 +70,9 @@ package {
 			
 			animations = new Animations();
 			
-
 			inventoryLength = 14;
 			inventory = new Inventory(inventoryLength);
 			reachDistance = 100;
-			
 			
 			super(position, health, hunger);
 

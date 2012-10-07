@@ -17,7 +17,7 @@ package {
 		private var rocketImage:Image;
 		
 		private var isInventoryItem:Boolean;
-		private var inventoryItemImage:Image;
+		private var inventoryImage:Graphic;
 		
 		public function InteractionItem(_position:Point) {
 			
@@ -37,6 +37,7 @@ package {
 			setHitboxTo(graphic);
 			
 			isInventoryItem = true;
+			inventoryImage = graphic;
 		}
 
 		
