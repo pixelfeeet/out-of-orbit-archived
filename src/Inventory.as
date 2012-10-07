@@ -1,5 +1,7 @@
 package {
 	
+	import data.Items;
+	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
@@ -10,9 +12,11 @@ package {
 	public class Inventory extends Entity {
 		
 		public var inventory:Array;
+		private var items:Items;
 		
 		public function Inventory(_inventoryLength:int) {
 			inventory = new Array(_inventoryLength);
+			items = new Items();
 		}
 		
 		public function cleanUp():void{
@@ -45,11 +49,19 @@ package {
 			return -1;
 		}
 		
-		public function addItemToInventory(_e:Entity = null):void{
+		public function addItemToInventory(_e:InventoryItem = null):void{
 			var slot:int = findOpenSlot();
 			var e:InventoryItem = new InventoryItem();
+			if (!_e){
+				e.behavior = items.food.behavior;
+				e.numOfUses = items.food.numOfUses;
+				e.graphic = items.food.graphic;
+			} else {
+				e.behavior = _e.behavior;
+				e.numOfUses = _e.numOfUses;
+				e.graphic = _e.graphic;
+			}
 			if (slot != -1){
-				if (_e) e.graphic = _e.graphic;
 				inventory[slot] = e;
 			}
 		}

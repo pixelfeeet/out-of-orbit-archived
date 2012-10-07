@@ -1,4 +1,6 @@
 package {
+	import data.Items;
+	
 	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;
@@ -19,6 +21,7 @@ package {
 		private var isInventoryItem:Boolean;
 		private var inventoryImage:Graphic;
 		private var inventoryItem:InventoryItem;
+		private var items:Items;
 		
 		public function InteractionItem(_position:Point) {
 			
@@ -37,9 +40,11 @@ package {
 			
 			setHitboxTo(graphic);
 			
+			items = new Items();
+			
 			isInventoryItem = true;
 			inventoryImage = graphic;
-			inventoryItem = new InventoryItem(inventoryImage);
+			inventoryItem = items.mediPack;
 			
 		}
 
@@ -60,7 +65,7 @@ package {
 				&& isInventoryItem
 				&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
 				trace(distanceFrom(GameWorld.player));
-					GameWorld.player.getInventory().addItemToInventory(this);
+					GameWorld.player.getInventory().addItemToInventory(inventoryItem);
 					destroy();
 				}
 			}
