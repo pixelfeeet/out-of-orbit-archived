@@ -1,8 +1,11 @@
 package {
 	
+	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
+	import net.flashpunk.World;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
 	
@@ -12,8 +15,9 @@ package {
 		private var tiles:Tilemap;
 		private var grid:Grid;
 		private var t:int; //Settings.TILESIZE
+		private var xml:Class;
 		
-		public function Level(xml:Class) {
+		public function Level(_xml:Class) {
 			t = Settings.TILESIZE;
 			
 			tiles = new Tilemap(Assets.CAVE_TILESET, 40 * t, 40 * t, t, t);
@@ -25,10 +29,13 @@ package {
 			
 			type = "level";
 			
-			loadLevel(xml);
+			xml = _xml;
+			
+			loadLevel();
+			//loadEnemies();
 		}
 		
-		private function loadLevel(xml:Class):void {
+		private function loadLevel():void {
 			var rawData:ByteArray = new xml;
 			var dataString:String = rawData.readUTFBytes( rawData.length );
 			var xmlData:XML = new XML(dataString);
@@ -61,6 +68,24 @@ package {
 					}
 					gid++;
 				}
+			}
+		}
+		
+		public function loadEnemies(_w:World):void {
+			var rawData:ByteArray = new xml;
+			var dataString:String = rawData.readUTFBytes( rawData.length );
+			var xmlData:XML = new XML(dataString);
+			
+			var dataList:XMLList;
+			var dataElement:XML;
+			
+			dataList = xmlData.objectgroup.(@name=="objects").object;
+			for (var i:int = 0; i < dataList.length(); i++){
+				//var enemyType:String = dataList[i].@type;
+				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+				var e:Enemy = new Enemy(ePos, 60);
+				e.targetCharacter = GameWorld.player;
+				_w.add(e);
 			}
 		}
 		

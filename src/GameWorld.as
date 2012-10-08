@@ -3,6 +3,7 @@ package {
 	import data.*;
 	
 	import flash.geom.Point;
+	import flash.utils.ByteArray;
 	
 	import net.flashpunk.FP;
 	import net.flashpunk.World;
@@ -13,8 +14,6 @@ package {
 	
 	
 	public class GameWorld extends World {
-		[Embed(source = 'assets/cave.tmx', mimeType = "application/octet-stream")] private static const DEFAULT_MAP:Class;
-	
 		
 		public static var player:SpacemanPlayer;
 		public static var hud:HUD;
@@ -24,6 +23,8 @@ package {
 		public static var interactionItems:InteractionItems;
 		public static var enemies:Enemies;
 		
+		public var caveLevel:Level;
+		
 		public function GameWorld() {
 		
 			inventoryItems = new InventoryItems();
@@ -32,7 +33,10 @@ package {
 			
 			player = new SpacemanPlayer(new Point(400, 100));
 			add(player);
-			add(new Level(DEFAULT_MAP))
+			
+			caveLevel = new Level(Assets.CAVE_MAP);
+			caveLevel.loadEnemies(this);
+			add(caveLevel)
 			
 			var ii:InteractionItem = new InteractionItem(new Point(300, 100));
 			ii.setGraphic(interactionItems.mediPack.graphic);
@@ -40,9 +44,9 @@ package {
 			
 			add(new Cursor());
 
-			var enemy:Enemy = new Enemy(new Point(200, 200), 60);
-			enemy.targetCharacter = player;
-			add(enemy);
+			//var enemy:Enemy = new Enemy(new Point(200, 200), 60);
+			//enemy.targetCharacter = player;
+			//add(enemy);
 			
 			//UI
 			hud = new HUD(player);
