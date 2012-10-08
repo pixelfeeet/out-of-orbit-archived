@@ -36,11 +36,12 @@ package {
 			
 			caveLevel = new Level(Assets.CAVE_MAP);
 			caveLevel.loadEnemies(this);
+			caveLevel.loadInteractionItems(this);
 			add(caveLevel)
 			
-			var ii:InteractionItem = new InteractionItem(new Point(300, 100));
-			ii.setGraphic(interactionItems.mediPack.graphic);
-			add(ii);
+			//var ii:InteractionItem = new InteractionItem(new Point(300, 100));
+			//ii.setGraphic(interactionItems.mediPack.graphic);
+			///add(ii);
 			
 			add(new Cursor());
 

@@ -79,13 +79,31 @@ package {
 			var dataList:XMLList;
 			var dataElement:XML;
 			
-			dataList = xmlData.objectgroup.(@name=="objects").object;
+			dataList = xmlData.objectgroup.(@name=="enemies").object;
 			for (var i:int = 0; i < dataList.length(); i++){
 				//var enemyType:String = dataList[i].@type;
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
 				var e:Enemy = new Enemy(ePos, 60);
 				e.targetCharacter = GameWorld.player;
 				_w.add(e);
+			}
+		}
+		
+		public function loadInteractionItems(_w:World):void {
+			var rawData:ByteArray = new xml;
+			var dataString:String = rawData.readUTFBytes( rawData.length );
+			var xmlData:XML = new XML(dataString);
+			
+			var dataList:XMLList;
+			var dataElement:XML;
+			
+			dataList = xmlData.objectgroup.(@name=="interactionitems").object;
+			for (var i:int = 0; i < dataList.length(); i++){
+				//var enemyType:String = dataList[i].@type;
+				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+				var ii:InteractionItem = new InteractionItem(ePos);
+				ii.setGraphic(GameWorld.interactionItems.mediPack.graphic);
+				_w.add(ii);
 			}
 		}
 		

@@ -1611,10 +1611,13 @@
    <tile gid="2"/>
   </data>
  </layer>
- <objectgroup name="objects" width="40" height="40">
+ <objectgroup name="enemies" width="40" height="40">
   <object name="enemy1" type="enemy" x="219" y="250" width="53" height="42"/>
   <object name="enemy2" type="enemy" x="1050" y="209" width="43" height="42"/>
   <object name="enemy4" type="enemy" x="782" y="832" width="43" height="42"/>
   <object name="enemy3" type="enemy" x="262" y="801" width="43" height="42"/>
+ </objectgroup>
+ <objectgroup name="interactionitems" width="40" height="40">
+  <object type="mediPack" x="293" y="287" width="52" height="48"/>
  </objectgroup>
 </map>
