@@ -31,24 +31,19 @@ package {
 			interactionItems = new InteractionItems();
 			enemies = new Enemies();
 			
-			player = new SpacemanPlayer(new Point(400, 100));
-			add(player);
+			player = new SpacemanPlayer(new Point(0,0));
+
 			
 			caveLevel = new Level(Assets.CAVE_MAP);
 			caveLevel.loadEnemies(this);
 			caveLevel.loadInteractionItems(this);
-			add(caveLevel)
-			
-			//var ii:InteractionItem = new InteractionItem(new Point(300, 100));
-			//ii.setGraphic(interactionItems.mediPack.graphic);
-			///add(ii);
+			caveLevel.loadPlayer(this, player);
+			add(player);
+			add(caveLevel);
+
 			
 			add(new Cursor());
 
-			//var enemy:Enemy = new Enemy(new Point(200, 200), 60);
-			//enemy.targetCharacter = player;
-			//add(enemy);
-			
 			//UI
 			hud = new HUD(player);
 			add(hud);

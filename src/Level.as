@@ -45,7 +45,6 @@ package {
 			
 			loadTileProperties();
 			loadLevel();
-			//loadEnemies();
 		}
 		
 		private function loadLevel():void {
@@ -114,6 +113,13 @@ package {
 				ii.setInventoryItem(e.getInventoryItem());
 				_w.add(ii);
 			}
+		}
+		
+		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
+			var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
+			_player.x = dataList.@x;
+			_player.y = dataList.@y;
+			_w.add(_player);
 		}
 		
 	}
