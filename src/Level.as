@@ -17,6 +17,12 @@ package {
 		private var t:int; //Settings.TILESIZE
 		private var xml:Class;
 		
+		private var rawData:ByteArray;
+		private var dataString:String;
+		private var xmlData:XML
+		
+		private var solidList:Array;
+		
 		public function Level(_xml:Class) {
 			t = Settings.TILESIZE;
 			
@@ -31,25 +37,27 @@ package {
 			
 			xml = _xml;
 			
+			rawData = new xml;
+			dataString = rawData.readUTFBytes( rawData.length );
+			xmlData = new XML(dataString);
+			
+			solidList = [];
+			
+			loadTileProperties();
 			loadLevel();
 			//loadEnemies();
 		}
 		
 		private function loadLevel():void {
-			var rawData:ByteArray = new xml;
-			var dataString:String = rawData.readUTFBytes( rawData.length );
-			var xmlData:XML = new XML(dataString);
 			
-			var dataList:XMLList;
-			var dataElement:XML;
+			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;
 			
-			dataList = xmlData.layer.(@name=="ground").data.tile.@gid;
-			
-			//set tiles
 			var column:int;
 			var row:int;
+			var gid:int;
 			
-			var gid:int = 0;
+			//set tiles
+			gid = 0;
 			for(row = 0; row < 40; row ++){
 				for(column = 0; column < 40; column ++){
 					tiles.setTile(column, row, dataList[gid] - 1);
@@ -61,7 +69,7 @@ package {
 			gid = 0;
 			for(row = 0; row < 40; row ++){
 				for(column = 0; column < 40; column ++){
-					if (dataList[gid] == 2) {
+					if (solidList[dataList[gid] - 1] == 1) {
 						grid.setTile(column, row, true);
 					} else {
 						grid.setTile(column, row, false);
@@ -71,15 +79,17 @@ package {
 			}
 		}
 		
+		public function loadTileProperties():void {
+			
+			var dataList:XMLList = xmlData.tileset.(@name = "cave_tileset").tile.properties.property;
+			for (var i:int = 0; i < dataList.length(); i++){
+				solidList[i] = dataList[i].(@name=="solid").@value;
+			}
+		}
+		
 		public function loadEnemies(_w:World):void {
-			var rawData:ByteArray = new xml;
-			var dataString:String = rawData.readUTFBytes( rawData.length );
-			var xmlData:XML = new XML(dataString);
 			
-			var dataList:XMLList;
-			var dataElement:XML;
-			
-			dataList = xmlData.objectgroup.(@name=="enemies").object;
+			var dataList:XMLList = xmlData.objectgroup.(@name=="enemies").object;
 			for (var i:int = 0; i < dataList.length(); i++){
 				//var enemyType:String = dataList[i].@type;
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
@@ -89,14 +99,8 @@ package {
 		}
 		
 		public function loadInteractionItems(_w:World):void {
-			var rawData:ByteArray = new xml;
-			var dataString:String = rawData.readUTFBytes( rawData.length );
-			var xmlData:XML = new XML(dataString);
 			
-			var dataList:XMLList;
-			var dataElement:XML;
-			
-			dataList = xmlData.objectgroup.(@name=="interactionitems").object;
+			var dataList:XMLList = xmlData.objectgroup.(@name=="interactionitems").object;
 			for (var i:int = 0; i < dataList.length(); i++){
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
 				var e:InteractionItem;

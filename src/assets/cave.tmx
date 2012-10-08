@@ -6,6 +6,31 @@
  </tileset>
  <tileset firstgid="6" name="cave_tileset" tilewidth="32" tileheight="32">
   <image source="cave_tileset.png" width="160" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="solid" value="0"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="solid" value="1"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="solid" value="0"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="solid" value="0"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="solid" value="0"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="ground" width="40" height="40">
   <data>
