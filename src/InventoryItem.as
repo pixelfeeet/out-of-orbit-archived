@@ -10,6 +10,7 @@ package {
 		
 		public var numOfUses:int; //# of uses before used up
 		public var behavior:Function;
+		public var label:String;
 		
 		public function InventoryItem(_graphic:Graphic=null) {
 			
@@ -18,6 +19,7 @@ package {
 			behavior = function():void{
 				trace("used.");
 			};
+			label = "default";
 			
 		}
 		

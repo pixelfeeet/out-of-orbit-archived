@@ -84,7 +84,6 @@ package {
 				//var enemyType:String = dataList[i].@type;
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
 				var e:Enemy = new Enemy(ePos, 60);
-				e.targetCharacter = GameWorld.player;
 				_w.add(e);
 			}
 		}
@@ -99,10 +98,16 @@ package {
 			
 			dataList = xmlData.objectgroup.(@name=="interactionitems").object;
 			for (var i:int = 0; i < dataList.length(); i++){
-				//var enemyType:String = dataList[i].@type;
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+				var e:InteractionItem;
+				for (var j:int = 0; j < GameWorld.interactionItems.list.length; j++){
+					if (GameWorld.interactionItems.list[j].label == dataList[i].@type){
+						e = GameWorld.interactionItems.list[j];
+					}
+				}
 				var ii:InteractionItem = new InteractionItem(ePos);
-				ii.setGraphic(GameWorld.interactionItems.mediPack.graphic);
+				ii.setGraphic(e.graphic);
+				ii.setInventoryItem(e.getInventoryItem());
 				_w.add(ii);
 			}
 		}

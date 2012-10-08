@@ -22,6 +22,10 @@ package {
 		[Embed(source = 'assets/example_item.png')] public static const EXAMPLE_ITEM:Class;		
 		[Embed(source = 'assets/interaction_radius.png')] public static const INTERACTION_RADIUS:Class;	
 		
+		//InteractionItems
+		[Embed(source = 'assets/food.png')] public static const FOOD_IMG:Class;	
+		[Embed(source = 'assets/medipack.png')] public static const MEDIPACK_IMG:Class;	
+		
 		//Sounds
 		[Embed(source = "sounds/land.mp3")] public static const LAND_SOUND:Class;
 		

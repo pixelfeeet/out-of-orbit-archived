@@ -1618,6 +1618,7 @@
   <object name="enemy3" type="enemy" x="262" y="801" width="43" height="42"/>
  </objectgroup>
  <objectgroup name="interactionitems" width="40" height="40">
-  <object type="mediPack" x="293" y="287" width="52" height="48"/>
+  <object type="mediPack" x="255" y="311" width="52" height="48"/>
+  <object type="food" x="1050" y="650" width="45" height="43"/>
  </objectgroup>
 </map>

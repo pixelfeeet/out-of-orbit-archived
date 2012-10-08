@@ -14,14 +14,16 @@ package {
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
 			if (!_position) _position = new Point(0, 0);
-			
 			super(_position, _health);
 			PLAYER_SPEED = 25;
 			JUMP = 200;
+			
 			hungerTimer = -1;
 			viewDistance = 500;
 			graphic = Image.createRect(24, 40, 0xee8877, 1);
 			type = "enemy";
+			targetCharacter = GameWorld.player;
+			
 			setHitboxTo(graphic);
 		}
 		

@@ -19,24 +19,23 @@ package {
 	public class InteractionItem extends Character {
 		private var rocketImage:Image;
 		
-		private var isInventoryItem:Boolean;
 		private var inventoryImage:Graphic;
+		public var label:String;
 		
 		private var inventoryItem:InventoryItem; //corresponding inventoryItem;
 		private var inventoryItems:InventoryItems;
-		
-		private var interactionItems:InteractionItems;
 		
 		public function InteractionItem(_position:Point = null) {
 			
 			if (!_position) _position = new Point(0,0);
 			super(_position, -1, -1);
-			
-			
+						
 			//default graphic
 			setGraphic(new Image(Assets.ROCKET_IMAGE));
 			
 			xSpeed = 0;
+			
+			label = "default";
 
 		}
 
@@ -71,9 +70,17 @@ package {
 			world.remove(this);
 		}
 		
-		public function setGraphic(g:Graphic):void {
-			graphic = g;
+		public function setGraphic(_g:Graphic):void {
+			graphic = _g;
 			setHitboxTo(graphic);
+		}
+		
+		public function setInventoryItem(_i:InventoryItem):void{
+			inventoryItem = _i;
+		}
+		
+		public function getInventoryItem():InventoryItem{
+			return inventoryItem;
 		}
 		
 	}
