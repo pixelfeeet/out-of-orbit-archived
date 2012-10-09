@@ -39,7 +39,6 @@ package {
 
 		}
 
-		
 		override public function update():void {
 			
 			super.update();
@@ -81,6 +80,21 @@ package {
 		
 		public function getInventoryItem():InventoryItem{
 			return inventoryItem;
+		}
+		
+		public function getPropertiesFrom(i:InteractionItem, _position:Point = null):void{
+			inventoryItem = i.inventoryItem;
+			setGraphic(i.graphic);
+			label = i.label;
+			if (_position) {
+				x = _position.x;
+				y = _position.y;
+			}
+		}
+		
+		public function setPosition(_position:Point):void{
+			x = _position.x;
+			y = _position.y;
 		}
 		
 	}

@@ -8,9 +8,11 @@ package {
 	
 	public class InventoryItem extends Entity {
 		
+		
 		public var numOfUses:int; //# of uses before used up
 		public var behavior:Function;
 		public var label:String;
+		private var stackable:Boolean;
 		
 		public function InventoryItem(_graphic:Graphic=null) {
 			
@@ -21,6 +23,7 @@ package {
 			};
 			label = "default";
 			
+			stackable = false;
 		}
 		
 		public function onUse():void {
@@ -30,7 +33,9 @@ package {
 			if (numOfUses == 0) destroy();
 		}
 		
-		
+		public function isStackable():Boolean {
+			return stackable;
+		}
 		
 		private function destroy():void {
 			for (var i:int = 0; i < GameWorld.player.inventoryLength; i++){
