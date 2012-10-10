@@ -28,10 +28,14 @@ package {
 			graphic = Image.createRect(24, 40, 0xee8877, 1);
 			type = "enemy";
 			targetCharacter = GameWorld.player;
-			var f:InteractionItem = GameWorld.interactionItems.food;
-			dropItems = [f, f, f];
+			dropItems = generateDropItems();
 			
 			setHitboxTo(graphic);
+		}
+		
+		private function generateDropItems():Array{
+			var f:InteractionItem = GameWorld.interactionItems.food;
+			return [f, f, f];
 		}
 		
 		public function destroy():void {
