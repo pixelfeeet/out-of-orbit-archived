@@ -911,7 +911,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="0"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -950,8 +950,8 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -989,11 +989,11 @@
    <tile gid="0"/>
    <tile gid="2"/>
    <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -1029,11 +1029,11 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -1647,6 +1647,15 @@
   <object type="food" x="1050" y="650" width="45" height="43"/>
  </objectgroup>
  <objectgroup name="player" width="40" height="40">
-  <object name="player" type="player" x="746" y="341" width="37" height="46"/>
+  <object name="player" type="player" x="748" y="343" width="37" height="46"/>
+ </objectgroup>
+ <objectgroup name="doors" width="40" height="40">
+  <object name="caveLevelDoor1" type="door" x="1239" y="735" width="40" height="63">
+   <properties>
+    <property name="destinationDoor" value="door1"/>
+    <property name="destinationLevel" value="caveLevel2"/>
+    <property name="playerSpawnsToLeft" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

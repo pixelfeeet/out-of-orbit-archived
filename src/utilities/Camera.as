@@ -20,12 +20,11 @@ package utilities {
 			cameraXOffset = 200;
 			cameraYOffset = 150;
 			
-			adjustToPlayer();
+			//adjustToPlayer();
 		}
 		
 		public function followPlayer():void {
 		
-			
 			//HORIZONTAL SCROLLING
 			if(player.x - FP.camera.x < cameraXOffset) {
 				if (FP.camera.x > 0) FP.camera.x -= cameraXSpeed;

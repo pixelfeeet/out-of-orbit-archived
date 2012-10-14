@@ -18,6 +18,9 @@ package {
 		
 		private var healthHUD:Text;
 		private var hungerHUD:Text;
+		private var expHUD:Text;
+		private var levelHUD:Text;
+		
 		private var thePlayer:SpacemanPlayer;
 		 
 		private var display:Graphiclist;
@@ -41,13 +44,24 @@ package {
 			hungerHUD = new Text("Hunger: " + thePlayer.getHunger(), FP.screen.width - 210, 10); 
 			hungerHUD.color = 0x6B6B6B;
 			hungerHUD.size = 32;
+			
+			expHUD = new Text("EXP: " + thePlayer.getPlayerExperience(), 10, 50);
+			expHUD.color = 0x6B6B6B;
+			expHUD.size = 24;
+			
+			levelHUD = new Text("Level: " + thePlayer.getLevel(), 10, 80);
+			levelHUD.color = 0x6B6B6B;
+			levelHUD.size = 24;
+			
 
-			display = new Graphiclist(healthHUD, hungerHUD);
+			display = new Graphiclist(healthHUD, hungerHUD, expHUD, levelHUD);
 			
 			inventoryDisplay = new Array(thePlayer.inventoryLength);
 			inventoryBoxesInitiated = false;
 			
 			graphic = display;
+			
+			layer = -100;
 		}
 		
 		override public function update():void {
@@ -75,6 +89,8 @@ package {
 		private function updateHealth():void{
 			hungerHUD.text = "Hunger: " + thePlayer.getHunger();
 			healthHUD.text = "Health: " + thePlayer.getHealth();
+			expHUD.text = "EXP: " + thePlayer.getPlayerExperience();
+			levelHUD.text = "Level: " + thePlayer.getLevel();
 		}
 		
 		private function initInventoryBoxes():void {
@@ -82,6 +98,7 @@ package {
 			
 			for (var i:int = 0; i < inventoryDisplay.length; i++) {
 				var item:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60));
+				item.layer = -100;
 				inventoryBoxes.push(item);
 				FP.world.add(item);
 			}

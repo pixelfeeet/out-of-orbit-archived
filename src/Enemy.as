@@ -16,6 +16,7 @@ package {
 		//this should be an array, and maybe not just
 		//interactionitems
 		private var dropItems:Array;
+		private var expValue:int;
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
 			if (!_position) _position = new Point(0, 0);
@@ -27,6 +28,7 @@ package {
 			viewDistance = 500;
 			graphic = Image.createRect(24, 40, 0xee8877, 1);
 			type = "enemy";
+			expValue = 10;
 			targetCharacter = GameWorld.player;
 			dropItems = generateDropItems();
 			
@@ -45,20 +47,17 @@ package {
 				item.getPropertiesFrom(dropItems[i], new Point(x + ((i + 1) * 10), y + i));
 				FP.world.add(item);
 			}
+			GameWorld.player.gainExperience(expValue);
 			FP.world.remove(this);
 		}
 		
 		override public function update():void {
-
 			super.update();
 			behavior();
-			
 		}
 		
 		override protected function updateMovement():void {
-			
 			super.updateMovement();
-
 		}
 		
 		protected function behavior():void {
@@ -78,6 +77,10 @@ package {
 			super.takeDamage(damage);
 			//TODO: destroy animation
 			if (health <= 0) destroy();
+		}
+		
+		public function getEXP():int {
+			return expValue;
 		}
 	
 	}

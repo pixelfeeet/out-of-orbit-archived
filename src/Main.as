@@ -6,7 +6,7 @@ package {
 	public class Main extends Engine {
 		public function Main() {
 			super(Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, Settings.FRAMERATE, false);
-			FP.world = new GameWorld();
+			FP.world = new MainMenuWorld();
 		}
 		
 		override public function init():void {

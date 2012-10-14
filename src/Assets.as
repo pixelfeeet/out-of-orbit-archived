@@ -9,6 +9,7 @@ package {
 		
 		//Levels
 		[Embed(source = 'assets/cave.tmx', mimeType = "application/octet-stream")] public static const CAVE_MAP:Class;
+		[Embed(source = 'assets/cave2.tmx', mimeType = "application/octet-stream")] public static const CAVE_MAP2:Class;
 		[Embed(source = 'assets/space.tmx', mimeType = "application/octet-stream")] public static const SPACE_MAP:Class;
 		
 		//Spaceman sprites

@@ -36,15 +36,19 @@ package {
 		private var dexterity:int;
 		private var agility:int;
 		
+		private var experience:int;
+		private var level:int;
+		
 		//INVENTORY
 		public static var inventory:Inventory;
 		public var landSound:Sfx = new Sfx(Assets.LAND_SOUND);
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		
-		public function SpacemanPlayer(position:Point) {
-			x = position.x;
-			y = position.y;
+		public function SpacemanPlayer(_position:Point = null) {
+			if (!_position) _position = new Point(0, 0);
+			x = _position.x;
+			y = _position.y;
 			
 			PLAYER_SPEED = 120;
 			player_speed = PLAYER_SPEED;
@@ -60,7 +64,7 @@ package {
 			
 			graphic = standingImg;
 			
-			Input.define("Jump", Key.SPACE, Key.W);
+			Input.define("Jump", Key.W);
 			Input.define("Crouch", Key.S)
 			Input.define("Use", Key.E);
 			
@@ -75,7 +79,10 @@ package {
 			inventory = new Inventory(inventoryLength);
 			reachDistance = 100;
 			
-			super(position, health, hunger);
+			experience = 0;
+			level = 5;
+			
+			super(_position, health, hunger);
 
 		}
 		
@@ -113,7 +120,7 @@ package {
 		}
 		
 		override protected function shoot():void {
-			if (Input.mousePressed && !Input.check(Key.SHIFT)) {
+			if (Input.mouseReleased && !Input.check(Key.SHIFT)) {
 				var bullet_speed:int = 500;
 				var initX:int;
 				if (facingLeft) initX = x - 10;
@@ -303,5 +310,26 @@ package {
 			return inventory;
 		}
 		
+		//EXPERIENCE
+		public function gainExperience(_exp:int):void {
+			experience += _exp;
+			checkForLevelUp();
+		}
+		
+		private function checkForLevelUp():void {
+			if (experience % 20 == 0) levelUp();
+		}
+		
+		private function levelUp():void {
+			level++;
+		}
+		
+		public function getPlayerExperience():int {
+			return experience;
+		}
+		
+		public function getLevel():int {
+			return level;
+		}
 	}
 }
