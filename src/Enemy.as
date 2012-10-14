@@ -18,6 +18,9 @@ package {
 		private var dropItems:Array;
 		private var expValue:int;
 		
+		public var respawning:Boolean;
+		public var eliminated:Boolean;
+		
 		public function Enemy(_position:Point = null, _health:int = 100) {
 			if (!_position) _position = new Point(0, 0);
 			super(_position, _health);
@@ -31,6 +34,9 @@ package {
 			expValue = 10;
 			targetCharacter = GameWorld.player;
 			dropItems = generateDropItems();
+			
+			respawning = false;
+			eliminated = false;
 			
 			setHitboxTo(graphic);
 		}
@@ -49,6 +55,7 @@ package {
 			}
 			GameWorld.player.gainExperience(expValue);
 			FP.world.remove(this);
+			if (!respawning) eliminated = true;
 		}
 		
 		override public function update():void {
@@ -81,6 +88,10 @@ package {
 		
 		public function getEXP():int {
 			return expValue;
+		}
+		
+		override public function removed():void {
+			
 		}
 	
 	}

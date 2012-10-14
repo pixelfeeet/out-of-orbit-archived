@@ -33,7 +33,7 @@ package {
 			player = _player;
 			height = _height;
 			width = _width;
-			graphic = Image.createRect(width, height, 0xffcc44, 0.4);
+
 			type = "door";
 			setHitbox(width, height);
 			playerSpawnsToLeft = true;
@@ -65,7 +65,6 @@ package {
 		public function changeLevel():void {
 			setDestinationLevel(destinationLevelLabel);
 			w.switchLevel(c, destinationLevel, destinationDoor);
-			//trace("time to change the level to: " + destinationLevel.label);
 		}
 	}
 }

@@ -122,14 +122,21 @@ package {
 		}
 		
 		public function loadEnemies(_w:World):void {
-			
-			var dataList:XMLList = xmlData.objectgroup.(@name=="enemies").object;
-			for (var i:int = 0; i < dataList.length(); i++){
-
-				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-				var e:Enemy = new Enemy(ePos, 60);
-				enemiesList.push(e);
-				_w.add(e);
+			if (enemiesList.length == 0){
+				var dataList:XMLList = xmlData.objectgroup.(@name=="enemies").object;
+				for (var i:int = 0; i < dataList.length(); i++){
+	
+					var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+					var e:Enemy = new Enemy(ePos, 60);
+					enemiesList.push(e);
+					_w.add(e);
+				}
+			} else {
+				for (var j:int = 0; j < enemiesList.length; j++){
+					if (enemiesList[j].eliminated == false) {
+						_w.add(enemiesList[j]);
+					}
+				}
 			}
 		}
 		
@@ -178,17 +185,19 @@ package {
 		}
 		
 		override public function removed():void {
+			
 			for each (var door:Door in doorList) {
-				gw.remove(door);
+				FP.world.remove(door);
 			}
 			
 			for each (var item:InteractionItem in interactionItemList) {
-				gw.remove(item);
+				FP.world.remove(item);
 			}
 			
 			for each (var enemy:Enemy in enemiesList) {
-				gw.remove(enemy);
+				FP.world.remove(enemy);
 			}
+			trace("Level removed.");
 		}
 		
 	}
