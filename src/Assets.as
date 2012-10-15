@@ -17,11 +17,17 @@ package {
 		[Embed(source = 'assets/spaceman_running.png')] public static const SPACEMAN_RUNNING:Class;
 		[Embed(source = 'assets/spaceman_jumping.png')] public static const SPACEMAN_JUMPING:Class;
 		[Embed(source = 'assets/spaceman_crouching.png')] public static const SPACEMAN_CROUCHING:Class;
+
+		
+		[Embed(source = 'assets/standing_torso.png')] public static const STANDING_TORSO:Class;
+		[Embed(source = 'assets/standing_legs.png')] public static const STANDING_LEGS:Class;
+		
+		[Embed(source = 'assets/pbtorso.png')] public static const PB_TORSO:Class;
+		[Embed(source = 'assets/standing_legsx3.png')] public static const LEGS_MAP:Class;
 		
 		[Embed(source = 'assets/rocket.png')] public static const ROCKET_IMAGE:Class;
 		
 		[Embed(source = 'assets/example_item.png')] public static const EXAMPLE_ITEM:Class;		
-		[Embed(source = 'assets/interaction_radius.png')] public static const INTERACTION_RADIUS:Class;	
 		
 		//InteractionItems
 		[Embed(source = 'assets/food.png')] public static const FOOD_IMG:Class;	

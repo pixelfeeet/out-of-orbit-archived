@@ -64,7 +64,10 @@ package {
 		
 		override public function update():void {
 			
-			if (!adjusted) cam.adjustToPlayer();
+			if (!adjusted) {
+				cam.adjustToPlayer();
+				//adjusted = true;
+			}
 			if (!pause) {
 				cam.followPlayer();
 				super.update();

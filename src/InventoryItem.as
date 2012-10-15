@@ -24,6 +24,7 @@ package {
 			label = "default";
 			
 			stackable = false;
+			layer = -105;
 		}
 		
 		public function onUse():void {

@@ -9,10 +9,11 @@ package {
 	
 	public class Cursor extends Entity {
 		
-		[Embed(source = 'assets/crosshair.png')] private const PLAYER:Class;
+		//[Embed(source = 'assets/crosshair.png')] private const PLAYER:Class;
 		public function Cursor() {
-			graphic = new Image(PLAYER);
+			graphic = Image.createCircle(6, 0xffffff, 0.6);
 			Mouse.hide();
+			layer = -110;
 		}
 		
 		override public function update():void {

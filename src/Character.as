@@ -9,7 +9,7 @@ package
 
 	public class Character extends Entity {
 		
-		protected const GRAVITY:int = 8;
+		protected const GRAVITY:int = 14;
 		protected var PLAYER_SPEED:int;
 		protected var JUMP:int;
 		
@@ -63,8 +63,7 @@ package
 			minHunger = 0;
 			hungerTimer = 0;
 			
-			t = Settings.TILESIZE;
-			
+			t = Settings.TILESIZE;		
 		}
 		
 		override public function update():void {
@@ -72,7 +71,6 @@ package
 			updateCollision();
 			if (health != -1) checkForDamage();
 			if (hunger != -1) updateHunger();
-			
 			
 			super.update();
 		}
@@ -91,8 +89,10 @@ package
 					velocity.x = 0;
 					
 					x = Math.floor(x / t) * t;
-					if (width > t * 2) x = Math.floor(x / t) * t;
-					else x = Math.floor(x / t) * t + Math.abs((width % t) - t);
+					//x = Math.floor(x / t) * t - Math.abs((width % t) - t);
+					while (!collide("level", x + 1, y)){
+						x++;
+					}
 				} else {
 					//moving the left
 					velocity.x = 0;
@@ -107,8 +107,11 @@ package
 				if(FP.sign(velocity.y) > 0){
 					//moving down
 					calcFallDamage(velocity.y);
-					if (height > t * 2) y = Math.floor(y / t) * t;
-					else y = Math.floor(y / t) * t + Math.abs((height % t) - t);
+					velocity.y = 0;
+					y = Math.floor(y / t) * t;
+					while (!collide("level", x, y + 1)){
+						y++;
+					}
 					onGround = true;
 				} else {
 					//moving up
@@ -191,7 +194,7 @@ package
 		protected function takeDamage(damage:int):void{
 			changeHealth(-damage);
 			//Damage animation logic goes here
-			animations.hurtAnimation(this);
+			//animations.hurtAnimation(this);
 		}
 		
 		//GETTER FUNCTIONS
