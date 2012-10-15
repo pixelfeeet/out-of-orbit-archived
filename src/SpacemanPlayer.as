@@ -2,6 +2,7 @@ package {
 	
 	import flash.display.Shape;
 	import flash.geom.Point;
+	import flash.utils.Timer;
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
@@ -46,6 +47,9 @@ package {
 		
 		private var display:Graphiclist;
 		private var legsMap:Spritemap;
+
+		private var bulletFrequency:int;
+		private var bulletTimer:int;
 		
 		//INVENTORY
 		public static var inventory:Inventory;
@@ -65,6 +69,9 @@ package {
 			health = 100;
 			hunger = 100;
 			
+			bulletFrequency = 10;
+			bulletTimer = 0;
+			
 			standingImg = new Image(Assets.SPACEMAN_STANDING);
 			runningImg = new Image(Assets.SPACEMAN_RUNNING);
 			jumpingImg = new Image(Assets.SPACEMAN_JUMPING);
@@ -81,7 +88,6 @@ package {
 			
 			pbTorso.x = 12;
 			pbTorso.y = 30;
-
 			
 			standingLegs = new Image(Assets.STANDING_LEGS);
 			
@@ -120,6 +126,7 @@ package {
 			checkForEnemyCollision();
 				
 			if (damageTimer > 0) damageTimer--;
+			if (bulletTimer > 0) bulletTimer--;
 
 			if (Input.pressed("Use")){
 				onUse();
@@ -145,7 +152,7 @@ package {
 		}
 		
 		override protected function shoot():void {
-			if (Input.mouseReleased && !Input.check(Key.SHIFT)) {
+			if (Input.mouseDown && !Input.check(Key.SHIFT) && bulletTimer == 0) {
 				var bullet_speed:int = 500;
 				var initX:int;
 				if (facingLeft) initX = x;
@@ -158,6 +165,7 @@ package {
 				speed.x = (speed.x / len) * bullet_speed;
 				speed.y = (speed.y / len) * bullet_speed;
 				FP.world.add(new Projectile(initPos.x, initPos.y, speed.x, speed.y));
+				bulletTimer = bulletFrequency;
 			}
 		}
 		
