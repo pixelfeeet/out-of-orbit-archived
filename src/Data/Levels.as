@@ -1,4 +1,5 @@
 package data {
+	import net.flashpunk.Sfx;
 	import net.flashpunk.World;
 	
 	public class Levels {
@@ -6,6 +7,7 @@ package data {
 		public var caveLevel2:Level;
 		
 		public var levelsList:Array;
+		public var ambience:Sfx;
 		
 		public function Levels(_w:GameWorld, _p:SpacemanPlayer){
 			levelsList = [];
@@ -20,6 +22,9 @@ package data {
 			caveLevel2.loadPlayer(_w, _p);
 			
 			levelsList = [caveLevel, caveLevel2];
+			
+			ambience = new Sfx(Assets.AMBIENCE);
+			ambience.loop();
 		}
 	}
 }

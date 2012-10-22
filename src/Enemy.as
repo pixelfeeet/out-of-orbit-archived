@@ -5,8 +5,8 @@ package {
 	import net.flashpunk.graphics.*;
 	import net.flashpunk.masks.Pixelmask;
 	
-	import utilities.UtilityFunctions;
 	import utilities.Settings;
+	import utilities.UtilityFunctions;
 	
 	public class Enemy extends Character {
 		
@@ -21,6 +21,9 @@ package {
 		
 		public var respawning:Boolean;
 		public var eliminated:Boolean;
+		
+		//SOUNDS
+		public var enemy_destroy:Sfx;
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
 			if (!_position) _position = new Point(0, 0);
@@ -40,6 +43,9 @@ package {
 			respawning = true;
 			eliminated = false;
 			
+			//Sounds
+			enemy_destroy = new Sfx(Assets.ENEMY_DESTROY);
+			
 			setHitboxTo(graphic);
 		}
 		
@@ -56,6 +62,7 @@ package {
 				FP.world.add(item);
 			}
 			GameWorld.player.gainExperience(expValue);
+			enemy_destroy.play();
 			FP.world.remove(this);
 			if (!respawning) eliminated = true;
 		}
@@ -70,16 +77,15 @@ package {
 		}
 		
 		protected function behavior():void {
-				if (distanceFrom(GameWorld.player) <= viewDistance){
-					if (Math.abs(targetCharacter.x - x) <= 20) velocity.x = 0;
-					else if (targetCharacter.x > x) xSpeed = PLAYER_SPEED;
-					else xSpeed = -PLAYER_SPEED;
-					
-					if (velocity.x == 0) jump();
-				} else {
-					xSpeed = 0;
-				}
-			
+			if (distanceFrom(GameWorld.player) <= viewDistance){
+				if (Math.abs(targetCharacter.x - x) <= 20) velocity.x = 0;
+				else if (targetCharacter.x > x) xSpeed = PLAYER_SPEED;
+				else xSpeed = -PLAYER_SPEED;
+				
+				if (velocity.x == 0) jump();
+			} else {
+				xSpeed = 0;
+			}
 		}
 
 		override protected function takeDamage(damage:int):void {

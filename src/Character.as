@@ -89,7 +89,6 @@ package
 					velocity.x = 0;
 					
 					x = Math.floor(x / t) * t;
-					//x = Math.floor(x / t) * t - Math.abs((width % t) - t);
 					while (!collide("level", x + 1, y)){
 						x++;
 					}
@@ -112,7 +111,10 @@ package
 					while (!collide("level", x, y + 1)){
 						y++;
 					}
-					onGround = true;
+					if (!onGround) {
+						onGround = true;
+						land();
+					}
 				} else {
 					//moving up
 					velocity.y = 0;
@@ -123,16 +125,22 @@ package
 			
 		}
 		
+		protected function land():void{}
+		
 		protected function calcFallDamage(_v:int):void {
+			/*
 			var damageVelocity:int = 700;
+			var totalDamage:int;
 			if (_v - damageVelocity > 0 ) {
 				_v-= damageVelocity;
 				while(_v > 0) {
-					takeDamage(5);
+					totalDamage += 5;
 					_v -= 50;
 				}
 			}
+			takeDamage(totalDamage);
 			velocity.y = 0;
+			*/
 		}
 		
 		private function updateHunger():void {

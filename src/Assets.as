@@ -26,7 +26,17 @@ package {
 		[Embed(source = 'assets/medipack.png')] public static const MEDIPACK_IMG:Class;	
 		
 		//Sounds
-		[Embed(source = "sounds/land.mp3")] public static const LAND_SOUND:Class;
+		[Embed(source = "sounds/land.mp3")] public static const LAND:Class;
+		[Embed(source = "sounds/injury.mp3")] public static const INJURY:Class;
+		[Embed(source = "sounds/jump.mp3")] public static const JUMP:Class;
+		[Embed(source = "sounds/enemy_destroy.mp3")] public static const ENEMY_DESTROY:Class;
+		[Embed(source = "sounds/shoot.mp3")] public static const SHOOT:Class;
+		[Embed(source = "sounds/blip.mp3")] public static const BLIP:Class;
+		[Embed(source = "sounds/ping.mp3")] public static const PING:Class;
+		
+		//Ambience/Music
+		[Embed(source = "sounds/ambience.mp3")] public static const AMBIENCE:Class;
+		
 		
 		//Cursors
 		[Embed(source = 'assets/cursor.png')] public static const CURSOR:Class;	

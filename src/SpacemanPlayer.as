@@ -15,6 +15,7 @@ package {
 	import net.flashpunk.utils.Draw;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	
 	import utilities.Settings;
 	
 	public class SpacemanPlayer extends Character {
@@ -54,10 +55,16 @@ package {
 		//INVENTORY
 		public static var inventory:Inventory;
 		public static var weaponInventory:WeaponInventory;
-		public var landSound:Sfx;
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		public var weaponInventoryLength:int;
+		
+		//SOUNDS
+		public var landSound:Sfx;
+		public var injurySound:Sfx;
+		public var jumpSound:Sfx;
+		public var shootSound:Sfx;
+		public var walkSound:Sfx;
 		
 		public function SpacemanPlayer(_position:Point = null) {
 			if (!_position) _position = new Point(0, 0);
@@ -126,7 +133,11 @@ package {
 			level = 5;
 			
 			//Sound
-			landSound = new Sfx(Assets.LAND_SOUND);
+			landSound = new Sfx(Assets.LAND);
+			injurySound = new Sfx(Assets.INJURY);
+			jumpSound = new Sfx(Assets.JUMP);
+			shootSound = new Sfx(Assets.SHOOT);
+			walkSound = new Sfx(Assets.BLIP);
 			
 			super(_position, health, hunger);
 
@@ -186,10 +197,14 @@ package {
 				var len:Number = cLength(initPos, destination);
 				speed.x = (speed.x / len) * bullet_speed;
 				speed.y = (speed.y / len) * bullet_speed;
+				
+				//Add projectile to world; determine init position
 				var p:Projectile = new Projectile(initPos.x, initPos.y, speed.x, speed.y);
 				if (facingLeft) FP.angleXY(p, pb.angle, -pb.width, initPos.x, initPos.y);
 				else FP.angleXY(p, pb.angle, pb.width, initPos.x, initPos.y);
+				
 				FP.world.add(p);
+				shootSound.play();
 				bulletTimer = bulletFrequency;
 			}
 		}
@@ -211,6 +226,7 @@ package {
 					if (FP.sign(velocity.x) == -1) legsMap.play("running");
 					else legsMap.play("backwards_running");
 				}
+				//if(legsMap.frame == 1) walkSound.play();
 			} else {
 				legsMap.play("standing");
 			}
@@ -301,13 +317,14 @@ package {
 
 		}
 		
-		private function land():void {
-			calcFallDamage(velocity.y);
-			landSound.play();
+		override protected function land():void {
+			
 			if(!onGround){
+				calcFallDamage(velocity.y);
 				onGround = true;
 			}
 		}
+		
 		private function debug():void {
 			//DEBUG: increase hunger
 			if (Input.pressed(Key.U)) {
@@ -339,6 +356,14 @@ package {
 			
 		}
 		
+		override protected function jump():void {
+			if (onGround){
+				velocity.y = -JUMP;
+				onGround = false;
+				jumpSound.play();
+			}
+		}
+		
 		//tentative idea: getHurt includes enemy-inflicted damage-
 		//specific animations, takeDamage displays only the default,
 		//i.e. red flash.
@@ -346,9 +371,24 @@ package {
 			trace("player hit!");
 			if (damageTimer == 0) {
 				takeDamage(10);
+				injurySound.play();
 				damageTimer = 60;
 			}
 			//Jump up
+		}
+		
+		override protected function calcFallDamage(_v:int):void {
+			var damageVelocity:int = 700;
+			var totalDamage:int = 0;
+			if (_v - damageVelocity > 0 ) {
+				_v-= damageVelocity;
+				while(_v > 0) {
+					totalDamage += 5;
+					_v -= 50;
+				}
+			}
+			if (totalDamage != 0) getHurt(totalDamage);
+			velocity.y = 0;
 		}
 		
 		//INVENTORY
