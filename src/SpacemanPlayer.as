@@ -15,6 +15,7 @@ package {
 	import net.flashpunk.utils.Draw;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import utilities.Settings;
 	
 	public class SpacemanPlayer extends Character {
 		
@@ -23,14 +24,12 @@ package {
 		private var isCrouched:Boolean;
 		private var running:Boolean;
 		
-		private var standingImg:Image;
-		private var runningImg:Image;
-		private var jumpingImg:Image;
-		private var crouchingImg:Image;
-		
 		private var standingTorso:Image;
 		private var standingLegs:Image;
 		private var pbTorso:Image;
+		private var head:Image;
+		
+		private var pb:Image;
 		
 		private var interactionRadius:Image;
 	
@@ -50,12 +49,15 @@ package {
 
 		private var bulletFrequency:int;
 		private var bulletTimer:int;
+		private var bulletSource:Point;
 		
 		//INVENTORY
 		public static var inventory:Inventory;
-		public var landSound:Sfx = new Sfx(Assets.LAND_SOUND);
+		public static var weaponInventory:WeaponInventory;
+		public var landSound:Sfx;
 		public var reachDistance:int;
 		public var inventoryLength:int;
+		public var weaponInventoryLength:int;
 		
 		public function SpacemanPlayer(_position:Point = null) {
 			if (!_position) _position = new Point(0, 0);
@@ -72,35 +74,43 @@ package {
 			bulletFrequency = 10;
 			bulletTimer = 0;
 			
-			standingImg = new Image(Assets.SPACEMAN_STANDING);
-			runningImg = new Image(Assets.SPACEMAN_RUNNING);
-			jumpingImg = new Image(Assets.SPACEMAN_JUMPING);
-			crouchingImg = new Image(Assets.SPACEMAN_CROUCHING);
-			
-			legsMap = new Spritemap(Assets.LEGS_MAP, 35, 46);
-			legsMap.add("running", [0, 1, 0, 2], 5);
+			//Legs
+			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
+			legsMap.add("running", [0, 1, 2, 3, 4], 18);
+			legsMap.add("backwards_running", [4, 3, 2, 1, 0], 18);
 			legsMap.add("standing", [0]);
+			legsMap.add("jumping", [5]);
+			legsMap.y = (Settings.TILESIZE * 2) - legsMap.height + 2;
 			
-			pbTorso = new Image(Assets.PB_TORSO);
-			
-			pbTorso.originX = 14;
-			pbTorso.originY = pbTorso.height;
-			
+			//Torso
+			pbTorso = new Image(Assets.TORSO);
+			pbTorso.originX = 5;
+			pbTorso.originY = pbTorso.height - 10;
 			pbTorso.x = 12;
-			pbTorso.y = 30;
+			pbTorso.y = 57;
 			
-			standingLegs = new Image(Assets.STANDING_LEGS);
+			//Head
+			head = new Image(Assets.HEAD);
+			head.originX = 12;
+			head.originY = 12;
+			head.x = 26;
+			head.y = 14;
 			
-			display = new Graphiclist(legsMap, pbTorso);
-			standingLegs.y = 19;
-			legsMap.y = 19;
+			//PB - Weapon
+			pb = new Image(Assets.PB);
+			pb.originX = 15;
+			pb.originY = pb.height / 2;
+			pb.x = 32;
+			pb.y = 34;
+			
+			display = new Graphiclist(pb, legsMap, pbTorso, head);
 			graphic = display;
 			
 			Input.define("Jump", Key.W);
 			Input.define("Crouch", Key.S)
 			Input.define("Use", Key.E);
 			
-			this.setHitbox(32, 64, 0, 0);
+			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
 			isCrouched = false;
 			running = false;
 			
@@ -108,10 +118,15 @@ package {
 			
 			inventoryLength = 14;
 			inventory = new Inventory(inventoryLength);
+			weaponInventoryLength = 2;
+			weaponInventory = new WeaponInventory(weaponInventoryLength);
 			reachDistance = 100;
 			
 			experience = 0;
 			level = 5;
+			
+			//Sound
+			landSound = new Sfx(Assets.LAND_SOUND);
 			
 			super(_position, health, hunger);
 
@@ -153,69 +168,99 @@ package {
 		
 		override protected function shoot():void {
 			if (Input.mouseDown && !Input.check(Key.SHIFT) && bulletTimer == 0) {
-				var bullet_speed:int = 500;
+				var bullet_speed:int = 1000;
 				var initX:int;
-				if (facingLeft) initX = x;
-				else initX = x + pbTorso.width;
-				var initPos:Point = new Point(initX, y + halfHeight - 20);
+				var initY:int;
+				if (facingLeft) {
+					initX = x + pb.x;
+					initY = y + pb.y;
+				} else {
+					initX = x + pb.x;
+					initY = y + pb.y;
+				}
+				//initY = y + halfHeight - 20;
+				var initPos:Point = new Point(initX, initY);
 				var destination:Point = new Point(Input.mouseX + FP.camera.x - 10, Input.mouseY + FP.camera.y - 10);
 				var speed:Point = new Point(destination.x - initPos.x, destination.y - initPos.y);
 				
 				var len:Number = cLength(initPos, destination);
 				speed.x = (speed.x / len) * bullet_speed;
 				speed.y = (speed.y / len) * bullet_speed;
-				FP.world.add(new Projectile(initPos.x, initPos.y, speed.x, speed.y));
+				var p:Projectile = new Projectile(initPos.x, initPos.y, speed.x, speed.y);
+				if (facingLeft) FP.angleXY(p, pb.angle, -pb.width, initPos.x, initPos.y);
+				else FP.angleXY(p, pb.angle, pb.width, initPos.x, initPos.y);
+				FP.world.add(p);
 				bulletTimer = bulletFrequency;
 			}
 		}
-		
-		
-		protected function crouch():void {
-			if(onGround && isCrouched){
-				player_speed = PLAYER_SPEED/2;
-			} else {
-				player_speed = PLAYER_SPEED;
-			}
-			//updateGraphic()
-		}
-		
+
 		private function updateGraphic():void {
 			
-			if(running)legsMap.play("running");
-			else legsMap.play("standing");
-			
+			//Get the player to face the horizontal direction as the cursor
 			if (Input.mouseX < x + halfWidth - FP.camera.x) facingLeft = true;
 			else facingLeft = false;
 			
+			//Play the animation
+			if (!onGround){
+				legsMap.play("jumping");
+			} else if (FP.sign(velocity.x) != 0) {
+				if (!facingLeft) {
+					if (FP.sign(velocity.x) == 1) legsMap.play("running");
+					else legsMap.play("backwards_running");
+				} else {
+					if (FP.sign(velocity.x) == -1) legsMap.play("running");
+					else legsMap.play("backwards_running");
+				}
+			} else {
+				legsMap.play("standing");
+			}
+			
+			//Calculating angles of head and weapon
 			if (facingLeft) { 
 				for (var i:int = 0; i < display.count; i++) {
 					Image(display.children[i]).flipped = true;
 				}
-				pbTorso.originX = pbTorso.width - 11;
-				pbTorso.x = 24;
+				head.originX = 12;
+				head.originY = 12;
+				head.x = 18;
+
+				pb.originX = pb.width - 15;
+				pb.x = 12;
 			} else {
 				for (var j:int = 0; j < display.count; j++) {
 					Image(display.children[j]).flipped = false;
 				}
-				pbTorso.originX = 11;
-				pbTorso.x = 12;
+				head.originX = 12;
+				head.originY = 12;
+				head.x = 24;
+				
+				pb.originX = 15;
+				pb.x = 35;
 			}
-
-			var angle:Number = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY);
-			var f:Boolean = Image(display.children[1]).flipped;
-			if(f) angle += 180;
 			
+			pbTorso.originX = 22;
+			pbTorso.x = 22;
+
+			var angle:Number = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
+			
+			var f:Boolean = Image(display.children[3]).flipped;
+			if(f) angle -= 180;
+			if(angle > 180) angle += 360;
+			
+			var headAngle:Number = angle;
+			headAngle /= 2;
 			trace(angle);
 			//player is bending down too low
-			if (f && angle > 410) angle = 410;
-			else if (!f && 270 <= angle && angle < 310) angle = 310;
+			if (f && headAngle < -15) headAngle = -15;
+			else if (!f && 270 <= headAngle && headAngle < 350) headAngle = 350;
 			
 			//player is bending back too much
-			if (f && angle < 310) angle = 310;
-			else if (!f && angle > 45 && angle < 90) angle = 45;
+			if (f && headAngle > 15) headAngle = 15;
+			else if (!f && headAngle > 15 && headAngle < 90) headAngle = 15;
 			
 
-			Image(display.children[1]).angle = Math.floor(angle); //torso
+			Image(display.children[3]).angle = headAngle; //HEAD
+			Image(display.children[0]).angle = angle; //PB
 			
 		}
 			
@@ -251,19 +296,6 @@ package {
 			if (Input.pressed("Jump")) {
 				jump();
 			}
-			if (Input.check("Crouch")) {
-				isCrouched = true;
-				crouch();
-			} else {
-				isCrouched = false;
-				crouch();
-			}
-			
-			if (Input.released("Crouch")) {
-				while(collide("level", x, y + 1)) {
-					y -= 10;
-				}
-			}
 			
 			velocity.x = player_speed * xInput;
 
@@ -271,6 +303,7 @@ package {
 		
 		private function land():void {
 			calcFallDamage(velocity.y);
+			landSound.play();
 			if(!onGround){
 				onGround = true;
 			}
@@ -321,6 +354,10 @@ package {
 		//INVENTORY
 		public function getInventory():Inventory {
 			return inventory;
+		}
+		
+		public function getWeaponInventory():WeaponInventory {
+			return weaponInventory;
 		}
 		
 		//EXPERIENCE

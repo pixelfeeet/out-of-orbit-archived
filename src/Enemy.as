@@ -6,6 +6,7 @@ package {
 	import net.flashpunk.masks.Pixelmask;
 	
 	import utilities.UtilityFunctions;
+	import utilities.Settings;
 	
 	public class Enemy extends Character {
 		
@@ -29,13 +30,14 @@ package {
 			
 			hungerTimer = -1;
 			viewDistance = 500;
-			graphic = Image.createRect(24, 40, 0xee8877, 1);
+			var t:int = Settings.TILESIZE;
+			graphic = Image.createRect(t - 10, t*2 - 10, 0xee8877, 1);
 			type = "enemy";
 			expValue = 10;
 			targetCharacter = GameWorld.player;
 			dropItems = generateDropItems();
 			
-			respawning = false;
+			respawning = true;
 			eliminated = false;
 			
 			setHitboxTo(graphic);

@@ -231,17 +231,10 @@ package
 			}
 		}
 		
-		
-		
-		//GEOMETRY STUFF.  If enough of this amasses
-		//it should go in its own class.
 		protected function cLength(a:Point, b:Point):Number {
 			return Math.sqrt(((b.x - a.x) * (b.x - a.x)) + (b.y - a.y) * (b.y - a.y));
 		}
-		
-		protected function pythagoras(p:Point):Number {
-			return Math.sqrt(p.x * p.x + p.y * p.y);
-		}
+
 		
 	}
 }

@@ -41,9 +41,11 @@ package {
 		
 		override public function update():void {
 			//if (!destinationLevel) destinationLevel = w.levels.caveLevel;
-			if (collidePoint(x, y, player.x, player.y)) {
+			if (collideWith(player, x + halfWidth, y + halfHeight)){
 				if(!useToTravel) {
 					changeLevel();
+				} else {
+					//check for use key pressed
 				}
 			}
 		}

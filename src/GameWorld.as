@@ -109,8 +109,8 @@ package {
 				//trace("toDoor: " + destinationDoor);
 				if (door.label == destinationDoor){
 					//trace("door coordinates: " + door.x + ", " + door.y);
-					if (door.playerSpawnsToLeft) player.x = door.x - 50;
-					else player.x = door.x + 70;
+					if (door.playerSpawnsToLeft) player.x = door.x - 70;
+					else player.x = door.x + 100;
 					player.y = door.y + 10;
 
 				}

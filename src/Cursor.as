@@ -11,7 +11,7 @@ package {
 		
 		//[Embed(source = 'assets/crosshair.png')] private const PLAYER:Class;
 		public function Cursor() {
-			graphic = Image.createCircle(6, 0xffffff, 0.6);
+			graphic = new Image(Assets.CURSOR);
 			Mouse.hide();
 			layer = -110;
 		}
@@ -23,6 +23,8 @@ package {
 			// Assigns the Entity's position to that of the mouse (relative to the World).
 			x =FP.world.mouseX - 12;
 			y =FP.world.mouseY - 12;
+			//if(Input.mouseDown) graphic = Image.createCircle(6, 0xbf4736, 0.6);
+			//else graphic = Image.createCircle(6, 0xffffff, 0.6);
 		}
 	}
 }

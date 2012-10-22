@@ -6,7 +6,7 @@ package
 	
 	public class Projectile extends Entity
 	{
-		private var speed:Number = 100;
+		private var speed:Number = 1000;
 		private var xSpeed:int;
 		private var ySpeed:int;
 		

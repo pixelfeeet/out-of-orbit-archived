@@ -26,10 +26,16 @@ package {
 		private var display:Graphiclist;
 		
 		private var inventory:Array;
+		private var weaponInventory:Array;
+		
 		//this doesn't seem good.
 		public static var inventoryDisplay:Array;
 		public static var inventoryBoxes:Array;
 		public static var inventoryBoxesInitiated:Boolean;
+		
+		public static var weaponInventoryDisplay:Array;
+		public static var weaponInventoryBoxes:Array;
+		public static var weaponInventoryBoxesInitiated:Boolean;
 		
 		public function HUD(player:SpacemanPlayer) {
 			layer = 1;
@@ -59,6 +65,9 @@ package {
 			inventoryDisplay = new Array(thePlayer.inventoryLength);
 			inventoryBoxesInitiated = false;
 			
+			weaponInventoryDisplay = new Array(thePlayer.weaponInventoryLength);
+			weaponInventoryBoxesInitiated = false;
+			
 			graphic = display;
 			
 			layer = -100;
@@ -71,6 +80,8 @@ package {
 			updateHealth();
 			
 			getInventory();
+			getWeaponInventory();
+			
 			updateInventoryPosition();
 			updateInventoryDisplay();
 			
@@ -79,12 +90,18 @@ package {
 			if(!inventoryBoxesInitiated) initInventoryBoxes();
 			updateInventoryBoxes();
 			
-			
 		}
 		
+		//ITEM INVENTORY
 		private function getInventory():void {
 			inventory = thePlayer.getInventory().inventory;
 		}
+		
+		//WEAPON INVENTORY
+		private function getWeaponInventory():void {
+			weaponInventory = thePlayer.getWeaponInventory().inventory;
+		}
+		
 		
 		private function updateHealth():void{
 			hungerHUD.text = "Hunger: " + thePlayer.getHunger();
@@ -104,10 +121,22 @@ package {
 			}
 			
 			inventoryBoxesInitiated = true;
+			
+			weaponInventoryBoxes = [];
+			
+			for (var j:int = 0; j < weaponInventoryDisplay.length; j++) {
+				var wItem:InventoryBox = new InventoryBox(new Point(FP.camera.x + FP.screen.width - 60, FP.camera.y + 120 + (j * 55)));
+				wItem.layer = -100;
+				weaponInventoryBoxes.push(wItem);
+				FP.world.add(wItem);
+			}
+			
+			weaponInventoryBoxesInitiated = true;
 		}
 		
 		
 		private function updateInventoryPosition():void{
+			//Item Inventory
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				var a:InventoryItem = inventoryDisplay[i];
 				if (a != null){
@@ -115,21 +144,47 @@ package {
 					a.y = FP.camera.y + FP.screen.height - 60;
 				}
 			}
+			
+			//Weapon Inventory
+			for (var j:int = 0; i < weaponInventoryDisplay.length; j++){
+				var b:Weapon = weaponInventoryDisplay[i];
+				if (b != null){
+					b.x = FP.camera.x + FP.screen.width - 60;
+					b.y = FP.camera.y + 120 + (j * 55);
+				}
+			}
 		}
 		
 		private function updateInventoryBoxes():void{
+			//Item Inventory
 			for (var i:int = 0; i < inventoryBoxes.length; i++){
 				inventoryBoxes[i].x = FP.camera.x + 10 + (i * 55);
 				inventoryBoxes[i].y = FP.camera.y + FP.screen.height - 60;
 			}
+			
+			//Weapon Inventory
+			for (var j:int = 0; j < weaponInventoryBoxes.length; j++){
+				weaponInventoryBoxes[j].x = FP.camera.x + FP.screen.width - 60;
+				weaponInventoryBoxes[j].y = FP.camera.y + 120 + (j * 55);
+			}
 		}
 		
 		public function updateInventoryDisplay():void {
+			//Item Inventory
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				if (inventory[i] != null){
 					if (inventoryDisplay[i] == null) drawNewItem(i, inventory[i]);
 				} else {
 					if (inventoryDisplay[i] != null) removeItemFromInventory(i);
+				}
+			}
+			
+			//Weapon Inventory
+			for (var j:int = 0; j < inventoryDisplay.length; j++){
+				if (weaponInventory[i] != null){
+					if (weaponInventoryDisplay[j] == null) drawNewItem(j, weaponInventory[j]);
+				} else {
+					if (inventoryDisplay[j] != null) removeItemFromInventory(j);
 				}
 			}
 		}

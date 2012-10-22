@@ -7,8 +7,7 @@ package {
 	import net.flashpunk.graphics.Image;
 	
 	public class InventoryItem extends Entity {
-		
-		
+			
 		public var numOfUses:int; //# of uses before used up
 		public var behavior:Function;
 		public var label:String;
@@ -16,7 +15,6 @@ package {
 		
 		public function InventoryItem(_graphic:Graphic=null) {
 			
-			graphic = new Image(Assets.SPACEMAN_JUMPING);
 			numOfUses = 1;
 			behavior = function():void{
 				trace("used.");
@@ -27,8 +25,7 @@ package {
 			layer = -105;
 		}
 		
-		public function onUse():void {
-			
+		public function onUse():void {	
 			behavior();
 			if (numOfUses != -1) numOfUses--;
 			if (numOfUses == 0) destroy();
