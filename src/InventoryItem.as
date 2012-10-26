@@ -4,6 +4,7 @@ package {
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
+	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 	
 	public class InventoryItem extends Entity {
@@ -12,6 +13,7 @@ package {
 		public var behavior:Function;
 		public var label:String;
 		private var stackable:Boolean;
+		private var useSound:Sfx;
 		
 		public function InventoryItem(_graphic:Graphic=null) {
 			
@@ -22,11 +24,13 @@ package {
 			label = "default";
 			
 			stackable = false;
-			layer = -105;
+			useSound = new Sfx(Assets.USE);
+			layer = -205;
 		}
 		
 		public function onUse():void {	
 			behavior();
+			useSound.play();
 			if (numOfUses != -1) numOfUses--;
 			if (numOfUses == 0) destroy();
 		}

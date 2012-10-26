@@ -80,7 +80,6 @@ package {
 			updateHealth();
 			
 			getInventory();
-			getWeaponInventory();
 			
 			updateInventoryPosition();
 			updateInventoryDisplay();
@@ -95,11 +94,6 @@ package {
 		//ITEM INVENTORY
 		private function getInventory():void {
 			inventory = thePlayer.getInventory().inventory;
-		}
-		
-		//WEAPON INVENTORY
-		private function getWeaponInventory():void {
-			weaponInventory = thePlayer.getWeaponInventory().inventory;
 		}
 		
 		
@@ -122,37 +116,21 @@ package {
 			
 			inventoryBoxesInitiated = true;
 			
-			weaponInventoryBoxes = [];
-			
-			for (var j:int = 0; j < weaponInventoryDisplay.length; j++) {
-				var wItem:InventoryBox = new InventoryBox(new Point(FP.camera.x + FP.screen.width - 60, FP.camera.y + 120 + (j * 55)));
-				wItem.layer = -100;
-				weaponInventoryBoxes.push(wItem);
-				FP.world.add(wItem);
-			}
-			
-			weaponInventoryBoxesInitiated = true;
 		}
 		
 		
 		private function updateInventoryPosition():void{
 			//Item Inventory
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
-				var a:InventoryItem = inventoryDisplay[i];
-				if (a != null){
-					a.x = FP.camera.x + 10 + (i * 55);
-					a.y = FP.camera.y + FP.screen.height - 60;
+				var e:InventoryItem = inventoryDisplay[i];
+				if (e != null){
+					var baseX:int = FP.camera.x + 10 + (i * 55);
+					var baseY:int = FP.camera.y + FP.screen.height - 60;
+					e.x = baseX + (25) - (Image(e.graphic).width / 2);
+					e.y = baseY + (25) - (Image(e.graphic).height / 2);
 				}
 			}
 			
-			//Weapon Inventory
-			for (var j:int = 0; i < weaponInventoryDisplay.length; j++){
-				var b:Weapon = weaponInventoryDisplay[i];
-				if (b != null){
-					b.x = FP.camera.x + FP.screen.width - 60;
-					b.y = FP.camera.y + 120 + (j * 55);
-				}
-			}
 		}
 		
 		private function updateInventoryBoxes():void{
@@ -162,11 +140,6 @@ package {
 				inventoryBoxes[i].y = FP.camera.y + FP.screen.height - 60;
 			}
 			
-			//Weapon Inventory
-			for (var j:int = 0; j < weaponInventoryBoxes.length; j++){
-				weaponInventoryBoxes[j].x = FP.camera.x + FP.screen.width - 60;
-				weaponInventoryBoxes[j].y = FP.camera.y + 120 + (j * 55);
-			}
 		}
 		
 		public function updateInventoryDisplay():void {
@@ -179,20 +152,14 @@ package {
 				}
 			}
 			
-			//Weapon Inventory
-			for (var j:int = 0; j < inventoryDisplay.length; j++){
-				if (weaponInventory[i] != null){
-					if (weaponInventoryDisplay[j] == null) drawNewItem(j, weaponInventory[j]);
-				} else {
-					if (inventoryDisplay[j] != null) removeItemFromInventory(j);
-				}
-			}
 		}
 		
 		private function drawNewItem(_slot:int, _e:InventoryItem = null):void{
 			var e:InventoryItem = _e;
-			e.x = FP.camera.x + 10 + (_slot * 55);
-			e.y = FP.camera.y + FP.screen.height - 60;
+			var baseX:int = FP.camera.x + 10 + (_slot * 55);
+			var baseY:int = FP.camera.y + FP.screen.height - 60;
+			e.x = baseX + (25) - (Image(e.graphic).width / 2);
+			e.y = baseY + (25) - (Image(e.graphic).height / 2);
 			inventoryDisplay[_slot] = e;
 			world.add(e);
 		}

@@ -25,10 +25,13 @@ package {
 		public static var interactionItems:InteractionItems;
 		public static var enemies:Enemies;
 		public var levels:Levels;
+		public static var npcs:NPCs;
 		
 		public var pause:Boolean;
 		private var pauseMenu:PauseMenu;
 		private var adjusted:Boolean;
+		
+		private var background:Background;
 		
 		public function GameWorld() {
 			super();
@@ -38,13 +41,16 @@ package {
 			interactionItems = new InteractionItems();
 			enemies = new Enemies();
 			levels = new Levels(this, player);
+			npcs = new NPCs();
 
 			pause = false;
 			
 			add(player);
-			add(levels.caveLevel2);
-			levels.caveLevel2.loadLevel(this, player);
-
+			var currentLevel:Level = levels.caveLevel2;
+			background = new Background(currentLevel.xml);
+			add(background);
+			add(currentLevel);
+			currentLevel.loadLevel(this, player);
 			
 			pauseMenu = new PauseMenu(this);
 
@@ -58,7 +64,6 @@ package {
 			
 			//Camera
 			cam = new Camera();
-			
 			adjusted = false;
 		}
 		
@@ -101,21 +106,18 @@ package {
 
 
 			remove(currentLevel);
+			background.init(destinationLevel.xml);
 			destinationLevel.loadLevel(this, player);
 			add(destinationLevel);
 			var doorList:Array = destinationLevel.doorList;
 			for each (var door:Door in doorList) {
-				//trace ("door.label: " + door.label);
-				//trace("toDoor: " + destinationDoor);
 				if (door.label == destinationDoor){
-					//trace("door coordinates: " + door.x + ", " + door.y);
 					if (door.playerSpawnsToLeft) player.x = door.x - 70;
 					else player.x = door.x + 100;
 					player.y = door.y + 10;
 
 				}
 			}
-			//trace("time to switch levels");
 		}
 		
 	}

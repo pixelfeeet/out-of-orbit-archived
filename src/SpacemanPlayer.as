@@ -135,7 +135,7 @@ package {
 			//Sound
 			landSound = new Sfx(Assets.LAND);
 			injurySound = new Sfx(Assets.INJURY);
-			jumpSound = new Sfx(Assets.JUMP);
+			jumpSound = new Sfx(Assets.BUMP);
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
 			
@@ -182,13 +182,10 @@ package {
 				var bullet_speed:int = 1000;
 				var initX:int;
 				var initY:int;
-				if (facingLeft) {
-					initX = x + pb.x;
-					initY = y + pb.y;
-				} else {
-					initX = x + pb.x;
-					initY = y + pb.y;
-				}
+
+				initX = x + pb.x;
+				initY = y + pb.y;
+
 				//initY = y + halfHeight - 20;
 				var initPos:Point = new Point(initX, initY);
 				var destination:Point = new Point(Input.mouseX + FP.camera.x - 10, Input.mouseY + FP.camera.y - 10);
@@ -265,7 +262,7 @@ package {
 			
 			var headAngle:Number = angle;
 			headAngle /= 2;
-			trace(angle);
+			//trace(angle);
 			//player is bending down too low
 			if (f && headAngle < -15) headAngle = -15;
 			else if (!f && 270 <= headAngle && headAngle < 350) headAngle = 350;

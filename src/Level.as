@@ -6,7 +6,10 @@ package {
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.Graphic;
 	import net.flashpunk.World;
+	import net.flashpunk.graphics.Graphiclist;
+	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
 	
@@ -16,11 +19,11 @@ package {
 		private var tiles:Tilemap;
 		private var grid:Grid;
 		private var t:int; //Settings.TILESIZE
-		private var xml:Class;
+		public var xml:Class;
 		
 		private var rawData:ByteArray;
 		private var dataString:String;
-		private var xmlData:XML
+		private var xmlData:XML;
 		
 		private var solidList:Array;
 		private var gw:GameWorld;
@@ -28,13 +31,16 @@ package {
 		private var doorsLoaded:Boolean;
 		
 		public var label:String;
-		//private var settings;
+
 		private var w:int;
 		private var h:int;
 		
 		public var doorList:Array;
 		public var interactionItemList:Array;
 		public var enemiesList:Array;
+		public var NPClist:Array;
+		
+		private var graphicList:Graphiclist;
 		
 		public function Level(_xml:Class) {
 			t = Settings.TILESIZE;
@@ -51,7 +57,7 @@ package {
 			
 			tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
 			graphic = tiles;
-			layer = 1;
+			layer = -10;
 			
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
 			mask = grid;
@@ -63,6 +69,7 @@ package {
 			doorList = [];
 			interactionItemList = [];
 			enemiesList = [];
+			NPClist = [];
 			
 			
 			loadTileProperties();
@@ -74,6 +81,7 @@ package {
 			gw = _w;
 			player = _p;
 			loadEnemies(_w);
+			loadNPCs(_w);
 			loadDoors(_w, _p);
 			loadInteractionItems(_w);
 			loadPlayer(_w, _p);
@@ -95,7 +103,10 @@ package {
 			gid = 0;
 			for(row = 0; row < h; row ++){
 				for(column = 0; column < w; column ++){
-					tiles.setTile(column, row, dataList[gid] - 1);
+					var index:int = dataList[gid] - 1;
+					if (index >= 0) {
+						tiles.setTile(column, row, index);
+					}
 					gid++;
 				}
 			}
@@ -104,7 +115,8 @@ package {
 			gid = 0;
 			for(row = 0; row < h; row ++){
 				for(column = 0; column < w; column ++){
-					if (solidList[dataList[gid] - 1] == 1) {
+					if (solidList[dataList[gid] - 1] != null &&
+						solidList[dataList[gid] - 1] == 1) {
 						grid.setTile(column, row, true);
 					} else {
 						grid.setTile(column, row, false);
@@ -115,9 +127,9 @@ package {
 		}
 		
 		public function loadTileProperties():void {
-			var dataList:XMLList = xmlData.tileset.(@name == "cave_tileset").tile.properties.property;
+			var dataList:XMLList = xmlData.tileset.(@name == "cave_tileset").tile;//.properties.property;
 			for (var i:int = 0; i < dataList.length(); i++){
-				solidList[i] = dataList[i].(@name=="solid").@value;
+				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
 			}
 		}
 		
@@ -135,6 +147,32 @@ package {
 				for (var j:int = 0; j < enemiesList.length; j++){
 					if (enemiesList[j].eliminated == false) {
 						_w.add(enemiesList[j]);
+					}
+				}
+			}
+		}
+		
+		public function loadNPCs(_w:World):void {
+			if (NPClist.length == 0){
+				var dataList:XMLList = xmlData.objectgroup.(@name=="NPCs").object;
+				for (var i:int = 0; i < dataList.length(); i++){
+					var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+					var e:NPC = new NPC(ePos, 20);
+					var list:Array = GameWorld.npcs.list;
+					for (var j:int = 0; j < list.length; j++){
+						if (dataList[i].@type == list[j].label) {
+							//e.graphic = list[j].graphic;
+							//e.behavior = list[j].behavior;
+							e.movementFrequency = list[j].movementFrequency;
+						}
+					}
+					NPClist.push(e);
+					_w.add(e);
+				}
+			} else {
+				for (var k:int = 0; k < NPClist.length; k++){
+					if (NPClist[k].eliminated == false) {
+						_w.add(NPClist[k]);
 					}
 				}
 			}

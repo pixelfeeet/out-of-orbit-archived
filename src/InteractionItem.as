@@ -58,7 +58,6 @@ package {
 				if(GameWorld.player.getInventory().findOpenSlot() != -1
 				&& inventoryItem != null
 				&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
-				trace(distanceFrom(GameWorld.player));
 					GameWorld.player.getInventory().addItemToInventory(inventoryItem);
 					destroy();
 				}

@@ -33,6 +33,8 @@ package {
 		[Embed(source = "sounds/shoot.mp3")] public static const SHOOT:Class;
 		[Embed(source = "sounds/blip.mp3")] public static const BLIP:Class;
 		[Embed(source = "sounds/ping.mp3")] public static const PING:Class;
+		[Embed(source = "sounds/bump.mp3")] public static const BUMP:Class;
+		[Embed(source = "sounds/use.mp3")] public static const USE:Class;
 		
 		//Ambience/Music
 		[Embed(source = "sounds/ambience.mp3")] public static const AMBIENCE:Class;
@@ -40,6 +42,9 @@ package {
 		
 		//Cursors
 		[Embed(source = 'assets/cursor.png')] public static const CURSOR:Class;	
+		
+		//NPCs
+		[Embed(source = 'assets/dust_ball.png')] public static const DUST_BALL:Class;
 		
 	}
 }
