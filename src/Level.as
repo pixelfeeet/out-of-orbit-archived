@@ -1,5 +1,7 @@
 package {
 	
+	import NPCs.NPC;
+	
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	import flash.xml.XMLNode;
@@ -12,6 +14,7 @@ package {
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
+	import net.flashpunk.tweens.misc.VarTween;
 	
 	import utilities.Settings;
 	
@@ -40,6 +43,7 @@ package {
 		public var enemiesList:Array;
 		public var NPClist:Array;
 		
+		public var timeMask:Entity;
 		private var graphicList:Graphiclist;
 		
 		public function Level(_xml:Class) {
@@ -56,7 +60,8 @@ package {
 			h = xmlData.@height;
 			
 			tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
-			graphic = tiles;
+			
+			graphic = new Graphiclist(tiles);
 			layer = -10;
 			
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
@@ -156,14 +161,14 @@ package {
 			if (NPClist.length == 0){
 				var dataList:XMLList = xmlData.objectgroup.(@name=="NPCs").object;
 				for (var i:int = 0; i < dataList.length(); i++){
-					var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-					var e:NPC = new NPC(ePos, 20);
+					var e:Entity;
 					var list:Array = GameWorld.npcs.list;
 					for (var j:int = 0; j < list.length; j++){
 						if (dataList[i].@type == list[j].label) {
-							//e.graphic = list[j].graphic;
-							//e.behavior = list[j].behavior;
-							e.movementFrequency = list[j].movementFrequency;
+							e = new list[j]();
+							e.x = dataList[i].@x
+							e.y = dataList[i].@y;
+							break;
 						}
 					}
 					NPClist.push(e);
@@ -177,18 +182,18 @@ package {
 				}
 			}
 		}
-		
+
 		public function loadInteractionItems(_w:World):void {
 			
 			var dataList:XMLList = xmlData.objectgroup.(@name=="interactionitems").object;
 			for (var i:int = 0; i < dataList.length(); i++){
-				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
 				var e:InteractionItem;
 				for (var j:int = 0; j < GameWorld.interactionItems.list.length; j++){
 					if (GameWorld.interactionItems.list[j].label == dataList[i].@type){
 						e = GameWorld.interactionItems.list[j];
 					}
 				}
+				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
 				var ii:InteractionItem = new InteractionItem(ePos);
 				ii.setGraphic(e.graphic);
 				ii.setInventoryItem(e.getInventoryItem());
@@ -235,7 +240,7 @@ package {
 			for each (var enemy:Enemy in enemiesList) {
 				FP.world.remove(enemy);
 			}
-			trace("Level removed.");
+			
 		}
 		
 	}

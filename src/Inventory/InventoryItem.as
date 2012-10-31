@@ -1,4 +1,4 @@
-package {
+package Inventory {
 	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;
@@ -12,18 +12,16 @@ package {
 		public var numOfUses:int; //# of uses before used up
 		public var behavior:Function;
 		public var label:String;
-		private var stackable:Boolean;
+		public var stackable:Boolean;
 		private var useSound:Sfx;
 		
 		public function InventoryItem(_graphic:Graphic=null) {
 			
-			numOfUses = 1;
-			behavior = function():void{
-				trace("used.");
-			};
-			label = "default";
+			numOfUses = -1;
+			behavior = function():void{};
+			label = "default_inventory_item";
 			
-			stackable = false;
+			stackable = true;
 			useSound = new Sfx(Assets.USE);
 			layer = -205;
 		}
@@ -41,9 +39,9 @@ package {
 		
 		private function destroy():void {
 			for (var i:int = 0; i < GameWorld.player.inventoryLength; i++){
-				if (GameWorld.player.getInventory().inventory[i] == this){
+				if (GameWorld.player.getInventory().inventory[i][0].label == this.label){
 					GameWorld.player.getInventory().removeItemFromInventory(i);
-					GameWorld.hud.deselectAll();
+					//GameWorld.hud.deselectAll();
 					FP.world.remove(this);
 					return;
 				}

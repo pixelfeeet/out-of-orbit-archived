@@ -1,4 +1,4 @@
-package {
+package Inventory {
 	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;
@@ -7,6 +7,7 @@ package {
 	import net.flashpunk.FP;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import ui.HUD;
 	
 	public class InventoryBox extends Entity {
 		
@@ -33,17 +34,18 @@ package {
 		
 		public function click():void {
 			if (Input.check(Key.SHIFT)){
-				if (!selected) selected = true;
-				else selected = false;
-				
-				for (var i:int = 0; i < HUD.inventoryBoxes.length; i++){
-					if (HUD.inventoryBoxes[i] != this) HUD.inventoryBoxes[i].selected = false;
-				}
+				GameWorld.hud.deselectAll();
+				if (!selected) select();
+				else deselect();
 			}
 		}
 		
 		public function isSelected():Boolean {
 			return selected;
+		}
+		
+		public function select():void {
+			selected = true;	
 		}
 		
 		public function deselect():void{

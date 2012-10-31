@@ -11,6 +11,8 @@ package {
 		private var fireRate:int;
 		//# of projectiles before reloading
 		private var clipSize:int;
+		//Total bullets
+		public var projectiles:int;
 		
 		public function Weapon() {
 			super();

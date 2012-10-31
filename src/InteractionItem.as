@@ -1,4 +1,6 @@
 package {
+	import Inventory.InventoryItem;
+	
 	import data.InteractionItems;
 	import data.InventoryItems;
 	
@@ -8,6 +10,7 @@ package {
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
+	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.tweens.*;
 	import net.flashpunk.tweens.misc.VarTween;
@@ -22,8 +25,13 @@ package {
 		private var inventoryImage:Graphic;
 		public var label:String;
 		
-		private var inventoryItem:InventoryItem; //corresponding inventoryItem;
+		public var inventoryItem:InventoryItem; //corresponding inventoryItem;
 		private var inventoryItems:InventoryItems;
+		
+		private var pickupSound:Sfx;
+		
+		public var respawning:Boolean;
+		public var eliminated:Boolean;
 		
 		public function InteractionItem(_position:Point = null) {
 			
@@ -36,7 +44,12 @@ package {
 			xSpeed = 0;
 			
 			label = "default";
-
+			type = "InteractionItem";
+			pickupSound = new Sfx(Assets.BLIP);
+			
+			respawning = true;
+			eliminated = false;
+			
 		}
 
 		override public function update():void {
@@ -47,20 +60,20 @@ package {
 			//again.  I don't know of there's a better way of doing this.
 			if (!inventoryItem) inventoryItem = GameWorld.inventoryItems.mediPack;
 			
-			if (collidePoint(x, y, world.mouseX, world.mouseY)) {
-				if (Input.mouseReleased) click();
+			if (collideWith(GameWorld.player, x, y)) {
+				//if (Input.mouseReleased) click();
+				pickupSound.play();
+				getPickedUp();
 			}
 
 		}
 		
-		protected function click():void {
-			if (Input.check(Key.SHIFT)){
-				if(GameWorld.player.getInventory().findOpenSlot() != -1
-				&& inventoryItem != null
-				&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
-					GameWorld.player.getInventory().addItemToInventory(inventoryItem);
-					destroy();
-				}
+		protected function getPickedUp():void {
+			if(GameWorld.player.getInventory().findSlot(this.inventoryItem) != -1
+			&& inventoryItem != null
+			&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
+				GameWorld.player.getInventory().addItemToInventory(inventoryItem);
+				destroy();
 			}
 		}
 		

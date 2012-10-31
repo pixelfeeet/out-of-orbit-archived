@@ -210,13 +210,10 @@ package
 			return velocity;
 		}
 		
-		public function getHealth():int {
-			return health;
-		}
-		
-		public function getHunger():int {
-			return hunger;
-		}
+		public function getHealth():int { return health; }
+		public function getMaxHealth():int { return maxHealth; }
+		public function getHunger():int { return hunger; }
+		public function getMaxHunger():int { return maxHunger; }
 		
 		//SETTER FUNCTIONS
 		public function changeHunger(newHunger:int):void {
@@ -237,6 +234,10 @@ package
 				if (health > minHealth && health + newHealth > minHealth) health += newHealth;
 				else health = minHealth;
 			}
+		}
+		
+		public function setHealth(h:int):void {
+			health = h;
 		}
 		
 		protected function cLength(a:Point, b:Point):Number {

@@ -1,4 +1,4 @@
-package {
+package Inventory {
 	
 	import data.InteractionItems;
 	import data.InventoryItems;
@@ -22,55 +22,61 @@ package {
 		}
  
 		private function initItems():void{
-
+			for (var i:int = 0; i < inventory.length; i++) {
+				inventory[i] = [];
+			}
 		}
-		override public function update():void {
-			//if(!inventoryItems) inventoryItems = GameWorld.inventoryItems;
-			//if(!interactionItems) interactionItems = GameWorld.interactionItems;
-		}
-		public function findOpenSlot():int{
+		
+		override public function update():void { }
+		
+		public function findSlot(e:InventoryItem):int{
 			for (var i:int = 0; i < inventory.length; i++){
-				if (inventory[i] == null || inventory[i] == undefined){
-					trace("slot#" + i + " is free");
+				if (inventory[i].length == 0){
+					return i;
+				} else if (inventory[i][0].label == e.label
+					&& inventory[i][0].isStackable()) {
 					return i;
 				}
 			}
-			trace("no free slots");
 			return -1;
 		}
 		
 		private function findLastInventoryItem():int {
 			if (inventory != null && inventory.length > 0) {
 				for (var i:int = inventory.length - 1; i > -1; i--){
-					if (inventory[i] != null) {
-						trace("slot #" + i + " is not empty");
+					if (inventory[i].length > 0) {
 						return i;
 					}
 				}
 			}
-			trace("Inventory is empty");
+			//Inventory is empty;
 			return -1;
 		}
 		
 		public function addItemToInventory(_e:InventoryItem = null):void{
-			var slot:int = findOpenSlot();
 			var e:InventoryItem = new InventoryItem();
-			if (!_e){
-				e.behavior = GameWorld.inventoryItems.food.behavior;
-				e.numOfUses = GameWorld.inventoryItems.food.numOfUses;
-				e.graphic = GameWorld.inventoryItems.food.graphic;
-			} else {
+			if (_e){
 				e.behavior = _e.behavior;
 				e.numOfUses = _e.numOfUses;
 				e.graphic = _e.graphic;
+				e.label = _e.label;
+				e.stackable = _e.stackable;
+			} else {
+				//Some default values
+				e.behavior = GameWorld.inventoryItems.food.behavior;
+				e.numOfUses = GameWorld.inventoryItems.food.numOfUses;
+				e.graphic = GameWorld.inventoryItems.food.graphic;
 			}
+			
+			var slot:int = findSlot(e);
+			
 			if (slot != -1){
-				inventory[slot] = e;
+				inventory[slot].push(e);
 			}
 		}
 		
 		public function removeItemFromInventory(_slot:int):void {
-			if (inventory[_slot] != null) inventory[_slot] = null;
+			if (inventory[_slot].length > 0) inventory[_slot].pop();
 		}
 		
 		public function removeLastItemFromInventory():void {

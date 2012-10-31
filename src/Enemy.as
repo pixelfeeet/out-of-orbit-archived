@@ -1,4 +1,6 @@
 package {
+	import NPCs.NPC;
+	
 	import flash.geom.Point;
 	
 	import net.flashpunk.*;
@@ -19,7 +21,7 @@ package {
 			if (!_position) _position = new Point(0, 0);
 			super(_position, _health);
 			PLAYER_SPEED = 25;
-			JUMP = 200;
+			JUMP = 300;
 			
 			hungerTimer = -1;
 			viewDistance = 500;
@@ -39,7 +41,8 @@ package {
 		
 		override protected function generateDropItems():Array{
 			var f:InteractionItem = GameWorld.interactionItems.food;
-			return [f, f, f];
+			var a:Ammunition = GameWorld.interactionItems.ammunition;
+			return [f, f, a];
 		}
 		
 		override protected function initBehavior():void {

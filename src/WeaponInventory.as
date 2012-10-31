@@ -8,6 +8,7 @@ package {
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import Inventory.Inventory;
 
 	public class WeaponInventory extends Inventory {
 		

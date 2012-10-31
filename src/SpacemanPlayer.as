@@ -1,6 +1,11 @@
 package {
 	
+	import Inventory.Inventory;
+	
+	import flash.display.Graphics;
 	import flash.display.Shape;
+	import flash.display.Sprite;
+	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
@@ -11,10 +16,13 @@ package {
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.graphics.Text;
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Draw;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	
+	import ui.HUD;
 	
 	import utilities.Settings;
 	
@@ -30,41 +38,44 @@ package {
 		private var pbTorso:Image;
 		private var head:Image;
 		
-		private var pb:Image;
-		
-		private var interactionRadius:Image;
-	
-		//ESSENTIALS
-		
-		//STATS
-		private var strength:int;
-		private var intelligence:int;
-		private var dexterity:int;
-		private var agility:int;
-		
-		private var experience:int;
-		private var level:int;
+		public var pb:Image;
 		
 		private var display:Graphiclist;
 		private var legsMap:Spritemap;
+	
+		//ESSENTIALS
+		
+		//Stats
+		public var strength:int;
+		public var intelligence:int;
+		public var dexterity:int;
+		public var agility:int;
+		
+		private var experience:int;
+		private var level:int;
 
 		private var bulletFrequency:int;
 		private var bulletTimer:int;
 		private var bulletSource:Point;
 		
-		//INVENTORY
+		//Inventory
 		public static var inventory:Inventory;
 		public static var weaponInventory:WeaponInventory;
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		public var weaponInventoryLength:int;
 		
-		//SOUNDS
+		//Sounds
 		public var landSound:Sfx;
 		public var injurySound:Sfx;
 		public var jumpSound:Sfx;
 		public var shootSound:Sfx;
 		public var walkSound:Sfx;
+		
+		//Combat/Weapons
+		public var equipped:Boolean;
+		public var weaponImg:Class;
+		public var ammunition:int;
 		
 		public function SpacemanPlayer(_position:Point = null) {
 			if (!_position) _position = new Point(0, 0);
@@ -75,11 +86,20 @@ package {
 			player_speed = PLAYER_SPEED;
 			JUMP = 580;
 			
+			maxHealth = 100;
+			maxHunger = 100;
+			
 			health = 100;
 			hunger = 100;
 			
 			bulletFrequency = 10;
 			bulletTimer = 0;
+			
+			//Stats
+			strength = 10;
+			intelligence = 10;
+			dexterity = 10;
+			agility = 10;
 			
 			//Legs
 			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
@@ -104,7 +124,8 @@ package {
 			head.y = 14;
 			
 			//PB - Weapon
-			pb = new Image(Assets.PB);
+			weaponImg = Assets.NO_WEAPON;
+			pb = new Image(weaponImg);
 			pb.originX = 15;
 			pb.originY = pb.height / 2;
 			pb.x = 32;
@@ -123,7 +144,7 @@ package {
 			
 			animations = new Animations();
 			
-			inventoryLength = 14;
+			inventoryLength = 7;
 			inventory = new Inventory(inventoryLength);
 			weaponInventoryLength = 2;
 			weaponInventory = new WeaponInventory(weaponInventoryLength);
@@ -138,6 +159,10 @@ package {
 			jumpSound = new Sfx(Assets.BUMP);
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
+			
+			//Weapons/Combat
+			equipped = false;
+			ammunition = 10;
 			
 			super(_position, health, hunger);
 
@@ -160,16 +185,24 @@ package {
 			super.update();
 		}
 		
+		public function equipWeapon(weapon:Class):void {
+			weaponImg = weapon;
+			pb = new Image(weaponImg);
+			pb.originX = 15;
+			pb.originY = pb.height / 2;
+			pb.x = 32;
+			pb.y = 34;
+			display.children[0] = pb;
+			equipped = true;
+		}
+		
 		private function onUse():void {
 			for (var i:int = 0; i < HUD.inventoryBoxes.length; i++){
-				if (HUD.inventoryBoxes[i].isSelected()) {
-					trace("#" + i + " is selected");
-					if (inventory.inventory[i] != null) inventory.inventory[i].onUse();
-					else trace("nothing to use");
+				if (HUD.inventoryBoxes[i]["box"].isSelected()) {
+					if (inventory.inventory[i].length > 0) inventory.inventory[i][inventory.inventory[i].length - 1].onUse();
 					return;
 				}
 			}
-			trace("no selected things");
 		}
 		
 		protected function checkForEnemyCollision():void {
@@ -178,7 +211,11 @@ package {
 		}
 		
 		override protected function shoot():void {
-			if (Input.mouseDown && !Input.check(Key.SHIFT) && bulletTimer == 0) {
+			if (Input.mouseDown
+				&& !Input.check(Key.SHIFT)
+				&& bulletTimer == 0
+			 	&& equipped
+			    && ammunition > 0) {
 				var bullet_speed:int = 1000;
 				var initX:int;
 				var initY:int;
@@ -203,6 +240,7 @@ package {
 				FP.world.add(p);
 				shootSound.play();
 				bulletTimer = bulletFrequency;
+				ammunition--;
 			}
 		}
 
@@ -302,10 +340,6 @@ package {
 				}
 			}
 			
-			if (Input.pressed(Key.D) || Input.pressed(Key.A)) {
-
-			}
-			
 			if (Input.pressed("Jump")) {
 				jump();
 			}
@@ -378,7 +412,7 @@ package {
 			var damageVelocity:int = 700;
 			var totalDamage:int = 0;
 			if (_v - damageVelocity > 0 ) {
-				_v-= damageVelocity;
+				_v -= damageVelocity;
 				while(_v > 0) {
 					totalDamage += 5;
 					_v -= 50;
@@ -400,6 +434,7 @@ package {
 		//EXPERIENCE
 		public function gainExperience(_exp:int):void {
 			experience += _exp;
+			GameWorld.hud.expText(_exp);
 			checkForLevelUp();
 		}
 		
@@ -415,8 +450,9 @@ package {
 			return experience;
 		}
 		
-		public function getLevel():int {
-			return level;
-		}
+		public function getLevel():int { return level; }
+		
+		public function getExperience():int { return experience; }
+		
 	}
 }

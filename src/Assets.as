@@ -18,6 +18,7 @@ package {
 		[Embed(source = 'assets/spaceman_parts/head.png')] public static const HEAD:Class;
 		
 		//Weapons
+		[Embed(source = 'assets/no_weapon.png')] public static const NO_WEAPON:Class;
 		[Embed(source = 'assets/pb.png')] public static const PB:Class;
 		[Embed(source = 'assets/rocket.png')] public static const ROCKET_IMAGE:Class;	
 		
@@ -45,6 +46,13 @@ package {
 		
 		//NPCs
 		[Embed(source = 'assets/dust_ball.png')] public static const DUST_BALL:Class;
+		[Embed(source = 'assets/fruit_plant.png')] public static const FRUIT_PLANT:Class;
 		
+		//UI
+		[Embed(source = 'assets/button.png')] public static const BUTTON:Class;
+		[Embed(source = 'assets/button_hover.png')] public static const BUTTON_HOVER:Class;
+		[Embed(source = 'assets/button_down.png')] public static const BUTTON_DOWN:Class;
+		[Embed(source = 'assets/checkbox.png')] public static const CHECKBOX:Class;
+		[Embed(source = 'assets/radiobutton.png')] public static const RADIOBUTTON:Class;
 	}
 }
