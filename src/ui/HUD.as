@@ -1,7 +1,7 @@
 package ui {
-	
-	import Inventory.InventoryBox;
+
 	import Inventory.InventoryItem;
+	import Inventory.InventoryBox;
 	
 	import flash.display.Shape;
 	import flash.geom.Point;
@@ -24,13 +24,13 @@ package ui {
 		private var expHUD:Text;
 		private var levelHUD:Text;
 		private var bulletsHUD:Text;
+		private var scrapsHUD:Text;
 		
-		private var thePlayer:SpacemanPlayer;
+		private var player:SpacemanPlayer;
 		 
 		public var display:Graphiclist;
 		
 		private var inventory:Array;
-		private var weaponInventory:Array;
 		
 		private var expList:Array;
 		private var expHeight:int;
@@ -38,43 +38,49 @@ package ui {
 		
 		//this doesn't seem good.
 		public static var inventoryDisplay:Array;
-		public static var inventoryBoxes:Array;
+		public var inventoryBoxes:Array;
 		public static var inventoryBoxesInitiated:Boolean;
 		
 		public static var weaponInventoryDisplay:Array;
 		public static var weaponInventoryBoxes:Array;
 		public static var weaponInventoryBoxesInitiated:Boolean;
 		
-		public function HUD(player:SpacemanPlayer) {
+		private var w:GameWorld;
+		
+		public function HUD(_player:SpacemanPlayer, _w:GameWorld) {
 			layer = 1;
 			//At some point player I should make gameworld's player
 			//a static variable, or something.
-			thePlayer = player;
+			player = _player;
+			w = _w;
 			
-			healthHUD = new Text("Health: " + thePlayer.getHealth(), 10, 10, 200, 50)
+			healthHUD = new Text("Health: " + player.getHealth(), 10, 10, 200, 50)
 			healthHUD.color = 0x6B6B6B;
 			healthHUD.size = 32
 				
-			hungerHUD = new Text("Hunger: " + thePlayer.getHunger(), FP.screen.width - 210, 10); 
+			hungerHUD = new Text("Hunger: " + player.getHunger(), FP.screen.width - 210, 10); 
 			hungerHUD.color = 0x6B6B6B;
 			hungerHUD.size = 32;
 			
-			expHUD = new Text("EXP: " + thePlayer.getPlayerExperience(), 10, 50);
+			expHUD = new Text("EXP: " + player.getPlayerExperience(), 10, 50);
 			expHUD.color = 0x6B6B6B;
 			expHUD.size = 24;
 			
-			levelHUD = new Text("Level: " + thePlayer.getLevel(), 10, 80);
+			levelHUD = new Text("Level: " + player.getLevel(), 10, 80);
 			levelHUD.color = 0x6B6B6B;
 			levelHUD.size = 24;
 			
-			bulletsHUD = new Text("Ammo: " + thePlayer.ammunition, 10, 100);
+			bulletsHUD = new Text("Ammo: " + player.ammunition, 10, 100);
 			bulletsHUD.color = 0x6b6b6b;
 			bulletsHUD.size = 22;
 			
-
-			display = new Graphiclist(healthHUD, hungerHUD, expHUD, levelHUD, bulletsHUD);
+			scrapsHUD = new Text("Scraps: " + player.scraps, 10, 126);
+			scrapsHUD.color = 0x6b6b6b;
+			scrapsHUD.size = 22;
 			
-			inventoryDisplay = new Array(thePlayer.inventoryLength);
+			display = new Graphiclist(healthHUD, hungerHUD, expHUD, levelHUD, bulletsHUD, scrapsHUD);
+			
+			inventoryDisplay = new Array(player.inventoryLength);
 			inventoryBoxesInitiated = false;
 			
 			expList = [];
@@ -107,16 +113,16 @@ package ui {
 		
 		//ITEM INVENTORY
 		private function getInventory():void {
-			inventory = thePlayer.getInventory().inventory;
+			inventory = player.getInventory().inventory;
 		}
 		
-		
 		private function updateHealth():void{
-			hungerHUD.text = "Hunger: " + thePlayer.getHunger();
-			healthHUD.text = "Health: " + thePlayer.getHealth();
-			expHUD.text = "EXP: " + thePlayer.getPlayerExperience();
-			levelHUD.text = "Level: " + thePlayer.getLevel();
-			bulletsHUD.text = "Ammo: " + thePlayer.ammunition;
+			hungerHUD.text = "Hunger: " + player.getHunger();
+			healthHUD.text = "Health: " + player.getHealth();
+			expHUD.text = "EXP: " + player.getPlayerExperience();
+			levelHUD.text = "Level: " + player.getLevel();
+			bulletsHUD.text = "Ammo: " + player.weapon.getAmmo();
+			scrapsHUD.text = "Scraps: " + player.scraps;
 		}
 		
 		private function initInventoryBoxes():void {
@@ -124,13 +130,13 @@ package ui {
 			
 			for (var i:int = 0; i < inventoryDisplay.length; i++) {
 				var boxGraphics:Object = {};
-				var box:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60));
+				var box:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60), w, false);
 				box.layer = -100;
 				var text:Text = new Text(inventory[i].length, 10 + (i * 55), FP.screen.height - 60);
 				boxGraphics = {"box": box, "text": text};
 				inventoryBoxes.push(boxGraphics);
 				FP.world.add(boxGraphics["box"]);
-				display.add(boxGraphics["text"])
+				display.add(boxGraphics["text"]);
 			}
 			
 			inventoryBoxesInitiated = true;
@@ -159,17 +165,18 @@ package ui {
 				if (inventory[i].length > 1) inventoryBoxes[i]["text"].text = inventory[i].length;
 				else inventoryBoxes[i]["text"].text = "";
 			}
-			
 		}
 		
 		public function updateInventoryDisplay():void {
 			//Item Inventory
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
+				removeItemFromInventory(i);
 				if (inventory[i] != []){
 					if (inventoryDisplay[i] == null) drawNewItem(i, inventory[i][0]);
-				} else {
-					if (inventoryDisplay[i] != null) removeItemFromInventory(i);
 				}
+//				} else {
+//					if (inventoryDisplay[i] != null) removeItemFromInventory(i);
+//				}
 			}
 			
 		}
@@ -204,8 +211,8 @@ package ui {
 		public function expText(_exp:int):void {
 			var exp:Object = new Object;
 			var expText:Text = new Text(_exp.toString(),
-				Math.abs(x - FP.camera.x + thePlayer.x + thePlayer.halfWidth) - (expTextSize / 2),
-				Math.abs(y - FP.camera.y + thePlayer.y - expTextSize), null, 100);
+				Math.abs(x - FP.camera.x + player.x + player.halfWidth) - (expTextSize / 2),
+				Math.abs(y - FP.camera.y + player.y - expTextSize), null, 100);
 			expText.color = 0xffffff;
 			expText.size = expTextSize;
 			exp["text"] = expText;
@@ -218,10 +225,10 @@ package ui {
 		private function updateExp():void {
 			var currentY:int;
 			for each (var exp:Object in expList){
-				currentY = Math.abs(y - FP.camera.y + thePlayer.y - exp["text"].y);
+				currentY = Math.abs(y - FP.camera.y + player.y - exp["text"].y);
 				if (currentY < expHeight) {
 					exp["text"].y--;
-					exp["text"].x = x - FP.camera.x + thePlayer.x + thePlayer.halfWidth  - (expTextSize / 2);
+					exp["text"].x = x - FP.camera.x + player.x + player.halfWidth  - (expTextSize / 2);
 					if (currentY > 30) exp["text"].alpha = 1;
 				}
 				

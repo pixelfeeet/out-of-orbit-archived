@@ -32,8 +32,8 @@ package
 		public function LightMask(w:GameWorld, x:Number=0, y:Number=0) {
 			super(x, y);
 			
-			dayLength = nightLength = 60;
-			duskLength = dawnLength = 1;
+			dayLength = nightLength = 600; //frames
+			duskLength = dawnLength = 10; //seconds
 			dayTimer = -1;
 			nightTimer = -1;
 			

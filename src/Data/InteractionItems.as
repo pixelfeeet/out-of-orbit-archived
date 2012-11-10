@@ -7,6 +7,7 @@ package data {
 		public var mediPack:InteractionItem;
 		public var rocket:InteractionItem;
 		public var powerBlaster:InteractionItem;
+		public var scraps:Scraps;
 		public var ammunition:Ammunition;
 		
 		public var list:Array;
@@ -36,7 +37,11 @@ package data {
 			ammunition.graphic = new Image(Assets.FRUIT_PLANT);
 			ammunition.label = "ammunition";
 			
-			list = [food, mediPack, rocket, powerBlaster, ammunition];
+			scraps = new Scraps();
+			scraps.graphic = Image.createCircle(10, 0xffee33, 0.8);
+			scraps.label = "scraps";
+			
+			list = [food, mediPack, rocket, powerBlaster, ammunition, scraps];
 		}
 	}
 }

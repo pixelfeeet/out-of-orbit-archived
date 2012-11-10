@@ -38,9 +38,13 @@ package
 		
 		protected var t:int; //Settings.TILESIZE
 		
+		private var player:SpacemanPlayer;
+
+		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
 			
 			super();
+			player = GameWorld.player;
 			
 			x = _position.x;
 			y = _position.y;
@@ -63,7 +67,7 @@ package
 			minHunger = 0;
 			hungerTimer = 0;
 			
-			t = Settings.TILESIZE;		
+			t = Settings.TILESIZE;	
 		}
 		
 		override public function update():void {
@@ -167,6 +171,19 @@ package
 			if (bullet) {
 				bullet.destroy();
 				takeDamage(bullet.getDamagePoints());
+			}
+			
+			if (GameWorld.player.meleeAttacking &&
+				cLength(new Point(x, y), new Point(GameWorld.player.x, GameWorld.player.y)) < 100 &&
+				this.type != "Player") {
+				var dist:int = 0;
+				if (GameWorld.player.isFacingLeft()) {
+					dist = GameWorld.player.x - x;
+					if (0 <= dist && dist < 100) takeDamage(GameWorld.player.weapon.getDamage());
+				} else {
+					dist = x - GameWorld.player.x;
+					if (0 <= dist && dist < GameWorld.player.weapon.getRange()) takeDamage(GameWorld.player.weapon.getDamage());
+				}
 			}
 		}
 		

@@ -20,6 +20,7 @@ package {
 		//Weapons
 		[Embed(source = 'assets/no_weapon.png')] public static const NO_WEAPON:Class;
 		[Embed(source = 'assets/pb.png')] public static const PB:Class;
+		[Embed(source = 'assets/spaceman_parts/arm.png')] public static const ARM:Class;	
 		[Embed(source = 'assets/rocket.png')] public static const ROCKET_IMAGE:Class;	
 		
 		//InteractionItems
@@ -54,5 +55,8 @@ package {
 		[Embed(source = 'assets/button_down.png')] public static const BUTTON_DOWN:Class;
 		[Embed(source = 'assets/checkbox.png')] public static const CHECKBOX:Class;
 		[Embed(source = 'assets/radiobutton.png')] public static const RADIOBUTTON:Class;
+		
+		[Embed(source = 'assets/arrow_right.png')] public static const ARROW_RIGHT:Class;
+		[Embed(source = 'assets/arrow_left.png')] public static const ARROW_LEFT:Class;
 	}
 }

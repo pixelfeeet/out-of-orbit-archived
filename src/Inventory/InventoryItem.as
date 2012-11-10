@@ -13,6 +13,9 @@ package Inventory {
 		public var behavior:Function;
 		public var label:String;
 		public var stackable:Boolean;
+		public var sourceImage:Class;
+		public var scrapValue:int;
+		
 		private var useSound:Sfx;
 		
 		public function InventoryItem(_graphic:Graphic=null) {
@@ -21,8 +24,11 @@ package Inventory {
 			behavior = function():void{};
 			label = "default_inventory_item";
 			
+			sourceImage = Assets.ARM;
+			
 			stackable = true;
 			useSound = new Sfx(Assets.USE);
+			scrapValue = 10;
 			layer = -205;
 		}
 		

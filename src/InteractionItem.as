@@ -32,6 +32,7 @@ package {
 		
 		public var respawning:Boolean;
 		public var eliminated:Boolean;
+		public var scrapValue:int;
 		
 		public function InteractionItem(_position:Point = null) {
 			
@@ -46,6 +47,7 @@ package {
 			label = "default";
 			type = "InteractionItem";
 			pickupSound = new Sfx(Assets.BLIP);
+			scrapValue = 10;
 			
 			respawning = true;
 			eliminated = false;

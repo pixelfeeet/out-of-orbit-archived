@@ -22,6 +22,7 @@ package {
 	import ui.InventoryMenu;
 	import ui.PauseMenu;
 	import ui.StatsMenu;
+	import ui.ConstructionMenu;
 	
 	import utilities.Camera;
 	import utilities.Settings;
@@ -29,21 +30,25 @@ package {
 	public class GameWorld extends World {
 		
 		public static var player:SpacemanPlayer;
-		public static var hud:HUD;
+		public var hud:HUD;
 		private var cam:Camera;
 		
 		public static var inventoryItems:InventoryItems;
 		public static var interactionItems:InteractionItems;
 		public static var enemies:Enemies;
-		public var levels:Levels;
 		public static var npcs:NPCs;
+		public var levels:Levels;
 		
 		public var pause:Boolean;
-		private var pauseMenu:PauseMenu;
-		private var statsMenu:StatsMenu;
+		public var pauseMenu:PauseMenu;
+		public var statsMenu:StatsMenu;
+		public var inventoryMenu:InventoryMenu;
+		public var constructionMenu:ConstructionMenu;
 		
 		private var pauseMenuShowing:Boolean;
 		private var statsMenuShowing:Boolean;
+		private var inventoryMenuShowing:Boolean;
+		private var constructionMenuShowing:Boolean;
 		
 		private var adjusted:Boolean;
 		
@@ -51,11 +56,12 @@ package {
 		private var lightMask:LightMask;
 		
 		public var currentLevel:Level;
+		public var cursor:Cursor;
 		
 		public function GameWorld() {
 			super();
 			
-			player = new SpacemanPlayer();
+			player = new SpacemanPlayer(this);
 			inventoryItems = new InventoryItems();
 			interactionItems = new InteractionItems();
 			enemies = new Enemies();
@@ -65,6 +71,7 @@ package {
 			pause = false;
 			pauseMenuShowing = false;
 			statsMenuShowing = false;
+			constructionMenuShowing = false;
 			
 			add(player);
 			currentLevel = levels.caveLevel2;
@@ -75,14 +82,19 @@ package {
 			
 			pauseMenu = new PauseMenu(this);
 			statsMenu = new StatsMenu(this);
+			inventoryMenu = new InventoryMenu(this, player);
+			constructionMenu = new ConstructionMenu(this, player);
 
-			add(new Cursor());
+			cursor = new Cursor();
+			add(cursor);
 			
 			Input.define("Pause", Key.ESCAPE, Key.P);
-			Input.define("Stats", Key.I);
+			Input.define("Stats", Key.L);
+			Input.define("Inventory", Key.I);
+			Input.define("Construct", Key.C);
 
 			//UI
-			hud = new HUD(player);
+			hud = new HUD(player, this);
 			add(hud);
 			
 			//Camera
@@ -90,7 +102,7 @@ package {
 			adjusted = false;
 			
 			//Sound
-			FP.volume = 0.1;
+			FP.volume = 0.5;
 			
 			lightMask = new LightMask(this);
 			add(lightMask);
@@ -108,25 +120,39 @@ package {
 			} else {
 				if (pauseMenuShowing) pauseMenu.update();
 				if (statsMenuShowing) statsMenu.update();
+				if (inventoryMenuShowing) inventoryMenu.update();
+				if (constructionMenuShowing) constructionMenu.update();
+				cursor.update();
 			}
 			
-			if (Input.pressed("Pause")){
-				onPause();
-			}
-			
-			if (Input.pressed("Stats")) {
-				onStats();
-			}
+			//UI
+			if (Input.pressed("Pause")) onPause();
+			if (Input.pressed("Stats")) onStats();
+			if (Input.pressed("Inventory")) onInventory();
+			if (Input.pressed("Construct")) onConstruct();
 		}
 		
 		public function getPlayer():SpacemanPlayer {
 			return player;	
 		}
 		
-		public function onPause():void {
+		public function onConstruct():void {
+			removeMenus();
 			if (pause) {
 				pause = false;
-				removeMenus();
+				constructionMenuShowing = false;
+			} else {
+				pause = true;
+				constructionMenu.show();
+				constructionMenuShowing = true;
+			}
+		}
+		
+		public function onPause():void {
+			removeMenus();
+			if (pause) {
+				pause = false;
+				pauseMenuShowing = false;
 				Mouse.hide();
 			} else {
 				pause = true;
@@ -137,9 +163,10 @@ package {
 		}
 		
 		public function onStats():void {
+			removeMenus();
 			if (pause) {
 				pause = false;
-				removeMenus();
+				statsMenuShowing = false;
 				Mouse.hide();
 			} else {
 				pause = true;
@@ -149,13 +176,37 @@ package {
 			}
 		}
 		
+		public function onInventory():void {
+			removeMenus();
+			if (pause) {
+				pause = false;
+				inventoryMenuShowing = false;
+			} else {
+				pause = true;
+				inventoryMenu.show();
+				inventoryMenuShowing = true;
+			}
+		}
+		
 		public function removeMenus():void {
 			if (statsMenuShowing) {
 				statsMenu.remove();
 				statsMenuShowing = false;
-			} else if (pauseMenuShowing) {
+			}
+			
+			if (pauseMenuShowing) {
 				pauseMenu.remove();
 				statsMenuShowing = false;
+			}
+			
+			if (inventoryMenuShowing) {
+				inventoryMenu.remove();
+				inventoryMenuShowing = false;
+			}
+			
+			if (constructionMenuShowing) {
+				constructionMenu.remove();
+				constructionMenuShowing = false;
 			}
 		}
 		
@@ -172,6 +223,7 @@ package {
 			background.init(destinationLevel.xml);
 			destinationLevel.loadLevel(this, player);
 			add(destinationLevel);
+			
 			for each (var door:Door in destinationLevel.doorList) {
 				if (door.label == destinationDoor){
 					if (door.playerSpawnsToLeft) player.x = door.x - 70;
@@ -185,7 +237,5 @@ package {
 		}
 		
 	}
-	
-	
 	
 }

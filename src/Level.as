@@ -76,7 +76,6 @@ package {
 			enemiesList = [];
 			NPClist = [];
 			
-			
 			loadTileProperties();
 			loadTiles();
 			doorsLoaded = false;
@@ -184,7 +183,6 @@ package {
 		}
 
 		public function loadInteractionItems(_w:World):void {
-			
 			var dataList:XMLList = xmlData.objectgroup.(@name=="interactionitems").object;
 			for (var i:int = 0; i < dataList.length(); i++){
 				var e:InteractionItem;
@@ -228,7 +226,7 @@ package {
 		}
 		
 		override public function removed():void {
-			
+	
 			for each (var door:Door in doorList) {
 				FP.world.remove(door);
 			}

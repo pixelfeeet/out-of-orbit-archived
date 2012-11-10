@@ -2,6 +2,10 @@ package {
 	
 	import Inventory.Inventory;
 	
+	import Weapons.Weapon;
+	
+	import data.Weapons;
+	
 	import flash.display.Graphics;
 	import flash.display.Shape;
 	import flash.display.Sprite;
@@ -37,8 +41,7 @@ package {
 		private var standingLegs:Image;
 		private var pbTorso:Image;
 		private var head:Image;
-		
-		public var pb:Image;
+		public var weaponImg:Image;
 		
 		private var display:Graphiclist;
 		private var legsMap:Spritemap;
@@ -51,6 +54,8 @@ package {
 		public var dexterity:int;
 		public var agility:int;
 		
+		public var statsList:Object;
+		
 		private var experience:int;
 		private var level:int;
 
@@ -58,12 +63,20 @@ package {
 		private var bulletTimer:int;
 		private var bulletSource:Point;
 		
+		public var allocationPoints:int;
+		public var levelUpTime:Boolean;
+		
 		//Inventory
 		public static var inventory:Inventory;
 		public static var weaponInventory:WeaponInventory;
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		public var weaponInventoryLength:int;
+		//tentitive currency name
+		public var scraps:int;
+		
+		public var constructionRate:Number;
+		public var recycleRate:Number;
 		
 		//Sounds
 		public var landSound:Sfx;
@@ -74,13 +87,18 @@ package {
 		
 		//Combat/Weapons
 		public var equipped:Boolean;
-		public var weaponImg:Class;
+		public var weapon:Weapon;
 		public var ammunition:int;
 		
-		public function SpacemanPlayer(_position:Point = null) {
+		public var weapons:Weapons;
+		public var meleeAttacking:Boolean;
+		
+		private var w:GameWorld;
+		
+		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
 			if (!_position) _position = new Point(0, 0);
-			x = _position.x;
-			y = _position.y;
+			
+			w = _world;
 			
 			PLAYER_SPEED = 240;
 			player_speed = PLAYER_SPEED;
@@ -100,6 +118,14 @@ package {
 			intelligence = 10;
 			dexterity = 10;
 			agility = 10;
+			
+			statsList = {"strength": strength, "agility": agility,
+				"intelligence": intelligence, "dexterity": dexterity};
+			
+			//Weapons/Combat
+			weapons = new Weapons(this);
+			weapon = weapons.unarmed;
+			meleeAttacking = false;
 			
 			//Legs
 			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
@@ -124,14 +150,10 @@ package {
 			head.y = 14;
 			
 			//PB - Weapon
-			weaponImg = Assets.NO_WEAPON;
-			pb = new Image(weaponImg);
-			pb.originX = 15;
-			pb.originY = pb.height / 2;
-			pb.x = 32;
-			pb.y = 34;
+			equipWeapon(weapon);
+			FP.world.add(weapon);
 			
-			display = new Graphiclist(pb, legsMap, pbTorso, head);
+			display = new Graphiclist(weaponImg, legsMap, pbTorso, head);
 			graphic = display;
 			
 			Input.define("Jump", Key.W);
@@ -144,14 +166,19 @@ package {
 			
 			animations = new Animations();
 			
+			//Inventory
 			inventoryLength = 7;
 			inventory = new Inventory(inventoryLength);
-			weaponInventoryLength = 2;
-			weaponInventory = new WeaponInventory(weaponInventoryLength);
 			reachDistance = 100;
+			scraps = 0;
 			
 			experience = 0;
 			level = 5;
+			levelUpTime = true;
+			allocationPoints = 10;
+			
+			constructionRate = 1.1;
+			recycleRate = 0.9;
 			
 			//Sound
 			landSound = new Sfx(Assets.LAND);
@@ -160,9 +187,7 @@ package {
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
 			
-			//Weapons/Combat
-			equipped = false;
-			ammunition = 10;
+			type = "Player";
 			
 			super(_position, health, hunger);
 
@@ -175,30 +200,103 @@ package {
 			shoot();
 			debug();
 			checkForEnemyCollision();
-				
+			inventoryButtons();
+			
+			//combat
+			weapon.shoot();
+			weapon.update();
 			if (damageTimer > 0) damageTimer--;
-			if (bulletTimer > 0) bulletTimer--;
 
-			if (Input.pressed("Use")){
-				onUse();
-			}
+			if (Input.pressed("Use")) onUse();
+			
 			super.update();
 		}
 		
-		public function equipWeapon(weapon:Class):void {
-			weaponImg = weapon;
-			pb = new Image(weaponImg);
-			pb.originX = 15;
-			pb.originY = pb.height / 2;
-			pb.x = 32;
-			pb.y = 34;
-			display.children[0] = pb;
-			equipped = true;
+		public function inventoryButtons():void {
+			var boxes:Array = w.hud.inventoryBoxes;
+			if (Input.pressed(Key.DIGIT_1)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[0])
+					w.hud.inventoryBoxes[0]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_2)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[1])
+					w.hud.inventoryBoxes[1]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_3)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[2])
+					w.hud.inventoryBoxes[2]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_4)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[3])
+					w.hud.inventoryBoxes[3]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_5)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[4])
+					w.hud.inventoryBoxes[4]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_6)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[5])
+					w.hud.inventoryBoxes[5]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_7)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[6])
+					w.hud.inventoryBoxes[6]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_8)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[7])
+					w.hud.inventoryBoxes[7]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_9)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[8])
+					w.hud.inventoryBoxes[8]["box"].select();	
+			}
+			
+			if (Input.pressed(Key.DIGIT_0)) {
+				w.hud.deselectAll();
+				if (w.hud.inventoryBoxes[9])
+					w.hud.inventoryBoxes[9]["box"].select();	
+			}
+		}
+		
+		public function equipWeapon(_weapon:Weapon):void {
+			weapon = _weapon;
+			setWeaponGfx(weapon);
+		}
+		
+		public function setWeaponGfx(_weapon:Weapon):void{
+			weaponImg = Image(_weapon.graphic)
+			
+			if(!facingLeft) weaponImg.originX = _weapon.originX;
+			else weaponImg.originX = _weapon.leftOriginX;
+			weaponImg.originY = _weapon.originY;
+			
+			if (!facingLeft) weaponImg.x = _weapon.x;
+			else weaponImg.x = _weapon.leftX;
+			weaponImg.y = _weapon.y;
+			
+			if (display) display.children[0] = weaponImg;
 		}
 		
 		private function onUse():void {
-			for (var i:int = 0; i < HUD.inventoryBoxes.length; i++){
-				if (HUD.inventoryBoxes[i]["box"].isSelected()) {
+			for (var i:int = 0; i < w.hud.inventoryBoxes.length; i++){
+				if (w.hud.inventoryBoxes[i]["box"].isSelected()) {
 					if (inventory.inventory[i].length > 0) inventory.inventory[i][inventory.inventory[i].length - 1].onUse();
 					return;
 				}
@@ -210,38 +308,9 @@ package {
 			if (enemy) getHurt(10);
 		}
 		
-		override protected function shoot():void {
-			if (Input.mouseDown
-				&& !Input.check(Key.SHIFT)
-				&& bulletTimer == 0
-			 	&& equipped
-			    && ammunition > 0) {
-				var bullet_speed:int = 1000;
-				var initX:int;
-				var initY:int;
-
-				initX = x + pb.x;
-				initY = y + pb.y;
-
-				//initY = y + halfHeight - 20;
-				var initPos:Point = new Point(initX, initY);
-				var destination:Point = new Point(Input.mouseX + FP.camera.x - 10, Input.mouseY + FP.camera.y - 10);
-				var speed:Point = new Point(destination.x - initPos.x, destination.y - initPos.y);
-				
-				var len:Number = cLength(initPos, destination);
-				speed.x = (speed.x / len) * bullet_speed;
-				speed.y = (speed.y / len) * bullet_speed;
-				
-				//Add projectile to world; determine init position
-				var p:Projectile = new Projectile(initPos.x, initPos.y, speed.x, speed.y);
-				if (facingLeft) FP.angleXY(p, pb.angle, -pb.width, initPos.x, initPos.y);
-				else FP.angleXY(p, pb.angle, pb.width, initPos.x, initPos.y);
-				
-				FP.world.add(p);
-				shootSound.play();
-				bulletTimer = bulletFrequency;
-				ammunition--;
-			}
+		override protected function shoot():void { 
+			if (weapon.fireTimer > 0) weapon.fireTimer--;
+			if (Input.mouseDown) weapon.shoot();
 		}
 
 		private function updateGraphic():void {
@@ -275,8 +344,8 @@ package {
 				head.originY = 12;
 				head.x = 18;
 
-				pb.originX = pb.width - 15;
-				pb.x = 12;
+				weaponImg.originX = weaponImg.width - weapon.leftOriginX;
+				weaponImg.x = weapon.leftX;
 			} else {
 				for (var j:int = 0; j < display.count; j++) {
 					Image(display.children[j]).flipped = false;
@@ -285,8 +354,8 @@ package {
 				head.originY = 12;
 				head.x = 24;
 				
-				pb.originX = 15;
-				pb.x = 35;
+				weaponImg.originX = weapon.originX;
+				weaponImg.x = weapon.x;
 			}
 			
 			pbTorso.originX = 22;
@@ -375,16 +444,6 @@ package {
 				changeHealth(10);
 			}
 			
-			//DEBUG: remove last item from inventory
-			if (Input.pressed(Key.DIGIT_1)) {
-				inventory.removeLastItemFromInventory();
-			}
-			
-			//DEBUG: addItemToInventory
-			if (Input.pressed(Key.DIGIT_2)) {
-				inventory.addItemToInventory();
-			}
-			
 		}
 		
 		override protected function jump():void {
@@ -398,8 +457,9 @@ package {
 		//tentative idea: getHurt includes enemy-inflicted damage-
 		//specific animations, takeDamage displays only the default,
 		//i.e. red flash.
+	
 		private function getHurt(damage:int):void{
-			trace("player hit!");
+
 			if (damageTimer == 0) {
 				takeDamage(10);
 				injurySound.play();
@@ -423,36 +483,30 @@ package {
 		}
 		
 		//INVENTORY
-		public function getInventory():Inventory {
-			return inventory;
-		}
-		
-		public function getWeaponInventory():WeaponInventory {
-			return weaponInventory;
-		}
-		
+		public function getInventory():Inventory { return inventory; }
+
 		//EXPERIENCE
 		public function gainExperience(_exp:int):void {
 			experience += _exp;
-			GameWorld.hud.expText(_exp);
+			w.hud.expText(_exp);
 			checkForLevelUp();
 		}
 		
 		private function checkForLevelUp():void {
-			if (experience % 20 == 0) levelUp();
+			//checking logic goes here
+			levelUp();
 		}
 		
 		private function levelUp():void {
 			level++;
+			allocationPoints += 5;
+			levelUpTime = true;
 		}
 		
-		public function getPlayerExperience():int {
-			return experience;
-		}
-		
+		public function getPlayerExperience():int { return experience; }
 		public function getLevel():int { return level; }
-		
 		public function getExperience():int { return experience; }
+		public function isFacingLeft():Boolean { return facingLeft; }
 		
 	}
 }

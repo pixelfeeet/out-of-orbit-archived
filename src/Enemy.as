@@ -41,8 +41,9 @@ package {
 		
 		override protected function generateDropItems():Array{
 			var f:InteractionItem = GameWorld.interactionItems.food;
-			var a:Ammunition = GameWorld.interactionItems.ammunition;
-			return [f, f, a];
+			var a:Ammunition = new Ammunition();
+			var s:Scraps = new Scraps();
+			return [f, a, a, s];
 		}
 		
 		override protected function initBehavior():void {

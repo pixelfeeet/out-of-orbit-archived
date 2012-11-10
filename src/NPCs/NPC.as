@@ -5,6 +5,8 @@ package NPCs {
 	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.Entity;
+	import flash.utils.getDefinitionByName;
 	
 	public class NPC extends Character {
 		public var respawning:Boolean;
@@ -79,8 +81,15 @@ package NPCs {
 					item.getPropertiesFrom(dropItems[i], new Point(x + ((i + 1) * 10), y + i));
 					FP.world.add(item);
 				} else {
-					var ammo:Ammunition = new Ammunition(new Point(x + ((i + 1) * 10), y + i));
-					FP.world.add(ammo);
+					var myClass:Class = getDefinitionByName(dropItems[i].toString()) as Class;
+					//trace(dropItems[i].toString())
+					var anItem:Entity = new myClass();
+					var p:Point = new Point(x + ((i + 1) * 10), y + i);
+					anItem.x = p.x;
+					anItem.y = p.y;
+					//var ammo:Ammunition = new Ammunition(new Point(x + ((i + 1) * 10), y + i));
+					trace("The new item is: " + anItem);
+					FP.world.add(anItem);
 				}
 				
 			}
@@ -93,5 +102,10 @@ package NPCs {
 		public function getBehavior():Function {
 			return behavior;	
 		}
+		
+		public function randomRange(max:Number, min:Number = 0):Number {
+			return Math.random() * (max - min) + min;
+		}
+
 	}
 }

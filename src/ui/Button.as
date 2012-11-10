@@ -27,8 +27,7 @@ package ui {
 		public var params:Object;
 		public var graphics:Object;
 		
-		public function Button(x:Number=0, y:Number=0, text:String = "", callback:Function = null, params:Object = null, graphics:Object = null)
-		{
+		public function Button(x:Number=0, y:Number=0, text:String = "", callback:Function = null, params:Object = null, graphics:Object = null) {
 			super(x, y);
 			this.callback = callback;
 			this.params = params;
@@ -36,7 +35,7 @@ package ui {
 			
 			var normalStamp:Stamp;
 			if (graphics != null) {
-				normalStamp = graphics["normal"];
+				normalStamp = new Stamp(graphics["normal"]);
 				hover = new Stamp(graphics["hover"]);
 				down = new Stamp(graphics["down"]);
 			} else {
@@ -47,7 +46,7 @@ package ui {
 			
 			normal = normalStamp;
 			  
-			label = new Text(text, 10, 0, { size: 16, color: 0x000000, width: normalStamp.width - 30, wordWrap: true, align: "center" } );
+			label = new Text(text, 10, 0, { size: 16, color: 0x000000, width: normalStamp.width, wordWrap: true, align: "center" } );
 			label.y = (normalStamp.height - label.textHeight) * 0.5;
 			
 			graphic = normal;

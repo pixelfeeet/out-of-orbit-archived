@@ -53,13 +53,27 @@ package Inventory {
 			return -1;
 		}
 		
+		public function addItemToSlot(_e:InventoryItem, _slot:int):void {
+			inventory[_slot].push(_e);
+		}
+		
+		public function transferItems(_fromSlot:int, _toSlot:int):void {
+			inventory[_toSlot] = [];
+			for (var i:int = 0; i < inventory[_fromSlot].length; i++){
+				inventory[_toSlot][i] = inventory[_fromSlot][i];
+			}
+			inventory[_fromSlot] = [];
+		}
+		
 		public function addItemToInventory(_e:InventoryItem = null):void{
 			var e:InventoryItem = new InventoryItem();
 			if (_e){
 				e.behavior = _e.behavior;
 				e.numOfUses = _e.numOfUses;
-				e.graphic = _e.graphic;
+				e.sourceImage = _e.sourceImage;
+				e.graphic = new Image(e.sourceImage);
 				e.label = _e.label;
+				e.scrapValue = _e.scrapValue;
 				e.stackable = _e.stackable;
 			} else {
 				//Some default values

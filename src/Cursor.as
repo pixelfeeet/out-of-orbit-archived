@@ -1,19 +1,24 @@
 package {
 	
+	import flash.ui.Mouse;
+	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-	import flash.ui.Mouse;
 	
 	public class Cursor extends Entity {
 		
-		//[Embed(source = 'assets/crosshair.png')] private const PLAYER:Class;
+		public var carryingItem:Boolean;
+		private var reticule:Image;
+		
 		public function Cursor() {
-			graphic = new Image(Assets.CURSOR);
+			reticule = new Image(Assets.CURSOR);
+			graphic = reticule;
 			Mouse.hide();
-			layer = -110;
+			layer = -1000;
+			carryingItem = false;
 		}
 		
 		override public function update():void {
@@ -23,8 +28,10 @@ package {
 			// Assigns the Entity's position to that of the mouse (relative to the World).
 			x =FP.world.mouseX - 12;
 			y =FP.world.mouseY - 12;
-			//if(Input.mouseDown) graphic = Image.createCircle(6, 0xbf4736, 0.6);
-			//else graphic = Image.createCircle(6, 0xffffff, 0.6);
+
 		}
+		
+		public function setDefault():void { graphic = reticule; }
+		public function getReticule():Image { return reticule; }
 	}
 }
