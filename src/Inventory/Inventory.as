@@ -12,29 +12,29 @@ package Inventory {
 
 	public class Inventory extends Entity {
 		
-		public var inventory:Array;
+		public var items:Array;
 		private var inventoryItems:InventoryItems;
 		private var interactionItems:InteractionItems;
 		
 		public function Inventory(_inventoryLength:int) {
-			inventory = new Array(_inventoryLength);
+			items = new Array(_inventoryLength);
 			initItems();
 		}
  
 		private function initItems():void{
-			for (var i:int = 0; i < inventory.length; i++) {
-				inventory[i] = [];
+			for (var i:int = 0; i < items.length; i++) {
+				items[i] = [];
 			}
 		}
 		
 		override public function update():void { }
 		
 		public function findSlot(e:InventoryItem):int{
-			for (var i:int = 0; i < inventory.length; i++){
-				if (inventory[i].length == 0){
+			for (var i:int = 0; i < items.length; i++){
+				if (items[i].length == 0){
 					return i;
-				} else if (inventory[i][0].label == e.label
-					&& inventory[i][0].isStackable()) {
+				} else if (items[i][0].label == e.label
+					&& items[i][0].isStackable()) {
 					return i;
 				}
 			}
@@ -42,9 +42,9 @@ package Inventory {
 		}
 		
 		private function findLastInventoryItem():int {
-			if (inventory != null && inventory.length > 0) {
-				for (var i:int = inventory.length - 1; i > -1; i--){
-					if (inventory[i].length > 0) {
+			if (items != null && items.length > 0) {
+				for (var i:int = items.length - 1; i > -1; i--){
+					if (items[i].length > 0) {
 						return i;
 					}
 				}
@@ -54,15 +54,15 @@ package Inventory {
 		}
 		
 		public function addItemToSlot(_e:InventoryItem, _slot:int):void {
-			inventory[_slot].push(_e);
+			items[_slot].push(_e);
 		}
 		
 		public function transferItems(_fromSlot:int, _toSlot:int):void {
-			inventory[_toSlot] = [];
-			for (var i:int = 0; i < inventory[_fromSlot].length; i++){
-				inventory[_toSlot][i] = inventory[_fromSlot][i];
+			items[_toSlot] = [];
+			for (var i:int = 0; i < items[_fromSlot].length; i++){
+				items[_toSlot][i] = items[_fromSlot][i];
 			}
-			inventory[_fromSlot] = [];
+			items[_fromSlot] = [];
 		}
 		
 		public function addItemToInventory(_e:InventoryItem = null):void{
@@ -85,12 +85,12 @@ package Inventory {
 			var slot:int = findSlot(e);
 			
 			if (slot != -1){
-				inventory[slot].push(e);
+				items[slot].push(e);
 			}
 		}
 		
 		public function removeItemFromInventory(_slot:int):void {
-			if (inventory[_slot].length > 0) inventory[_slot].pop();
+			if (items[_slot].length > 0) items[_slot].pop();
 		}
 		
 		public function removeLastItemFromInventory():void {

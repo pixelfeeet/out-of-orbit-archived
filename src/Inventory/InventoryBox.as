@@ -50,10 +50,10 @@ package Inventory {
 					if (inv[i]["box"] == this) {
 						if (w.cursor.carryingItem) {
 							if (i != w.inventoryMenu.carriedItemSlot) {
-								if (playerInv.inventory[i] != [])
-									w.inventoryMenu.inventoryDisplay[i] = playerInv.inventory[i][0];
+								if (playerInv.items[i] != [])
+									w.inventoryMenu.inventoryDisplay[i] = playerInv.items[i][0];
 								
-								if (playerInv.inventory[i] != []) {	
+								if (playerInv.items[i] != []) {	
 									//w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot].graphic.visible = true;
 									FP.world.remove(w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot]);
 									//FP.world.remove(w.inventoryMenu.carriedItem);
@@ -67,13 +67,13 @@ package Inventory {
 							w.cursor.setDefault();
 							w.inventoryMenu.carriedItemSlot = -1;
 						}
-						if (playerInv.inventory[i] != []) {
+						if (playerInv.items[i] != []) {
 							if (w.inventoryMenu.inventoryDisplay[i] != null) {
 								//w.inventoryMenu.inventoryDisplay[i].graphic.visible = false;
 								w.inventoryMenu.carriedItemSlot = i;
 								w.cursor.carryingItem = true;
-								w.cursor.graphic = playerInv.inventory[i][0].graphic;
-								w.inventoryMenu.carriedItem = playerInv.inventory[i][0];
+								w.cursor.graphic = playerInv.items[i][0].graphic;
+								w.inventoryMenu.carriedItem = playerInv.items[i][0];
 							}
 						}
 					}

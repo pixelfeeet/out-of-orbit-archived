@@ -39,14 +39,12 @@ package {
 		
 		private var standingTorso:Image;
 		private var standingLegs:Image;
-		private var pbTorso:Image;
+		private var torso:Image;
 		private var head:Image;
-		public var weaponImg:Image;
+		private var weaponImg:Image;
 		
 		private var display:Graphiclist;
 		private var legsMap:Spritemap;
-	
-		//ESSENTIALS
 		
 		//Stats
 		public var strength:int;
@@ -75,15 +73,9 @@ package {
 		//tentitive currency name
 		public var scraps:int;
 		
+		//Exchange rate
 		public var constructionRate:Number;
 		public var recycleRate:Number;
-		
-		//Sounds
-		public var landSound:Sfx;
-		public var injurySound:Sfx;
-		public var jumpSound:Sfx;
-		public var shootSound:Sfx;
-		public var walkSound:Sfx;
 		
 		//Combat/Weapons
 		public var equipped:Boolean;
@@ -93,25 +85,34 @@ package {
 		public var weapons:Weapons;
 		public var meleeAttacking:Boolean;
 		
+		//Sounds
+		public var landSound:Sfx;
+		public var injurySound:Sfx;
+		public var jumpSound:Sfx;
+		public var shootSound:Sfx;
+		public var walkSound:Sfx;
+		
+		//World
 		private var w:GameWorld;
 		
 		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
-			if (!_position) _position = new Point(0, 0);
 			
+			//Essentials
+			maxHealth = 100;
+			maxHunger = 100;
+			health = 100;
+			hunger = 100;
+			
+			if (!_position) _position = new Point(0, 0);
 			w = _world;
+			
+			super(_position, health, hunger);
+			
+			type = "Player";
 			
 			PLAYER_SPEED = 240;
 			player_speed = PLAYER_SPEED;
 			JUMP = 580;
-			
-			maxHealth = 100;
-			maxHunger = 100;
-			
-			health = 100;
-			hunger = 100;
-			
-			bulletFrequency = 10;
-			bulletTimer = 0;
 			
 			//Stats
 			strength = 10;
@@ -122,10 +123,19 @@ package {
 			statsList = {"strength": strength, "agility": agility,
 				"intelligence": intelligence, "dexterity": dexterity};
 			
+			/*
+			Graphiclist components
+			*/
 			//Weapons/Combat
 			weapons = new Weapons(this);
 			weapon = weapons.unarmed;
 			meleeAttacking = false;
+			
+			bulletFrequency = 10;
+			bulletTimer = 0;
+
+			equipWeapon(weapon);
+			FP.world.add(weapon);
 			
 			//Legs
 			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
@@ -136,11 +146,11 @@ package {
 			legsMap.y = (Settings.TILESIZE * 2) - legsMap.height + 2;
 			
 			//Torso
-			pbTorso = new Image(Assets.TORSO);
-			pbTorso.originX = 5;
-			pbTorso.originY = pbTorso.height - 10;
-			pbTorso.x = 12;
-			pbTorso.y = 57;
+			torso = new Image(Assets.TORSO);
+			torso.originX = 5;
+			torso.originY = torso.height - 10;
+			torso.x = 12;
+			torso.y = 57;
 			
 			//Head
 			head = new Image(Assets.HEAD);
@@ -149,22 +159,18 @@ package {
 			head.x = 26;
 			head.y = 14;
 			
-			//PB - Weapon
-			equipWeapon(weapon);
-			FP.world.add(weapon);
-			
-			display = new Graphiclist(weaponImg, legsMap, pbTorso, head);
+			display = new Graphiclist(weaponImg, legsMap, torso, head);
 			graphic = display;
-			
-			Input.define("Jump", Key.W);
-			Input.define("Crouch", Key.S)
-			Input.define("Use", Key.E);
 			
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
 			isCrouched = false;
 			running = false;
 			
-			animations = new Animations();
+			//Input Definitions
+			Input.define("Left", Key.A);
+			Input.define("Right", Key.D);
+			Input.define("Jump", Key.W);
+			Input.define("Use", Key.E);
 			
 			//Inventory
 			inventoryLength = 7;
@@ -172,11 +178,13 @@ package {
 			reachDistance = 100;
 			scraps = 0;
 			
+			//Stats
 			experience = 0;
 			level = 5;
 			levelUpTime = true;
 			allocationPoints = 10;
 			
+			//Exchange rate
 			constructionRate = 1.1;
 			recycleRate = 0.9;
 			
@@ -186,34 +194,29 @@ package {
 			jumpSound = new Sfx(Assets.BUMP);
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
-			
-			type = "Player";
-			
-			super(_position, health, hunger);
-
 		}
 		
 		override public function update():void {
+			super.update();
 			
 			updateGraphic();
 			updateMovement();
-			shoot();
 			debug();
 			checkForEnemyCollision();
 			inventoryButtons();
 			
 			//combat
-			weapon.shoot();
+			shoot();
 			weapon.update();
 			if (damageTimer > 0) damageTimer--;
 
-			if (Input.pressed("Use")) onUse();
-			
-			super.update();
+			//Interaction
+			if (Input.pressed("Use")) onUse();	
 		}
 		
 		public function inventoryButtons():void {
 			var boxes:Array = w.hud.inventoryBoxes;
+			
 			if (Input.pressed(Key.DIGIT_1)) {
 				w.hud.deselectAll();
 				if (w.hud.inventoryBoxes[0])
@@ -297,7 +300,8 @@ package {
 		private function onUse():void {
 			for (var i:int = 0; i < w.hud.inventoryBoxes.length; i++){
 				if (w.hud.inventoryBoxes[i]["box"].isSelected()) {
-					if (inventory.inventory[i].length > 0) inventory.inventory[i][inventory.inventory[i].length - 1].onUse();
+					if (inventory.items[i].length > 0)
+						inventory.items[i][inventory.items[i].length - 1].onUse();
 					return;
 				}
 			}
@@ -315,25 +319,9 @@ package {
 
 		private function updateGraphic():void {
 			
-			//Get the player to face the horizontal direction as the cursor
+			//Get the player to face the cursor horizontally
 			if (Input.mouseX < x + halfWidth - FP.camera.x) facingLeft = true;
 			else facingLeft = false;
-			
-			//Play the animation
-			if (!onGround){
-				legsMap.play("jumping");
-			} else if (FP.sign(velocity.x) != 0) {
-				if (!facingLeft) {
-					if (FP.sign(velocity.x) == 1) legsMap.play("running");
-					else legsMap.play("backwards_running");
-				} else {
-					if (FP.sign(velocity.x) == -1) legsMap.play("running");
-					else legsMap.play("backwards_running");
-				}
-				//if(legsMap.frame == 1) walkSound.play();
-			} else {
-				legsMap.play("standing");
-			}
 			
 			//Calculating angles of head and weapon
 			if (facingLeft) { 
@@ -358,8 +346,24 @@ package {
 				weaponImg.x = weapon.x;
 			}
 			
-			pbTorso.originX = 22;
-			pbTorso.x = 22;
+			//Play the animation
+			if (!onGround){
+				legsMap.play("jumping");
+			} else if (FP.sign(velocity.x) != 0) {
+				if (!facingLeft) {
+					if (FP.sign(velocity.x) == 1) legsMap.play("running");
+					else legsMap.play("backwards_running");
+				} else {
+					if (FP.sign(velocity.x) == -1) legsMap.play("running");
+					else legsMap.play("backwards_running");
+				}
+				//if(legsMap.frame == 1) walkSound.play();
+			} else {
+				legsMap.play("standing");
+			}
+			
+			torso.originX = 22;
+			torso.x = 22;
 
 			var angle:Number = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
 			
@@ -369,7 +373,7 @@ package {
 			
 			var headAngle:Number = angle;
 			headAngle /= 2;
-			//trace(angle);
+			
 			//player is bending down too low
 			if (f && headAngle < -15) headAngle = -15;
 			else if (!f && 270 <= headAngle && headAngle < 350) headAngle = 350;
@@ -377,11 +381,9 @@ package {
 			//player is bending back too much
 			if (f && headAngle > 15) headAngle = 15;
 			else if (!f && headAngle > 15 && headAngle < 90) headAngle = 15;
-			
 
-			Image(display.children[3]).angle = headAngle; //HEAD
 			Image(display.children[0]).angle = angle; //PB
-			
+			Image(display.children[3]).angle = headAngle; //HEAD
 		}
 			
 		override protected function updateMovement():void {
@@ -391,35 +393,29 @@ package {
 			var xInput:int = 0;
 			var yInput:int = 0;
 			
-			//CHECK PLAYER INPUT
-			
 			//WSAD: MOVEMENT
-			if (Input.check(Key.A)) {
+			if (Input.check("Left")) {
 				xInput -= 1;
-				if(!Input.check(Key.D)) running = true;
+				if(!Input.check("Right")) running = true;
 			} else {
 				running = false;
 			}
-			if (Input.check(Key.D)) {
+			if (Input.check("Right")) {
 				xInput += 1;
-				if(!Input.check(Key.A)) running = true;
+				if(!Input.check("Left")) running = true;
 			} else {
-				if (!running) {
-					running = false;
-				}
+				running = false;
 			}
 			
-			if (Input.pressed("Jump")) {
-				jump();
-			}
-			
+			//Jump = W
+			if (Input.pressed("Jump")) jump();
+
 			velocity.x = player_speed * xInput;
 
 		}
 		
 		override protected function land():void {
-			
-			if(!onGround){
+			if(!onGround) {
 				calcFallDamage(velocity.y);
 				onGround = true;
 			}
@@ -457,15 +453,13 @@ package {
 		//tentative idea: getHurt includes enemy-inflicted damage-
 		//specific animations, takeDamage displays only the default,
 		//i.e. red flash.
-	
 		private function getHurt(damage:int):void{
-
 			if (damageTimer == 0) {
 				takeDamage(10);
 				injurySound.play();
 				damageTimer = 60;
 			}
-			//Jump up
+			//TODO: animation
 		}
 		
 		override protected function calcFallDamage(_v:int):void {
@@ -503,6 +497,7 @@ package {
 			levelUpTime = true;
 		}
 		
+		//Getter functions
 		public function getPlayerExperience():int { return experience; }
 		public function getLevel():int { return level; }
 		public function getExperience():int { return experience; }

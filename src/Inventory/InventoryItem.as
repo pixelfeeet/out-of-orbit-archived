@@ -45,7 +45,7 @@ package Inventory {
 		
 		private function destroy():void {
 			for (var i:int = 0; i < GameWorld.player.inventoryLength; i++){
-				if (GameWorld.player.getInventory().inventory[i][0].label == this.label){
+				if (GameWorld.player.getInventory().items[i][0].label == this.label){
 					GameWorld.player.getInventory().removeItemFromInventory(i);
 					//GameWorld.hud.deselectAll();
 					FP.world.remove(this);
