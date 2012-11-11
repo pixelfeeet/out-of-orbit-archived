@@ -113,7 +113,7 @@ package ui {
 		
 		//ITEM INVENTORY
 		private function getInventory():void {
-			inventory = player.getInventory().inventory;
+			inventory = player.getInventory().items;
 		}
 		
 		private function updateHealth():void{
@@ -174,9 +174,6 @@ package ui {
 				if (inventory[i] != []){
 					if (inventoryDisplay[i] == null) drawNewItem(i, inventory[i][0]);
 				}
-//				} else {
-//					if (inventoryDisplay[i] != null) removeItemFromInventory(i);
-//				}
 			}
 			
 		}

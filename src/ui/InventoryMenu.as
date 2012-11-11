@@ -82,7 +82,7 @@ package ui {
 		}
 		
 		private function getInventory():void {
-			inventory = player.getInventory().inventory;
+			inventory = player.getInventory().items;
 		}
 		
 		public function show():void {
@@ -138,8 +138,8 @@ package ui {
 						inventoryBoxes[i]["box"].y = panel.y + 5 + (y * 60);
 					}
 					//if (inventory[i].length > 1) 
-					if (player.getInventory().inventory[i])
-						inventoryBoxes[i]["text"].text = player.getInventory().inventory[i].length;
+					if (player.getInventory().items[i])
+						inventoryBoxes[i]["text"].text = player.getInventory().items[i].length;
 					//else inventoryBoxes[i]["text"].text = "";
 					i++;
 				}
