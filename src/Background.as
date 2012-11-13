@@ -17,17 +17,21 @@ package {
 		private var rawData:ByteArray;
 		private var dataString:String;
 		private var xmlData:XML;
+		
+		private var color:uint;
 
 		private var w:int;
 		private var h:int;
 		
 		private var tiles:Tilemap;
 		
-		public function Background(_xml:Class) {
+		public function Background(_xml:Class, _color:uint) {
 			super();
 			
 			t = Settings.TILESIZE;
 			xml = _xml;
+			
+			color = _color;
 			
 			init(xml);
 			layer = 100;
@@ -39,13 +43,11 @@ package {
 			dataString = rawData.readUTFBytes( rawData.length );
 			xmlData = new XML(dataString);
 			
-			//settings = xmlData.map;
-			
 			w = xmlData.@width;
 			h = xmlData.@height;
 			
 			//tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
-			graphic = Image.createRect(w * t, h * t, 0x819a9a, 1);
+			graphic = Image.createRect(w * t, h * t, color, 1);
 		}
 	}
 }

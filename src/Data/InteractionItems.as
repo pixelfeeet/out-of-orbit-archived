@@ -21,7 +21,7 @@ package data {
 			mediPack = new InteractionItem();
 			mediPack.graphic = new Image(Assets.MEDIPACK_IMG);
 			mediPack.setInventoryItem(GameWorld.inventoryItems.mediPack);
-			mediPack.label = "mediPack";
+			mediPack.label = "medipack";
 			
 			rocket = new InteractionItem();
 			rocket.graphic = new Image(Assets.ROCKET_IMAGE);
@@ -31,7 +31,7 @@ package data {
 			powerBlaster.graphic = new Image(Assets.PB);
 			powerBlaster.setInventoryItem(GameWorld.inventoryItems.powerBlaster);
 			powerBlaster.respawning = false;
-			powerBlaster.label = "powerBlaster";
+			powerBlaster.label = "power_blaster";
 			
 			ammunition = new Ammunition();
 			ammunition.graphic = new Image(Assets.FRUIT_PLANT);

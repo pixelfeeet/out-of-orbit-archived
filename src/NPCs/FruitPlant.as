@@ -1,6 +1,7 @@
 package NPCs {
 	import net.flashpunk.graphics.Image;
 	public class FruitPlant extends NPC {
+		
 		public static var label:String = "fruit_plant";
 		public function FruitPlant() {
 			super();

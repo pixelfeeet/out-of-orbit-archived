@@ -16,7 +16,7 @@ package NPCs {
 			
 			spriteMap = new Spritemap(Assets.DUST_BALL, 40, 40);
 			spriteMap.add("standing", [0]);
-			spriteMap.add("moving", [0, 1], 3);
+			spriteMap.add("moving", [0, 1], 4);
 			
 			graphic = spriteMap;
 			setHitboxTo(graphic);

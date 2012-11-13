@@ -14,8 +14,8 @@ package data {
 		public function NPCs() {
 			
 			list = [FruitPlant, DustBall];
+		
 		}
-
 
 	}
 }

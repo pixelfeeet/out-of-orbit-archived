@@ -74,8 +74,8 @@ package {
 			constructionMenuShowing = false;
 			
 			add(player);
-			currentLevel = levels.caveLevel2;
-			background = new Background(currentLevel.xml);
+			currentLevel = levels.jungleLevel;
+			background = new Background(currentLevel.xml, currentLevel.backgroundColor);
 			add(background);
 			add(currentLevel);
 			currentLevel.loadLevel(this, player);
@@ -102,7 +102,7 @@ package {
 			adjusted = false;
 			
 			//Sound
-			FP.volume = 0.5;
+			FP.volume = 0.05;
 			
 			lightMask = new LightMask(this);
 			add(lightMask);

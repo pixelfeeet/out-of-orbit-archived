@@ -38,6 +38,8 @@ package {
 		private var w:int;
 		private var h:int;
 		
+		public var backgroundColor:uint;
+		
 		public var doorList:Array;
 		public var interactionItemList:Array;
 		public var enemiesList:Array;
@@ -53,14 +55,11 @@ package {
 			rawData = new xml;
 			dataString = rawData.readUTFBytes( rawData.length );
 			xmlData = new XML(dataString);
-			
-			//settings = xmlData.map;
 
 			w = xmlData.@width;
 			h = xmlData.@height;
 			
-			tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
-			
+			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			graphic = new Graphiclist(tiles);
 			layer = -10;
 			
@@ -131,7 +130,7 @@ package {
 		}
 		
 		public function loadTileProperties():void {
-			var dataList:XMLList = xmlData.tileset.(@name == "cave_tileset").tile;//.properties.property;
+			var dataList:XMLList = xmlData.tileset.(@name == "jungle_tileset").tile;
 			for (var i:int = 0; i < dataList.length(); i++){
 				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
 			}
