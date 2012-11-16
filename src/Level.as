@@ -88,6 +88,7 @@ package {
 			loadDoors(_w, _p);
 			loadInteractionItems(_w);
 			loadPlayer(_w, _p);
+			loadScenery(_w);
 		}
 		
 		override public function update():void {
@@ -133,6 +134,47 @@ package {
 			var dataList:XMLList = xmlData.tileset.(@name == "jungle_tileset").tile;
 			for (var i:int = 0; i < dataList.length(); i++){
 				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
+			}
+		}
+		
+		public function loadScenery(_w:World):void {
+			loadBackgroundScenery(_w);
+			loadFrontScenery(_w);
+		}
+		
+		public function loadBackgroundScenery(_w:World):void {
+			var dataList:XMLList = xmlData.objectgroup.(@name=="backgroundScenery").object;
+			for (var i:int = 0; i < dataList.length(); i++){
+				var e:InteractionItem;
+				for (var j:int = 0; j < GameWorld.scenery.list.length; j++){
+					if (GameWorld.scenery.list[j].label == dataList[i].@type){
+						e = GameWorld.scenery.list[j];
+					}
+				}
+				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+				var ii:InteractionItem = new InteractionItem();
+				ii = GameWorld.scenery.copyItem(e, ePos);
+				ii.layer = 100;
+				interactionItemList.push(ii);
+				_w.add(ii);
+			}	
+		}
+		
+		public function loadFrontScenery(_w:World):void {
+			var dataList:XMLList = xmlData.objectgroup.(@name=="frontScenery").object;
+			for (var i:int = 0; i < dataList.length(); i++){
+				var e:InteractionItem;
+				for (var j:int = 0; j < GameWorld.scenery.list.length; j++){
+					if (GameWorld.scenery.list[j].label == dataList[i].@type){
+						e = GameWorld.scenery.list[j];
+					}
+				}
+				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+				var ii:InteractionItem = new InteractionItem();
+				ii = GameWorld.scenery.copyItem(e, ePos);
+				ii.layer = -100;
+				interactionItemList.push(ii);
+				_w.add(ii);
 			}
 		}
 		
@@ -191,9 +233,8 @@ package {
 					}
 				}
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-				var ii:InteractionItem = new InteractionItem(ePos);
-				ii.setGraphic(e.graphic);
-				ii.setInventoryItem(e.getInventoryItem());
+				var ii:InteractionItem = new InteractionItem();
+				ii = GameWorld.interactionItems.copyItem(e, ePos);
 				interactionItemList.push(ii);
 				_w.add(ii);
 			}

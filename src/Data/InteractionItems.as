@@ -1,5 +1,6 @@
 package data {
 	import net.flashpunk.graphics.Image;
+	import flash.geom.Point;
 	
 	public class InteractionItems {
 		
@@ -9,6 +10,8 @@ package data {
 		public var powerBlaster:InteractionItem;
 		public var scraps:Scraps;
 		public var ammunition:Ammunition;
+		public var shrub1:InteractionItem;
+		public var shrub2:InteractionItem;
 		
 		public var list:Array;
 		
@@ -42,6 +45,18 @@ package data {
 			scraps.label = "scraps";
 			
 			list = [food, mediPack, rocket, powerBlaster, ammunition, scraps];
+		}
+		
+		public function copyItem(_e:InteractionItem, _position:Point = null):InteractionItem {
+			if (!_position) _position = new Point(0,0);
+			var e:InteractionItem = new InteractionItem(_position);
+			e.graphic = _e.graphic;
+			e.setHitboxTo(e.graphic);
+			e.label = _e.label;
+			e.pickUpable = _e.pickUpable;
+			e.respawning = _e.respawning;
+			e.setInventoryItem(_e.inventoryItem);
+			return e;
 		}
 	}
 }

@@ -26,6 +26,10 @@ package {
 		[Embed(source = 'assets/food.png')] public static const FOOD_IMG:Class;	
 		[Embed(source = 'assets/medipack.png')] public static const MEDIPACK_IMG:Class;	
 		
+		//Scenery
+		[Embed(source = 'assets/shrub1.png')] public static const SHRUB1:Class;	
+		[Embed(source = 'assets/shrub2.png')] public static const SHRUB2:Class;
+		
 		//Sounds
 		[Embed(source = "sounds/land.mp3")] public static const LAND:Class;
 		[Embed(source = "sounds/injury.mp3")] public static const INJURY:Class;

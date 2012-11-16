@@ -34,8 +34,9 @@ package {
 		public var eliminated:Boolean;
 		public var scrapValue:int;
 		
+		public var pickUpable:Boolean;
+		
 		public function InteractionItem(_position:Point = null) {
-			
 			if (!_position) _position = new Point(0,0);
 			super(_position, -1, -1);
 						
@@ -51,6 +52,7 @@ package {
 			
 			respawning = true;
 			eliminated = false;
+			pickUpable = true;
 			
 		}
 
@@ -71,11 +73,13 @@ package {
 		}
 		
 		protected function getPickedUp():void {
-			if(GameWorld.player.getInventory().findSlot(this.inventoryItem) != -1
-			&& inventoryItem != null
-			&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
-				GameWorld.player.getInventory().addItemToInventory(inventoryItem);
-				destroy();
+			if (pickUpable) {
+				if(GameWorld.player.getInventory().findSlot(this.inventoryItem) != -1
+				&& inventoryItem != null
+				&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
+					GameWorld.player.getInventory().addItemToInventory(inventoryItem);
+					destroy();
+				}
 			}
 		}
 		

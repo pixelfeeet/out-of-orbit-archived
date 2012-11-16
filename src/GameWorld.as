@@ -18,11 +18,11 @@ package {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
+	import ui.ConstructionMenu;
 	import ui.HUD;
 	import ui.InventoryMenu;
 	import ui.PauseMenu;
 	import ui.StatsMenu;
-	import ui.ConstructionMenu;
 	
 	import utilities.Camera;
 	import utilities.Settings;
@@ -37,6 +37,7 @@ package {
 		public static var interactionItems:InteractionItems;
 		public static var enemies:Enemies;
 		public static var npcs:NPCs;
+		public static var scenery:Scenery;
 		public var levels:Levels;
 		
 		public var pause:Boolean;
@@ -67,6 +68,7 @@ package {
 			enemies = new Enemies();
 			levels = new Levels(this, player);
 			npcs = new NPCs();
+			scenery = new Scenery();
 
 			pause = false;
 			pauseMenuShowing = false;
