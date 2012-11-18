@@ -110,7 +110,7 @@ package {
 			
 			type = "Player";
 			
-			PLAYER_SPEED = 240;
+			PLAYER_SPEED = 840;
 			player_speed = PLAYER_SPEED;
 			JUMP = 580;
 			
@@ -194,11 +194,13 @@ package {
 			jumpSound = new Sfx(Assets.BUMP);
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
+			
+			layer = -400 //debug layer
 		}
 		
 		override public function update():void {
 			super.update();
-			
+
 			updateGraphic();
 			updateMovement();
 			debug();
@@ -212,6 +214,12 @@ package {
 
 			//Interaction
 			if (Input.pressed("Use")) onUse();	
+		}
+		
+		override protected function updateCollision():void {
+			//DEBUG: No collisiton detection
+			x += velocity.x * FP.elapsed;
+			y += velocity.y * FP.elapsed;
 		}
 		
 		public function inventoryButtons():void {
@@ -388,7 +396,7 @@ package {
 			
 		override protected function updateMovement():void {
 			
-			super.updateMovement();
+			//super.updateMovement();
 			
 			var xInput:int = 0;
 			var yInput:int = 0;
@@ -407,9 +415,18 @@ package {
 				running = false;
 			}
 			
+			//DEBUG MOVEMENT
+			if (Input.check(Key.W)) {
+				yInput -= 1;
+			}
+			if (Input.check(Key.S)) {
+				yInput += 1;
+			}
+			
 			//Jump = W
-			if (Input.pressed("Jump")) jump();
+			//if (Input.pressed("Jump")) jump();
 
+			velocity.y = player_speed * yInput; //This isn't normally here
 			velocity.x = player_speed * xInput;
 
 		}

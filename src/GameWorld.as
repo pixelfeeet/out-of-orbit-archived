@@ -75,9 +75,9 @@ package {
 			statsMenuShowing = false;
 			constructionMenuShowing = false;
 			
-			add(player);
-			currentLevel = levels.jungleLevel;
-			background = new Background(currentLevel.xml, currentLevel.backgroundColor);
+			//add(player);
+			currentLevel = new Level(this, player);
+			background = new Background(currentLevel.xml, 0xeeeeee);
 			add(background);
 			add(currentLevel);
 			currentLevel.loadLevel(this, player);
@@ -155,12 +155,10 @@ package {
 			if (pause) {
 				pause = false;
 				pauseMenuShowing = false;
-				Mouse.hide();
 			} else {
 				pause = true;
 				pauseMenu.show();
 				pauseMenuShowing = true;
-				Mouse.show();
 			}
 		}
 		
@@ -169,12 +167,10 @@ package {
 			if (pause) {
 				pause = false;
 				statsMenuShowing = false;
-				Mouse.hide();
 			} else {
 				pause = true;
 				statsMenu.show();
 				statsMenuShowing = true;
-				Mouse.show();
 			}
 		}
 		
@@ -231,7 +227,6 @@ package {
 					if (door.playerSpawnsToLeft) player.x = door.x - 70;
 					else player.x = door.x + 100;
 					player.y = door.y + 10;
-
 				}
 			}
 			

@@ -2,6 +2,7 @@ package {
 	
 	import NPCs.NPC;
 	
+	import flash.display3D.IndexBuffer3D;
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	import flash.xml.XMLNode;
@@ -34,7 +35,7 @@ package {
 		private var doorsLoaded:Boolean;
 		
 		public var label:String;
-
+		
 		private var w:int;
 		private var h:int;
 		
@@ -48,16 +49,21 @@ package {
 		public var timeMask:Entity;
 		private var graphicList:Graphiclist;
 		
-		public function Level(_xml:Class) {
+		private var generated:Boolean;
+		
+		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
-			xml = _xml;
-			
-			rawData = new xml;
-			dataString = rawData.readUTFBytes( rawData.length );
-			xmlData = new XML(dataString);
 
-			w = xmlData.@width;
-			h = xmlData.@height;
+			//xml = _xml;
+			//rawData = new xml;
+			//dataString = rawData.readUTFBytes(rawData.length);
+			//xmlData = new XML(dataString);
+			
+			//w = xmlData.@width;
+			//h = xmlData.@height;
+			
+			w = 40;
+			h = 40;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			graphic = new Graphiclist(tiles);
@@ -75,198 +81,366 @@ package {
 			enemiesList = [];
 			NPClist = [];
 			
-			loadTileProperties();
-			loadTiles();
+			//loadTileProperties();
+			//loadTiles();
+			loadLevel(_w, _p);
+			generateTiles();
 			doorsLoaded = false;
+			
+			generated = false
 		}
 		
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
 			gw = _w;
 			player = _p;
-			loadEnemies(_w);
-			loadNPCs(_w);
-			loadDoors(_w, _p);
-			loadInteractionItems(_w);
+			//loadEnemies(_w);
+			//loadNPCs(_w);
+			//loadDoors(_w, _p);
+			//loadInteractionItems(_w);
+			//loadScenery(_w);
 			loadPlayer(_w, _p);
-			loadScenery(_w);
 		}
 		
 		override public function update():void {
-			if (!doorsLoaded) loadDoors(gw, player);
+
+		}
+		
+		private function generateTiles():void {
+			var gid:int;
+			
+			var pockets:int = 10;
+			var pocketWidth:int = 7;
+			var halfPocketWidth:int = Math.abs(pocketWidth / 2)
+			var pocketPoints:Array = [];
+			
+			//Fill the entire map in
+			//tiles.setRect(0, 0, w, h, 11);
+		
+			var column:int;
+			var row:int; 
+			
+			//Generate center points for pockets
+
+			//for (var j:int = 0; j < pockets; j++) {
+
+			while (pocketPoints.length < pockets) {
+				var p:Point;
+				if (pocketPoints.length == 0) {
+					p = randomPoint();
+					pocketPoints.push(p);
+				}
+				p = randomPoint();
+				var isolated:Boolean = true;
+				iLoop: for (var i:int = 0; i < pocketPoints.length; i++) {
+
+					if (Math.abs(pocketPoints[i].x - p.x) > pocketWidth + 1
+						|| Math.abs(pocketPoints[i].y - p.y) > pocketWidth + 1) {
+						isolated = true;
+					} else {
+						isolated = false;
+						break iLoop;
+					}
+				}
+				if (isolated) pocketPoints.push(p);
+				trace("isolated: " + isolated);
+				trace("length: " + pocketPoints.length);
+			}
+		
+			//drawPocket(pockets, pocketPoints, pocketWidth);
+			
+			//Draw tunnel
+//			for (var line:int = 0; line < pockets - 1; line++) {
+//				drawLine(pocketPoints[line], pocketPoints[line + 1]);
+//			}
+			
+			//Horizontal tunnel
+			var horzTunnels:int = 5;
+			var horzTunnelLen:int = 20;
+			for (var t:int = 0; t < horzTunnels; t++) {
+				var start:Point = randomPoint();
+				var end:Point = new Point(start.x + horzTunnelLen, start.y);
+				drawLine(start, end, {"width": 5, "height": 5, "positive": true});
+			}
+
+//			for (var f:int = 0; f < horzTunnels; f++){
+//				var start:Point = randomPoint();
+//				for (var s:int = 0; s < horzTunnelLen; s++){
+//					tiles.clearTile(start.x + s, start.y);
+//					tiles.clearTile(start.x + s, start.y + 1);
+//				}
+//			}
+			drawGround();
+		}
+		
+		private function randomPoint():Point {
+			var x:int = Math.ceil(Math.random() * w);
+			var y:int = Math.ceil(Math.random() * h);
+			return new Point(x, y);
+		}
+		
+		private function drawPocket(pockets:int, pocketPoints:Array, pocketWidth:int):void {
+			for (var pocket:int = 0; pocket < pockets; pocket++) {
+				var _x:int = pocketPoints[pocket].x;
+				var _y:int = pocketPoints[pocket].y;
+				
+				var startX:int = _x - (pocketWidth / 2);
+				var startY:int = _y - (pocketWidth / 2);
+				
+				startX = _x - Math.floor(pocketWidth / 2);
+				startY = _y - Math.floor(pocketWidth / 2);
+				for (var column:int = startX; column < startX + pocketWidth; column++){
+					for (var row:int = startY; row < startY + pocketWidth; row++) {
+						tiles.clearTile(column, row);
+					}
+				}
+			}
+		}
+		
+		private function drawLine(startPoint:Point, endPoint:Point, options:Object = null):void {
+			var currentPoint:Point = new Point(startPoint.x, startPoint.y);
+			var width:int = 1;
+			var height:int = 1;
+			var positive:Boolean = false; //true = setTile, false = clearTile
+			
+			if (options) {
+				if (options["width"]) width = options["width"];
+				if (options["height"]) width = options["height"];
+				if (options["positive"]) positive = options["positive"];
+			}
+			trace("options: " + options)
+			trace(width + ", " + height + ", postive = " + positive)
+			
+			var points:Array = getLine(startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+			for each(var po:Point in points){
+				
+				for (var w:int = 0; w < width; w++){
+					for (var h:int = 0; h < height; h++){
+						if (positive) tiles.setTile(po.x + w, po.y + h, 11)
+						else tiles.clearTile(po.x + w, po.y + h);
+					}
+				}
+			}
+		}
+		
+		private function drawGround():void {
+			var start:Point = new Point(0, h - 1);
+			var end:Point = new Point(w - 1, h - 1);
+			drawLine(start, end, {"positive": true});
 		}
 		
 		private function loadTiles():void {
-			
-			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;
-			
-			var column:int;
-			var row:int;
-			var gid:int;
-			
-			//set tiles
-			gid = 0;
-			for(row = 0; row < h; row ++){
-				for(column = 0; column < w; column ++){
-					var index:int = dataList[gid] - 1;
-					if (index >= 0) {
-						tiles.setTile(column, row, index);
-					}
-					gid++;
-				}
-			}
-			
-			//set grid
-			gid = 0;
-			for(row = 0; row < h; row ++){
-				for(column = 0; column < w; column ++){
-					if (solidList[dataList[gid] - 1] != null &&
-						solidList[dataList[gid] - 1] == 1) {
-						grid.setTile(column, row, true);
-					} else {
-						grid.setTile(column, row, false);
-					}
-					gid++;
-				}
-			}
-		}
-		
-		public function loadTileProperties():void {
-			var dataList:XMLList = xmlData.tileset.(@name == "jungle_tileset").tile;
-			for (var i:int = 0; i < dataList.length(); i++){
-				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
-			}
-		}
-		
-		public function loadScenery(_w:World):void {
-			loadBackgroundScenery(_w);
-			loadFrontScenery(_w);
-		}
-		
-		public function loadBackgroundScenery(_w:World):void {
-			var dataList:XMLList = xmlData.objectgroup.(@name=="backgroundScenery").object;
-			for (var i:int = 0; i < dataList.length(); i++){
-				var e:InteractionItem;
-				for (var j:int = 0; j < GameWorld.scenery.list.length; j++){
-					if (GameWorld.scenery.list[j].label == dataList[i].@type){
-						e = GameWorld.scenery.list[j];
-					}
-				}
-				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-				var ii:InteractionItem = new InteractionItem();
-				ii = GameWorld.scenery.copyItem(e, ePos);
-				ii.layer = 100;
-				interactionItemList.push(ii);
-				_w.add(ii);
-			}	
-		}
-		
-		public function loadFrontScenery(_w:World):void {
-			var dataList:XMLList = xmlData.objectgroup.(@name=="frontScenery").object;
-			for (var i:int = 0; i < dataList.length(); i++){
-				var e:InteractionItem;
-				for (var j:int = 0; j < GameWorld.scenery.list.length; j++){
-					if (GameWorld.scenery.list[j].label == dataList[i].@type){
-						e = GameWorld.scenery.list[j];
-					}
-				}
-				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-				var ii:InteractionItem = new InteractionItem();
-				ii = GameWorld.scenery.copyItem(e, ePos);
-				ii.layer = -100;
-				interactionItemList.push(ii);
-				_w.add(ii);
-			}
-		}
-		
-		public function loadEnemies(_w:World):void {
-			if (enemiesList.length == 0){
-				var dataList:XMLList = xmlData.objectgroup.(@name=="enemies").object;
-				for (var i:int = 0; i < dataList.length(); i++){
-	
-					var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-					var e:Enemy = new Enemy(ePos, 60);
-					enemiesList.push(e);
-					_w.add(e);
-				}
-			} else {
-				for (var j:int = 0; j < enemiesList.length; j++){
-					if (enemiesList[j].eliminated == false) {
-						_w.add(enemiesList[j]);
-					}
-				}
-			}
-		}
-		
-		public function loadNPCs(_w:World):void {
-			if (NPClist.length == 0){
-				var dataList:XMLList = xmlData.objectgroup.(@name=="NPCs").object;
-				for (var i:int = 0; i < dataList.length(); i++){
-					var e:Entity;
-					var list:Array = GameWorld.npcs.list;
-					for (var j:int = 0; j < list.length; j++){
-						if (dataList[i].@type == list[j].label) {
-							e = new list[j]();
-							e.x = dataList[i].@x
-							e.y = dataList[i].@y;
-							break;
-						}
-					}
-					NPClist.push(e);
-					_w.add(e);
-				}
-			} else {
-				for (var k:int = 0; k < NPClist.length; k++){
-					if (NPClist[k].eliminated == false) {
-						_w.add(NPClist[k]);
-					}
-				}
-			}
-		}
 
-		public function loadInteractionItems(_w:World):void {
-			var dataList:XMLList = xmlData.objectgroup.(@name=="interactionitems").object;
-			for (var i:int = 0; i < dataList.length(); i++){
-				var e:InteractionItem;
-				for (var j:int = 0; j < GameWorld.interactionItems.list.length; j++){
-					if (GameWorld.interactionItems.list[j].label == dataList[i].@type){
-						e = GameWorld.interactionItems.list[j];
-					}
-				}
-				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-				var ii:InteractionItem = new InteractionItem();
-				ii = GameWorld.interactionItems.copyItem(e, ePos);
-				interactionItemList.push(ii);
-				_w.add(ii);
-			}
+			generateTiles();
+//			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;
+//			
+//			var column:int;
+//			var row:int;
+//			var gid:int;
+//			
+//			//set tiles
+//			gid = 0;
+//			for(row = 0; row < h; row ++){
+//				for(column = 0; column < w; column ++){
+//					var index:int = dataList[gid] - 1;
+//					if (index >= 0) {
+//						tiles.setTile(column, row, index);
+//					}
+//					gid++;
+//				}
+//			}
+//			
+//			//set grid
+//			gid = 0;
+//			for(row = 0; row < h; row ++){
+//				for(column = 0; column < w; column ++){
+//					if (solidList[dataList[gid] - 1] != null &&
+//						solidList[dataList[gid] - 1] == 1) {
+//						grid.setTile(column, row, true);
+//					} else {
+//						grid.setTile(column, row, false);
+//					}
+//					gid++;
+//				}
+//			}
 		}
+//		
+//		public function loadTileProperties():void {
+//			var dataList:XMLList = xmlData.tileset.(@name == "jungle_tileset").tile;
+//			for (var i:int = 0; i < dataList.length(); i++){
+//				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
+//			}
+//		}
+//		
+//		public function loadScenery(_w:World):void {
+//			loadWScenery(_w, "backgroundScenery", false);
+//			loadWScenery(_w, "frontScenery", true);
+//		}
+//		
+//		public function loadWScenery(_w:World, _name:String, inFront:Boolean):void {
+//			var dataList:XMLList = xmlData.objectgroup.(@name==_name).object;
+//			for (var i:int = 0; i < dataList.length(); i++){
+//				var e:InteractionItem;
+//				for (var j:int = 0; j < GameWorld.scenery.list.length; j++){
+//					if (GameWorld.scenery.list[j].label == dataList[i].@type){
+//						e = GameWorld.scenery.list[j];
+//					}
+//				}
+//				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+//				var ii:InteractionItem = new InteractionItem();
+//				ii = GameWorld.scenery.copyItem(e, ePos);
+//				if (inFront) ii.layer = -100
+//				else ii.layer = 100;
+//				interactionItemList.push(ii);
+//				_w.add(ii);
+//			}	
+//		}
+//		
+//		public function loadEnemies(_w:World):void {
+//			if (enemiesList.length == 0){
+//				var dataList:XMLList = xmlData.objectgroup.(@name=="enemies").object;
+//				for (var i:int = 0; i < dataList.length(); i++){
+//					
+//					var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+//					var e:Enemy = new Enemy(ePos, 60);
+//					enemiesList.push(e);
+//					_w.add(e);
+//				}
+//			} else {
+//				for (var j:int = 0; j < enemiesList.length; j++){
+//					if (enemiesList[j].eliminated == false) {
+//						_w.add(enemiesList[j]);
+//					}
+//				}
+//			}
+//		}
+//		
+//		public function loadNPCs(_w:World):void {
+//			if (NPClist.length == 0){
+//				var dataList:XMLList = xmlData.objectgroup.(@name=="NPCs").object;
+//				for (var i:int = 0; i < dataList.length(); i++){
+//					var e:Entity;
+//					var list:Array = GameWorld.npcs.list;
+//					for (var j:int = 0; j < list.length; j++){
+//						if (dataList[i].@type == list[j].label) {
+//							e = new list[j]();
+//							e.x = dataList[i].@x
+//							e.y = dataList[i].@y;
+//							break;
+//						}
+//					}
+//					NPClist.push(e);
+//					_w.add(e);
+//				}
+//			} else {
+//				for (var k:int = 0; k < NPClist.length; k++){
+//					if (NPClist[k].eliminated == false) {
+//						_w.add(NPClist[k]);
+//					}
+//				}
+//			}
+//		}
+//		
+//		public function loadInteractionItems(_w:World):void {
+//			var dataList:XMLList = xmlData.objectgroup.(@name=="interactionitems").object;
+//			for (var i:int = 0; i < dataList.length(); i++){
+//				var e:InteractionItem;
+//				for (var j:int = 0; j < GameWorld.interactionItems.list.length; j++){
+//					if (GameWorld.interactionItems.list[j].label == dataList[i].@type){
+//						e = GameWorld.interactionItems.list[j];
+//					}
+//				}
+//				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
+//				var ii:InteractionItem = new InteractionItem();
+//				ii = GameWorld.interactionItems.copyItem(e, ePos);
+//				interactionItemList.push(ii);
+//				_w.add(ii);
+//			}
+//		}
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
-			var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
-			_player.x = dataList.@x;
-			_player.y = dataList.@y;
+			//var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
+			//_player.x = dataList.@x;
+			//_player.y = dataList.@y;
+			_player.x = 30;
+			_player.y = 30;
 			_w.add(_player);
 		}
 		
-		public function loadDoors(_w:GameWorld, _player:SpacemanPlayer):void{
-			var dataList:XMLList = xmlData.objectgroup.(@name=="doors").object;
-			for (var i:int = 0; i < dataList.length(); i ++){
-				var j:XML = dataList[i];
-				var d:Door = new Door(new Point(j.@x, j.@y), _w, this, _player, j.@height, j.@width);
-				d.label = j.@name;
-				d.destinationLevelLabel = j.properties.property.(@name=="destinationLevel").@value;
-				d.destinationDoor = j.properties.property.(@name=="destinationDoor").@value;
-				if (j.properties.property.(@name=="playerSpawnsToLeft").@value == "true")
-					d.playerSpawnsToLeft = true;
-				else d.playerSpawnsToLeft = false;
-
-				doorList.push(d);
-				_w.add(d);
+//		public function loadDoors(_w:GameWorld, _player:SpacemanPlayer):void{
+//			var dataList:XMLList = xmlData.objectgroup.(@name=="doors").object;
+//			for (var i:int = 0; i < dataList.length(); i ++){
+//				var j:XML = dataList[i];
+//				var d:Door = new Door(new Point(j.@x, j.@y), _w, this, _player, j.@height, j.@width);
+//				d.label = j.@name;
+//				d.destinationLevelLabel = j.properties.property.(@name=="destinationLevel").@value;
+//				d.destinationDoor = j.properties.property.(@name=="destinationDoor").@value;
+//				if (j.properties.property.(@name=="playerSpawnsToLeft").@value == "true")
+//					d.playerSpawnsToLeft = true;
+//				else d.playerSpawnsToLeft = false;
+//				
+//				doorList.push(d);
+//				_w.add(d);
+//			}
+//			doorsLoaded = true;
+//		}
+		
+		
+		
+		private function getLine(x0:int, x1:int, y0:int, y1:int):Array {
+			var points:Array = []
+			var steep:Boolean = (Math.abs(y1-y0)) > (Math.abs(x1-x0))
+			var placeHolder:int;
+			if (steep) {
+				//x0, y0 = y0, x0;
+				placeHolder = x0;
+				x0 = y0;
+				y0 = placeHolder;
+				//x1, y1 = y1, x1;
+				placeHolder = x1;
+				x1 = y1;
+				y1 = placeHolder;
 			}
-			doorsLoaded = true;
+			if (x0 > x1) {
+				//x0, x1 = x1, x0;
+				placeHolder = x0;
+				x0 = x1;
+				x1 = placeHolder;
+				//y0, y1 = y1, y0;
+				placeHolder = y0;
+				y0 = y1;
+				y1 = placeHolder;
+			}
+			var deltax:Number = x1 - x0
+			var deltay:Number = Math.abs(y1 - y0)
+			var error:int = (deltax / 2)
+			var y:int = y0
+			var ystep:Number;
+			if (y0 < y1) {
+				ystep = 1
+			} else {
+				ystep = -1
+			}
+			for (var x:int = x0; x <= x1; x++) {
+				var o:Point;
+				if (steep) {
+					points.push(new Point(y, x));
+				} else {
+					points.push(new Point(x, y));
+				}
+				error -= deltay;
+				if (error < 0) {
+					y += ystep
+					error += deltax
+				}
+			}
+
+			return points;
 		}
 		
+
+		
 		override public function removed():void {
-	
+			
 			for each (var door:Door in doorList) {
 				FP.world.remove(door);
 			}

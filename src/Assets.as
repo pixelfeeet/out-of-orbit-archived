@@ -6,7 +6,7 @@ package {
 		//Tilesets
 		[Embed(source = 'assets/space_tileset.png')] public static const SPACE_TILESET:Class;
 		[Embed(source = 'assets/jungle_tileset.png')] public static const JUNGLE_TILESET:Class;
-
+		
 		//Levels
 		[Embed(source = 'assets/space.tmx', mimeType = "application/octet-stream")] public static const SPACE_MAP:Class;
 		[Embed(source = 'assets/jungle.tmx', mimeType = "application/octet-stream")] public static const JUNGLE:Class;
@@ -43,7 +43,7 @@ package {
 		
 		//Ambience/Music
 		[Embed(source = "sounds/ambience.mp3")] public static const AMBIENCE:Class;
-
+		
 		//Cursors
 		[Embed(source = 'assets/cursor.png')] public static const CURSOR:Class;	
 		

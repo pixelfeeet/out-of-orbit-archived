@@ -22,14 +22,14 @@ package data {
 //			caveLevel2.loadDoors(_w, _p);
 //			caveLevel2.loadPlayer(_w, _p);
 			
-			jungleLevel = new Level(Assets.JUNGLE);
-			jungleLevel.backgroundColor = 0xc2baad;
-			jungleLevel.loadEnemies(_w);
-			jungleLevel.loadInteractionItems(_w);
-			jungleLevel.loadDoors(_w, _p);
-			jungleLevel.loadPlayer(_w, _p);
+			//jungleLevel = new Level(Assets.JUNGLE);
+			//jungleLevel.backgroundColor = 0xc2baad;
+			//jungleLevel.loadEnemies(_w);
+			//jungleLevel.loadInteractionItems(_w);
+			//jungleLevel.loadDoors(_w, _p);
+			//jungleLevel.loadPlayer(_w, _p);
 			
-			levelsList = [jungleLevel];
+			//levelsList = [jungleLevel];
 			
 			ambience = new Sfx(Assets.AMBIENCE);
 			ambience.loop();

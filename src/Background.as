@@ -30,7 +30,6 @@ package {
 			
 			t = Settings.TILESIZE;
 			xml = _xml;
-			
 			color = _color;
 			
 			init(xml);
@@ -38,13 +37,13 @@ package {
 		}
 		
 		public function init(_xml:Class):void {
-			xml = _xml;
-			rawData = new xml;
-			dataString = rawData.readUTFBytes( rawData.length );
-			xmlData = new XML(dataString);
+			//xml = _xml;
+			//rawData = new xml;
+			//dataString = rawData.readUTFBytes( rawData.length );
+			//xmlData = new XML(dataString);
 			
-			w = xmlData.@width;
-			h = xmlData.@height;
+			w = 40;// xmlData.@width;
+			h = 40;//xmlData.@height;
 			
 			//tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
 			graphic = Image.createRect(w * t, h * t, color, 1);

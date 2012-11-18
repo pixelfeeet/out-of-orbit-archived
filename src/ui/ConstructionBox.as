@@ -50,24 +50,13 @@ package ui {
 			}
 		}
 		
-		public function isSelected():Boolean {
-			return selected;
-		}
+		//Getter
+		public function isSelected():Boolean { return selected; }
 		
-		public function select():void {
-			selected = true;	
-		}
-		
-		public function deselect():void{
-			selected = false;
-		}
-		
-		public function setAlpha(_alpha:Number):void {
-			Image(graphic).alpha = _alpha;
-		}
-		
-		public function setColor(_color:uint):void {
-			graphic = Image.createRect(length, length, _color, Image(graphic).alpha);
-		}
+		//Setter
+		public function select():void { selected = true; }
+		public function deselect():void { selected = false; }
+		public function setAlpha(_alpha:Number):void { Image(graphic).alpha = _alpha; }
+		public function setColor(_color:uint):void { graphic = Image.createRect(length, length, _color, Image(graphic).alpha); }
 	}
 }
