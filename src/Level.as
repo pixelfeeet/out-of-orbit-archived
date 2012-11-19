@@ -62,7 +62,7 @@ package {
 			//w = xmlData.@width;
 			//h = xmlData.@height;
 			
-			w = 100;
+			w = 50;
 			h = 40;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
@@ -227,7 +227,14 @@ package {
 		}
 		
 		private function drawIsland():void {
-			tiles.setRect(5, 5, 5, 5, 12);	
+			var minWidth:int = 8;
+			var minHeight:int = 8;
+			
+			var islandWidth:int = Math.round(minWidth + (Math.random() * 5));
+			var islandHeight:int = Math.round(minHeight + (Math.random() * 5));
+			var x:int = Math.floor((Math.random() * w) - islandWidth);
+			var y:int = Math.floor((Math.random() * h) - islandHeight);
+			tiles.setRect(x, y, islandWidth, islandHeight, 12);
 		}
 		
 		private function randomPoint():Point {
