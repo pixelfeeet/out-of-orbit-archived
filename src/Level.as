@@ -49,7 +49,7 @@ package {
 		public var timeMask:Entity;
 		private var graphicList:Graphiclist;
 		
-		private var generated:Boolean;
+		private var groundDepth:int;
 		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
@@ -84,10 +84,11 @@ package {
 			//loadTileProperties();
 			//loadTiles();
 			loadLevel(_w, _p);
-			generateTiles();
 			doorsLoaded = false;
 			
-			generated = false
+			groundDepth = 3;
+			
+			generateTiles();
 		}
 		
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
@@ -142,8 +143,8 @@ package {
 					}
 				}
 				if (isolated) pocketPoints.push(p);
-				trace("isolated: " + isolated);
-				trace("length: " + pocketPoints.length);
+				//trace("isolated: " + isolated);
+				//trace("length: " + pocketPoints.length);
 			}
 		
 			//drawPocket(pockets, pocketPoints, pocketWidth);
@@ -154,13 +155,13 @@ package {
 //			}
 			
 			//Horizontal tunnel
-			var horzTunnels:int = 5;
-			var horzTunnelLen:int = 20;
-			for (var t:int = 0; t < horzTunnels; t++) {
-				var start:Point = randomPoint();
-				var end:Point = new Point(start.x + horzTunnelLen, start.y);
-				drawLine(start, end, {"width": 5, "height": 5, "positive": true});
-			}
+//			var horzTunnels:int = 5;
+//			var horzTunnelLen:int = 20;
+//			for (var t:int = 0; t < horzTunnels; t++) {
+//				var start:Point = randomPoint();
+//				var end:Point = new Point(start.x + horzTunnelLen, start.y);
+//				drawLine(start, end, {"width": 5, "height": 5, "positive": true});
+//			}
 
 //			for (var f:int = 0; f < horzTunnels; f++){
 //				var start:Point = randomPoint();
@@ -169,7 +170,8 @@ package {
 //					tiles.clearTile(start.x + s, start.y + 1);
 //				}
 //			}
-			drawGround();
+			drawGround(groundDepth);
+			drawHill();
 		}
 		
 		private function randomPoint():Point {
@@ -204,11 +206,12 @@ package {
 			
 			if (options) {
 				if (options["width"]) width = options["width"];
-				if (options["height"]) width = options["height"];
+				if (options["height"]) height = options["height"];
 				if (options["positive"]) positive = options["positive"];
 			}
-			trace("options: " + options)
-			trace(width + ", " + height + ", postive = " + positive)
+			
+			//trace("options: " + options)
+			//trace(width + ", " + height + ", postive = " + positive)
 			
 			var points:Array = getLine(startPoint.x, endPoint.x, startPoint.y, endPoint.y);
 			for each(var po:Point in points){
@@ -222,10 +225,43 @@ package {
 			}
 		}
 		
-		private function drawGround():void {
-			var start:Point = new Point(0, h - 1);
-			var end:Point = new Point(w - 1, h - 1);
+		private function drawGround(depth:int):void {
+			for (var i:int = 0; i < depth; i++) {
+				var start:Point = new Point(0, h - (i + 1));
+				var end:Point = new Point(w - 1, h - (i + 1));
+				drawLine(start, end, {"positive": true});
+			}
+		}
+		
+		private function drawSlope(start:Point, end:Point):void {
 			drawLine(start, end, {"positive": true});
+		}
+		
+		private function fillSlope(start:Point, end:Point):void {
+			drawSlope(start, end);
+			var fillStart:Point = end;
+			var current:Point = new Point(fillStart.x, fillStart.y + 1);
+			while (current.y < (h - groundDepth)){
+				while(tiles.getTile(current.x, current.y) == 0) {
+					tiles.setTile(current.x, current.y, 11);
+					if (start.x < end.x) current.x--;
+					else current.x++;
+				}
+				trace(current.x + ", " + current.y);
+				current.x = fillStart.x;
+				current.y++;
+			}
+			
+		}
+		
+		private function drawHill():void {
+			var start:Point = new Point(10, h - (groundDepth + 1));
+			var end:Point = new Point(20, h - (groundDepth + 1) - 20);
+			fillSlope(start, end);
+			
+			start = new Point(30, h - (groundDepth + 1));
+			end = new Point(21, h - (groundDepth + 1) - 20);
+			fillSlope(start, end);
 		}
 		
 		private function loadTiles():void {
@@ -385,7 +421,8 @@ package {
 //		}
 		
 		
-		
+		//Based on Bresenham's Line Algorithm:
+		// http://roguebasin.roguelikedevelopment.org/index.php?title=Bresenham%27s_Line_Algorithm
 		private function getLine(x0:int, x1:int, y0:int, y1:int):Array {
 			var points:Array = []
 			var steep:Boolean = (Math.abs(y1-y0)) > (Math.abs(x1-x0))

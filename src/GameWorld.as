@@ -77,7 +77,7 @@ package {
 			
 			//add(player);
 			currentLevel = new Level(this, player);
-			background = new Background(currentLevel.xml, 0xeeeeee);
+			background = new Background(currentLevel.xml, 0xa29a8d);
 			add(background);
 			add(currentLevel);
 			currentLevel.loadLevel(this, player);
