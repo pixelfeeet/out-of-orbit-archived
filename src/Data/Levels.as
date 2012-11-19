@@ -12,15 +12,6 @@ package data {
 		
 		public function Levels(_w:GameWorld, _p:SpacemanPlayer){
 			levelsList = [];
-			//caveLevel = new Level(Assets.CAVE_MAP);
-//			caveLevel.label = "caveLevel";
-			
-			//caveLevel2 = new Level(Assets.CAVE_MAP2);
-//			caveLevel2.label = "caveLevel2";
-//			caveLevel2.loadEnemies(_w);
-//			caveLevel2.loadInteractionItems(_w);
-//			caveLevel2.loadDoors(_w, _p);
-//			caveLevel2.loadPlayer(_w, _p);
 			
 			//jungleLevel = new Level(Assets.JUNGLE);
 			//jungleLevel.backgroundColor = 0xc2baad;

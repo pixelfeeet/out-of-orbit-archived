@@ -62,7 +62,7 @@ package {
 			//w = xmlData.@width;
 			//h = xmlData.@height;
 			
-			w = 40;
+			w = 100;
 			h = 40;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
@@ -71,6 +71,8 @@ package {
 			
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
 			mask = grid;
+			
+			setHitboxTo(grid);
 			
 			type = "level";
 			label = "defaultLevel"
@@ -101,10 +103,7 @@ package {
 			//loadScenery(_w);
 			loadPlayer(_w, _p);
 		}
-		
-		override public function update():void {
 
-		}
 		
 		private function generateTiles():void {
 			var gid:int;
@@ -115,7 +114,7 @@ package {
 			var pocketPoints:Array = [];
 			
 			//Fill the entire map in
-			//tiles.setRect(0, 0, w, h, 11);
+			//tiles.setRect(0, 0, w, h, 12);
 		
 			var column:int;
 			var row:int; 
@@ -171,7 +170,64 @@ package {
 //				}
 //			}
 			drawGround(groundDepth);
-			drawHill();
+			drawHill([new Point(5, 0), new Point(20, 10), new Point(25, 10)]);
+			drawIsland();
+			fixGround();
+		}
+		
+		private function fixGround():void {
+			for (var x:int = 0; x < w; x++){
+				for (var y:int = 0; y < h; y++){
+					if (tiles.getTile(x, y) == 12){
+						var index:int = fixTile(x, y);
+						tiles.setTile(x, y, index);
+					}
+				}
+			}
+		}
+		
+		private function fixTile(x:int, y:int):int {
+			//tile above is empty
+			if (tiles.getTile(x, y - 1) == 0) {
+				//tile to the left is also empty
+				if (tiles.getTile(x - 1, y) == 0) {
+					return 1;
+				//tile to the right is also empty
+				} else if (tiles.getTile(x + 1, y) == 0) {
+					return 3;
+				}
+				return 2;
+			}
+			
+			//tile below is empty
+			if (tiles.getTile(x, y + 1) == 0) {
+				//tile to the left is also empty
+				if (tiles.getTile(x - 1, y) == 0) {
+					return 21;
+					//tile to the right is also empty
+				} else if (tiles.getTile(x + 1, y) == 0) {
+					return 23;
+				}
+				return 22;
+			}
+			
+			//tile to the right is empty
+			if (tiles.getTile(x + 1, y) == 0) return 13;
+			
+			//tile to the left is empty
+			if (tiles.getTile(x - 1, y) == 0) return 11;
+			
+			//tile to the top-left is empty
+			if (tiles.getTile(x - 1, y - 1) == 0) return 4;
+
+			//tile to the top-right is empty
+			if (tiles.getTile(x + 1, y - 1) == 0) return 5;
+			
+			return 12;
+		}
+		
+		private function drawIsland():void {
+			tiles.setRect(5, 5, 5, 5, 12);	
 		}
 		
 		private function randomPoint():Point {
@@ -218,7 +274,7 @@ package {
 				
 				for (var w:int = 0; w < width; w++){
 					for (var h:int = 0; h < height; h++){
-						if (positive) tiles.setTile(po.x + w, po.y + h, 11)
+						if (positive) tiles.setTile(po.x + w, po.y + h, 12)
 						else tiles.clearTile(po.x + w, po.y + h);
 					}
 				}
@@ -239,29 +295,51 @@ package {
 		
 		private function fillSlope(start:Point, end:Point):void {
 			drawSlope(start, end);
-			var fillStart:Point = end;
+			var fillStart:Point;
+			//handle horizontal slopes
+			if (start.y == end.y) {
+				//return;
+			}
+			
+			//if the slope is vertical, no filling is needed.
+			if (start.x == end.x) return;
+			
+			if (start.y < end.y) fillStart = start;
+			else fillStart = end;
+			
 			var current:Point = new Point(fillStart.x, fillStart.y + 1);
+			
 			while (current.y < (h - groundDepth)){
 				while(tiles.getTile(current.x, current.y) == 0) {
-					tiles.setTile(current.x, current.y, 11);
-					if (start.x < end.x) current.x--;
+					tiles.setTile(current.x, current.y, 12);
+					if ((start.x < end.x && start.y > end.y) || start.y == end.y) current.x--;
 					else current.x++;
 				}
-				trace(current.x + ", " + current.y);
 				current.x = fillStart.x;
 				current.y++;
 			}
 			
 		}
 		
-		private function drawHill():void {
-			var start:Point = new Point(10, h - (groundDepth + 1));
-			var end:Point = new Point(20, h - (groundDepth + 1) - 20);
-			fillSlope(start, end);
-			
-			start = new Point(30, h - (groundDepth + 1));
-			end = new Point(21, h - (groundDepth + 1) - 20);
-			fillSlope(start, end);
+		private function drawHill(stops:Array):void {
+			var start:Point;
+			var end:Point;
+			for (var i:int = 0; i < stops.length - 1; i++){
+				/**
+				 * The current fill algorithm breaks if the x points are drawn on
+				 * top of each other, so after the first point they need to be offset
+				 * by 1
+				 */
+				var offsetX:int;
+				if (i == 0) offsetX = 0;
+				else offsetX = 1;
+				start = new Point(stops[i].x + offsetX, h - (groundDepth + 1) - stops[i].y);
+				end = new Point(stops[i + 1].x, h - (groundDepth + 1) - stops[i + 1].y)
+				fillSlope(start, end);
+			}
+			start = new Point(10, h - (groundDepth + 1));
+			end = new Point(20, h - (groundDepth + 1) - 5);
+
 		}
 		
 		private function loadTiles():void {

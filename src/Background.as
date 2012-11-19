@@ -25,24 +25,23 @@ package {
 		
 		private var tiles:Tilemap;
 		
-		public function Background(_xml:Class, _color:uint) {
+		public function Background(_color:uint) {
 			super();
 			
 			t = Settings.TILESIZE;
-			xml = _xml;
 			color = _color;
 			
-			init(xml);
+			init();
 			layer = 100;
 		}
 		
-		public function init(_xml:Class):void {
+		public function init():void {
 			//xml = _xml;
 			//rawData = new xml;
 			//dataString = rawData.readUTFBytes( rawData.length );
 			//xmlData = new XML(dataString);
 			
-			w = 40;// xmlData.@width;
+			w = 100;// xmlData.@width;
 			h = 40;//xmlData.@height;
 			
 			//tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);

@@ -77,10 +77,9 @@ package {
 			
 			//add(player);
 			currentLevel = new Level(this, player);
-			background = new Background(currentLevel.xml, 0xa29a8d);
+			background = new Background(0xa29a8d);
 			add(background);
 			add(currentLevel);
-			currentLevel.loadLevel(this, player);
 			
 			pauseMenu = new PauseMenu(this);
 			statsMenu = new StatsMenu(this);
@@ -100,7 +99,7 @@ package {
 			add(hud);
 			
 			//Camera
-			cam = new Camera();
+			cam = new Camera(currentLevel);
 			adjusted = false;
 			
 			//Sound
@@ -218,7 +217,7 @@ package {
 			}
 			
 			remove(currentLevel);
-			background.init(destinationLevel.xml);
+			background.init();
 			destinationLevel.loadLevel(this, player);
 			add(destinationLevel);
 			
