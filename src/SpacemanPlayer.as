@@ -64,6 +64,8 @@ package {
 		public var allocationPoints:int;
 		public var levelUpTime:Boolean;
 		
+		private var flying:Boolean;
+		
 		//Inventory
 		public static var inventory:Inventory;
 		public static var weaponInventory:WeaponInventory;
@@ -166,11 +168,14 @@ package {
 			isCrouched = false;
 			running = false;
 			
+			flying = true;
+			
 			//Input Definitions
 			Input.define("Left", Key.A);
 			Input.define("Right", Key.D);
 			Input.define("Jump", Key.W);
 			Input.define("Use", Key.E);
+			Input.define("Toggle Flying", Key.T);
 			
 			//Inventory
 			inventoryLength = 7;
@@ -202,7 +207,8 @@ package {
 			super.update();
 
 			updateGraphic();
-			updateMovement();
+			if (!flying) updateMovement();
+			else debugMovement();
 			debug();
 			checkForEnemyCollision();
 			inventoryButtons();
@@ -213,13 +219,18 @@ package {
 			if (damageTimer > 0) damageTimer--;
 
 			//Interaction
-			if (Input.pressed("Use")) onUse();	
+			if (Input.pressed("Use")) onUse();
+			if (Input.pressed("Toggle Flying")) toggleFlying();
 		}
 		
 		override protected function updateCollision():void {
 			//DEBUG: No collisiton detection
-			x += velocity.x * FP.elapsed;
-			y += velocity.y * FP.elapsed;
+			if (!flying) {
+				super.updateCollision();
+			} else {
+				x += velocity.x * FP.elapsed;
+				y += velocity.y * FP.elapsed;
+			}
 		}
 		
 		public function inventoryButtons():void {
@@ -315,6 +326,17 @@ package {
 			}
 		}
 		
+		private function toggleFlying():void {
+			if (!flying) {
+				velocity.x = 0;
+				velocity.y = 0;
+				xSpeed = 0;
+				flying = true;
+			} else {
+				flying = false;
+			}
+		}
+		
 		protected function checkForEnemyCollision():void {
 			var enemy:Enemy = collide("enemy", x, y) as Enemy;
 			if (enemy) getHurt(10);
@@ -396,7 +418,33 @@ package {
 			
 		override protected function updateMovement():void {
 			
-			//super.updateMovement();
+			if (!flying) super.updateMovement();
+			
+			var xInput:int = 0;
+			var yInput:int = 0;
+			
+			//WSAD: MOVEMENT
+			if (Input.check("Left")) {
+				xInput -= 1;
+				if(!Input.check("Right")) running = true;
+			} else {
+				running = false;
+			}
+			if (Input.check("Right")) {
+				xInput += 1;
+				if(!Input.check("Left")) running = true;
+			} else {
+				running = false;
+			}
+			
+			//Jump = W
+			if (Input.pressed("Jump")) jump();
+
+			velocity.x = player_speed * xInput;
+
+		}
+		
+		private function debugMovement():void {
 			
 			var xInput:int = 0;
 			var yInput:int = 0;
@@ -422,13 +470,10 @@ package {
 			if (Input.check(Key.S)) {
 				yInput += 1;
 			}
-			
-			//Jump = W
-			//if (Input.pressed("Jump")) jump();
 
+			
 			velocity.y = player_speed * yInput; //This isn't normally here
 			velocity.x = player_speed * xInput;
-
 		}
 		
 		override protected function land():void {

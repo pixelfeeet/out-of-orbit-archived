@@ -72,8 +72,6 @@ package {
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
 			mask = grid;
 			
-			setHitboxTo(grid);
-			
 			type = "level";
 			label = "defaultLevel"
 			
@@ -173,6 +171,9 @@ package {
 			generateHill()
 			generateIslands();
 			fixGround();
+			setGrid();
+			
+			setHitboxTo(grid);
 		}
 		
 		private function fixGround():void {
@@ -383,6 +384,7 @@ package {
 		private function loadTiles():void {
 
 			generateTiles();
+			setGrid();
 //			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;
 //			
 //			var column:int;
@@ -401,19 +403,22 @@ package {
 //				}
 //			}
 //			
-//			//set grid
-//			gid = 0;
-//			for(row = 0; row < h; row ++){
-//				for(column = 0; column < w; column ++){
-//					if (solidList[dataList[gid] - 1] != null &&
-//						solidList[dataList[gid] - 1] == 1) {
-//						grid.setTile(column, row, true);
-//					} else {
-//						grid.setTile(column, row, false);
-//					}
-//					gid++;
-//				}
-//			}
+
+		}
+		
+		private function setGrid():void {
+			var gid:int = 0;
+			for(var row:int = 0; row < h; row++){
+				for(var column:int = 0; column < w; column++){
+					if (tiles.getTile(column, row) != 0) {
+						grid.setTile(column, row, true);
+					} else {
+						grid.setTile(column, row, false);
+					}
+					trace(tiles.getTile(column, row))
+					gid++;
+				}
+			}
 		}
 //		
 //		public function loadTileProperties():void {
