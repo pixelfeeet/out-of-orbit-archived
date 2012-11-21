@@ -62,7 +62,7 @@ package {
 			//w = xmlData.@width;
 			//h = xmlData.@height;
 			
-			w = 50;
+			w = 70;
 			h = 40;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
@@ -123,28 +123,28 @@ package {
 
 			//for (var j:int = 0; j < pockets; j++) {
 
-			while (pocketPoints.length < pockets) {
-				var p:Point;
-				if (pocketPoints.length == 0) {
-					p = randomPoint();
-					pocketPoints.push(p);
-				}
-				p = randomPoint();
-				var isolated:Boolean = true;
-				iLoop: for (var i:int = 0; i < pocketPoints.length; i++) {
-
-					if (Math.abs(pocketPoints[i].x - p.x) > pocketWidth + 1
-						|| Math.abs(pocketPoints[i].y - p.y) > pocketWidth + 1) {
-						isolated = true;
-					} else {
-						isolated = false;
-						break iLoop;
-					}
-				}
-				if (isolated) pocketPoints.push(p);
-				//trace("isolated: " + isolated);
-				//trace("length: " + pocketPoints.length);
-			}
+//			while (pocketPoints.length < pockets) {
+//				var p:Point;
+//				if (pocketPoints.length == 0) {
+//					p = randomPoint();
+//					pocketPoints.push(p);
+//				}
+//				p = randomPoint();
+//				var isolated:Boolean = true;
+//				iLoop: for (var i:int = 0; i < pocketPoints.length; i++) {
+//
+//					if (Math.abs(pocketPoints[i].x - p.x) > pocketWidth + 1
+//						|| Math.abs(pocketPoints[i].y - p.y) > pocketWidth + 1) {
+//						isolated = true;
+//					} else {
+//						isolated = false;
+//						break iLoop;
+//					}
+//				}
+//				if (isolated) pocketPoints.push(p);
+//				//trace("isolated: " + isolated);
+//				//trace("length: " + pocketPoints.length);
+//			}
 		
 			//drawPocket(pockets, pocketPoints, pocketWidth);
 			
@@ -170,8 +170,8 @@ package {
 //				}
 //			}
 			drawGround(groundDepth);
-			drawHill([new Point(5, 0), new Point(20, 10), new Point(25, 10)]);
-			drawIsland();
+			generateHill()
+			generateIslands();
 			fixGround();
 		}
 		
@@ -223,18 +223,34 @@ package {
 			//tile to the top-right is empty
 			if (tiles.getTile(x + 1, y - 1) == 0) return 5;
 			
+			//tile to the bottom-left is empty
+			if (tiles.getTile(x - 1, y + 1) == 0) return 14;
+			
+			//tile to the bottom-right is empty
+			if (tiles.getTile(x + 1, y + 1) == 0) return 15;
+				
 			return 12;
 		}
 		
-		private function drawIsland():void {
-			var minWidth:int = 8;
-			var minHeight:int = 8;
+		//TODO: add overlapping/not overlapping logic,
+		//optional parameters for different shapes -- isoceles etc.
+		private function drawIsland(minSize:int):void {
+			var minWidth:int = minSize;
+			var minHeight:int = minSize;
 			
 			var islandWidth:int = Math.round(minWidth + (Math.random() * 5));
 			var islandHeight:int = Math.round(minHeight + (Math.random() * 5));
 			var x:int = Math.floor((Math.random() * w) - islandWidth);
 			var y:int = Math.floor((Math.random() * h) - islandHeight);
 			tiles.setRect(x, y, islandWidth, islandHeight, 12);
+		}
+		
+		private function generateIslands():void {
+			var islands:int = 6;
+			var minSize:int = 3;
+			for (var i:int = 0; i < islands; i++) {
+				drawIsland(minSize);
+			}
 		}
 		
 		private function randomPoint():Point {
@@ -261,8 +277,8 @@ package {
 			}
 		}
 		
-		private function drawLine(startPoint:Point, endPoint:Point, options:Object = null):void {
-			var currentPoint:Point = new Point(startPoint.x, startPoint.y);
+		private function drawLine(start:Point, end:Point, options:Object = null):void {
+			var currentPoint:Point = new Point(start.x, start.y);
 			var width:int = 1;
 			var height:int = 1;
 			var positive:Boolean = false; //true = setTile, false = clearTile
@@ -276,7 +292,7 @@ package {
 			//trace("options: " + options)
 			//trace(width + ", " + height + ", postive = " + positive)
 			
-			var points:Array = getLine(startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+			var points:Array = getLine(start.x, end.x, start.y, end.y);
 			for each(var po:Point in points){
 				
 				for (var w:int = 0; w < width; w++){
@@ -301,29 +317,15 @@ package {
 		}
 		
 		private function fillSlope(start:Point, end:Point):void {
-			drawSlope(start, end);
-			var fillStart:Point;
-			//handle horizontal slopes
-			if (start.y == end.y) {
-				//return;
-			}
+			var current:Point = new Point(start.x, start.y);
 			
-			//if the slope is vertical, no filling is needed.
-			if (start.x == end.x) return;
-			
-			if (start.y < end.y) fillStart = start;
-			else fillStart = end;
-			
-			var current:Point = new Point(fillStart.x, fillStart.y + 1);
-			
-			while (current.y < (h - groundDepth)){
-				while(tiles.getTile(current.x, current.y) == 0) {
-					tiles.setTile(current.x, current.y, 12);
-					if ((start.x < end.x && start.y > end.y) || start.y == end.y) current.x--;
-					else current.x++;
+			var points:Array = getLine(start.x, end.x, start.y, end.y);
+			for each(var po:Point in points){
+				var c:Point = po;
+				while(c.y < (h - (groundDepth))) {
+					tiles.setTile(c.x, c.y, 12);
+					c.y++;
 				}
-				current.x = fillStart.x;
-				current.y++;
 			}
 			
 		}
@@ -344,9 +346,38 @@ package {
 				end = new Point(stops[i + 1].x, h - (groundDepth + 1) - stops[i + 1].y)
 				fillSlope(start, end);
 			}
-			start = new Point(10, h - (groundDepth + 1));
-			end = new Point(20, h - (groundDepth + 1) - 5);
+			//start = new Point(10, h - (groundDepth + 1));
+			//end = new Point(20, h - (groundDepth + 1) - 5);
 
+		}
+		
+		private function generateHill():void {
+			//TODO: base values off of cumulative hill width rather than
+			//individual segment width.
+			var hillStopsNum:int = 10;
+			var hillStops:Array = [] 
+			var segmentWidth:int;
+			var maxSegmentWidth:int = 5;
+			var minSegmentWidth:int = 2;
+			var peak:int = 10;
+			var leftoverHeight:int = peak;
+			var startX:int = 6;
+			var startY:int = 0;
+			
+			var x:int = startX;
+			var y:int = startY;
+			hillStops.push(new Point(x, y));
+			for (var i:int = 0; i < hillStopsNum; i++) {
+				
+				segmentWidth = Math.ceil((Math.random() * maxSegmentWidth) + minSegmentWidth);
+				x += segmentWidth;
+				
+				if (i != hillStopsNum - 1) y  = Math.ceil(Math.random() * peak);
+				else y = 0;
+					
+				hillStops.push(new Point(x, y));
+			}
+			drawHill(hillStops);
 		}
 		
 		private function loadTiles():void {
