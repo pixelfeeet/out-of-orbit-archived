@@ -16,6 +16,8 @@ package {
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
 	import net.flashpunk.tweens.misc.VarTween;
+	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 	
 	import utilities.Settings;
 	
@@ -51,6 +53,8 @@ package {
 		
 		private var groundDepth:int;
 		
+		private var jungleTiles:Object;
+		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
 
@@ -80,6 +84,18 @@ package {
 			interactionItemList = [];
 			enemiesList = [];
 			NPClist = [];
+			
+			jungleTiles = {"ground": {
+				"tl": 1,
+				"tc": 2,
+				"tr": 3,
+				"cl": 11,
+				"cc": 12,
+				"cr": 13,
+				"bl": 21,
+				"bc": 22,
+				"br": 23
+			}};
 			
 			//loadTileProperties();
 			//loadTiles();
@@ -176,6 +192,35 @@ package {
 			setHitboxTo(grid);
 		}
 		
+		override public function update():void {
+			if (Input.mousePressed) click();	
+		}
+		
+		private function click():void {
+			var x:int = Math.floor((FP.camera.x + Input.mouseX) / Settings.TILESIZE);
+			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE)
+			var blastRadius:int = 2;
+			if (Input.check(Key.SHIFT)) {
+				removeTiles(x, y, blastRadius);
+			} else{
+				if (!collide("Player", x, y)) {
+					addTiles(x, y, blastRadius);
+				}
+			}
+		}
+		
+		private function removeTiles(x:int, y:int, blastRadius:int):void {
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
+			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, false)
+			fixGround();
+		}
+		
+		private function addTiles(x:int, y:int, blastRadius:int):void {
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 12);
+			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, true)
+			fixGround();
+		}
+		
 		private function fixGround():void {
 			for (var x:int = 0; x < w; x++){
 				for (var y:int = 0; y < h; y++){
@@ -192,12 +237,12 @@ package {
 			if (tiles.getTile(x, y - 1) == 0) {
 				//tile to the left is also empty
 				if (tiles.getTile(x - 1, y) == 0) {
-					return 1;
+					return jungleTiles["ground"]["tl"];
 				//tile to the right is also empty
 				} else if (tiles.getTile(x + 1, y) == 0) {
-					return 3;
+					return jungleTiles["ground"]["tr"];
 				}
-				return 2;
+				return jungleTiles["ground"]["tc"];
 			}
 			
 			//tile below is empty
@@ -247,7 +292,7 @@ package {
 		}
 		
 		private function generateIslands():void {
-			var islands:int = 6;
+			var islands:int = 26;
 			var minSize:int = 3;
 			for (var i:int = 0; i < islands; i++) {
 				drawIsland(minSize);

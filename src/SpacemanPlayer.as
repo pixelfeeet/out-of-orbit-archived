@@ -64,7 +64,10 @@ package {
 		public var allocationPoints:int;
 		public var levelUpTime:Boolean;
 		
+		//debug movement
 		private var flying:Boolean;
+		//jetpack movement
+		private var jetpacking:Boolean;
 		
 		//Inventory
 		public static var inventory:Inventory;
@@ -97,6 +100,11 @@ package {
 		//World
 		private var w:GameWorld;
 		
+		public var jumpHeight:int;
+		private var maxJump:int;
+		private var jumpRecharge:int;
+		private var jumpRechargeTimer:int;
+		
 		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
 			
 			//Essentials
@@ -115,6 +123,12 @@ package {
 			PLAYER_SPEED = 840;
 			player_speed = PLAYER_SPEED;
 			JUMP = 580;
+			
+			maxJump = 100;
+			jumpHeight = maxJump;
+			jumpRecharge = 5;
+			jumpRechargeTimer = jumpRecharge; 
+			
 			
 			//Stats
 			strength = 10;
@@ -169,6 +183,7 @@ package {
 			running = false;
 			
 			flying = true;
+			jetpacking = false;
 			
 			//Input Definitions
 			Input.define("Left", Key.A);
@@ -332,8 +347,10 @@ package {
 				velocity.y = 0;
 				xSpeed = 0;
 				flying = true;
+				player_speed = 840;
 			} else {
 				flying = false;
+				player_speed = 400;
 			}
 		}
 		
@@ -438,7 +455,7 @@ package {
 			}
 			
 			//Jump = W
-			if (Input.pressed("Jump")) jump();
+			jump();
 
 			velocity.x = player_speed * xInput;
 
@@ -505,11 +522,31 @@ package {
 		}
 		
 		override protected function jump():void {
-			if (onGround){
-				velocity.y = -JUMP;
-				onGround = false;
-				jumpSound.play();
+			if (Input.check("Jump")) {
+				if (Input.check(Key.SHIFT)) {
+					if (jumpHeight >= 0) {
+						jetpacking = true;
+						jumpHeight--;
+						velocity.y = -JUMP;
+					}
+				} else {
+					if (onGround){
+						velocity.y = -JUMP;
+						onGround = false;
+						jumpSound.play();
+					}
+				}
+			} if (jetpacking) {
+				if (jumpRechargeTimer <= 0) { 
+					if (jumpHeight < maxJump) {
+						jumpHeight++;
+					}
+					jumpRechargeTimer = jumpRecharge;
+				} else {
+					jumpRechargeTimer--;
+				}
 			}
+			
 		}
 		
 		//tentative idea: getHurt includes enemy-inflicted damage-

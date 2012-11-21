@@ -1,7 +1,7 @@
 package ui {
 
-	import Inventory.InventoryItem;
 	import Inventory.InventoryBox;
+	import Inventory.InventoryItem;
 	
 	import flash.display.Shape;
 	import flash.geom.Point;
@@ -25,6 +25,7 @@ package ui {
 		private var levelHUD:Text;
 		private var bulletsHUD:Text;
 		private var scrapsHUD:Text;
+		private var jumpHUD:Text;
 		
 		private var player:SpacemanPlayer;
 		 
@@ -78,7 +79,9 @@ package ui {
 			scrapsHUD.color = 0x6b6b6b;
 			scrapsHUD.size = 22;
 			
-			display = new Graphiclist(healthHUD, hungerHUD, expHUD, levelHUD, bulletsHUD, scrapsHUD);
+			jumpHUD = new Text("Fuel: " + player.jumpHeight, 10, 146);
+			
+			display = new Graphiclist(healthHUD, hungerHUD, expHUD, levelHUD, bulletsHUD, scrapsHUD, jumpHUD);
 			
 			inventoryDisplay = new Array(player.inventoryLength);
 			inventoryBoxesInitiated = false;
@@ -123,6 +126,7 @@ package ui {
 			levelHUD.text = "Level: " + player.getLevel();
 			bulletsHUD.text = "Ammo: " + player.weapon.getAmmo();
 			scrapsHUD.text = "Scraps: " + player.scraps;
+			jumpHUD.text = "Jump: " + player.jumpHeight;
 		}
 		
 		private function initInventoryBoxes():void {
