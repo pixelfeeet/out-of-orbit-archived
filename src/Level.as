@@ -57,14 +57,6 @@ package {
 		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
-
-			//xml = _xml;
-			//rawData = new xml;
-			//dataString = rawData.readUTFBytes(rawData.length);
-			//xmlData = new XML(dataString);
-			
-			//w = xmlData.@width;
-			//h = xmlData.@height;
 			
 			w = 70;
 			h = 40;
@@ -86,15 +78,15 @@ package {
 			NPClist = [];
 			
 			jungleTiles = {"ground": {
-				"tl": 1,
-				"tc": 2,
-				"tr": 3,
-				"cl": 11,
-				"cc": 12,
-				"cr": 13,
-				"bl": 21,
-				"bc": 22,
-				"br": 23
+				"topLeft": 1,
+				"topMid": 2,
+				"topRight": 3,
+				"midLeft": 11,
+				"middle": 12,
+				"midRight": 13,
+				"botLeft": 21,
+				"botMid": 22,
+				"botRight": 23
 			}};
 			
 			//loadTileProperties();
@@ -105,6 +97,8 @@ package {
 			groundDepth = 3;
 			
 			generateTiles();
+			
+			trace(FP.randomSeed);
 		}
 		
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
@@ -161,30 +155,9 @@ package {
 //			}
 		
 			//drawPocket(pockets, pocketPoints, pocketWidth);
-			
-			//Draw tunnel
-//			for (var line:int = 0; line < pockets - 1; line++) {
-//				drawLine(pocketPoints[line], pocketPoints[line + 1]);
-//			}
-			
-			//Horizontal tunnel
-//			var horzTunnels:int = 5;
-//			var horzTunnelLen:int = 20;
-//			for (var t:int = 0; t < horzTunnels; t++) {
-//				var start:Point = randomPoint();
-//				var end:Point = new Point(start.x + horzTunnelLen, start.y);
-//				drawLine(start, end, {"width": 5, "height": 5, "positive": true});
-//			}
 
-//			for (var f:int = 0; f < horzTunnels; f++){
-//				var start:Point = randomPoint();
-//				for (var s:int = 0; s < horzTunnelLen; s++){
-//					tiles.clearTile(start.x + s, start.y);
-//					tiles.clearTile(start.x + s, start.y + 1);
-//				}
-//			}
 			drawGround(groundDepth);
-			generateHill()
+			generateHills()
 			generateIslands();
 			fixGround();
 			setGrid();
@@ -207,6 +180,7 @@ package {
 					addTiles(x, y, blastRadius);
 				}
 			}
+			fixGround();
 		}
 		
 		private function removeTiles(x:int, y:int, blastRadius:int):void {
@@ -233,35 +207,36 @@ package {
 		}
 		
 		private function fixTile(x:int, y:int):int {
+			var ts:Object = jungleTiles["ground"];
 			//tile above is empty
 			if (tiles.getTile(x, y - 1) == 0) {
 				//tile to the left is also empty
 				if (tiles.getTile(x - 1, y) == 0) {
-					return jungleTiles["ground"]["tl"];
+					return ts["topLeft"];
 				//tile to the right is also empty
 				} else if (tiles.getTile(x + 1, y) == 0) {
-					return jungleTiles["ground"]["tr"];
+					return ts["topRight"];
 				}
-				return jungleTiles["ground"]["tc"];
+				return ts["topMid"];
 			}
 			
 			//tile below is empty
 			if (tiles.getTile(x, y + 1) == 0) {
 				//tile to the left is also empty
 				if (tiles.getTile(x - 1, y) == 0) {
-					return 21;
+					return ts["botLeft"];
 					//tile to the right is also empty
 				} else if (tiles.getTile(x + 1, y) == 0) {
-					return 23;
+					return ts["botRight"];
 				}
-				return 22;
+				return ts["botMid"];
 			}
 			
 			//tile to the right is empty
-			if (tiles.getTile(x + 1, y) == 0) return 13;
+			if (tiles.getTile(x + 1, y) == 0) return ts["midRight"];
 			
 			//tile to the left is empty
-			if (tiles.getTile(x - 1, y) == 0) return 11;
+			if (tiles.getTile(x - 1, y) == 0) return ts["midLeft"];
 			
 			//tile to the top-left is empty
 			if (tiles.getTile(x - 1, y - 1) == 0) return 4;
@@ -275,33 +250,57 @@ package {
 			//tile to the bottom-right is empty
 			if (tiles.getTile(x + 1, y + 1) == 0) return 15;
 				
-			return 12;
+			return ts["middle"];
 		}
 		
 		//TODO: add overlapping/not overlapping logic,
 		//optional parameters for different shapes -- isoceles etc.
 		private function drawIsland(minSize:int):void {
-			var minWidth:int = minSize;
-			var minHeight:int = minSize;
+			var isolated:Boolean = false;
+			var border:int = 1;
+			var tries:int = 0;
+			var maxTries:int = 100;
 			
-			var islandWidth:int = Math.round(minWidth + (Math.random() * 5));
-			var islandHeight:int = Math.round(minHeight + (Math.random() * 5));
-			var x:int = Math.floor((Math.random() * w) - islandWidth);
-			var y:int = Math.floor((Math.random() * h) - islandHeight);
+			//Ensure no overlap
+			while (!isolated) {
+				var minWidth:int = minSize;
+				var minHeight:int = minSize;
+				
+				var islandWidth:int = Math.round(minWidth + (FP.random * 5));
+				var islandHeight:int = Math.round(minHeight + (FP.random * 5));
+				var x:int = Math.floor((FP.random * w) - islandWidth);
+				var y:int = Math.floor((FP.random * h) - islandHeight);
+				
+				var flag:Boolean = true;
+				outsideLoop: for (var i:int = -border; i < islandWidth + border; i++) {
+					for (var j:int = -border; j < islandHeight + border; j++){
+						if (tiles.getTile(x + i, y + j) == 0) {
+							flag = true
+						} else {
+							flag = false;
+							break outsideLoop;
+						}
+					}
+				}
+				isolated = flag;
+				
+				tries++
+				if (tries >= maxTries) break;
+			}
 			tiles.setRect(x, y, islandWidth, islandHeight, 12);
 		}
 		
 		private function generateIslands():void {
-			var islands:int = 26;
-			var minSize:int = 3;
+			var islands:int = 36;
+			var minSize:int = 2;
 			for (var i:int = 0; i < islands; i++) {
 				drawIsland(minSize);
 			}
 		}
 		
 		private function randomPoint():Point {
-			var x:int = Math.ceil(Math.random() * w);
-			var y:int = Math.ceil(Math.random() * h);
+			var x:int = Math.ceil(FP.random * w);
+			var y:int = Math.ceil(FP.random * h);
 			return new Point(x, y);
 		}
 		
@@ -334,9 +333,6 @@ package {
 				if (options["height"]) height = options["height"];
 				if (options["positive"]) positive = options["positive"];
 			}
-			
-			//trace("options: " + options)
-			//trace(width + ", " + height + ", postive = " + positive)
 			
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
 			for each(var po:Point in points){
@@ -392,17 +388,15 @@ package {
 				end = new Point(stops[i + 1].x, h - (groundDepth + 1) - stops[i + 1].y)
 				fillSlope(start, end);
 			}
-			//start = new Point(10, h - (groundDepth + 1));
-			//end = new Point(20, h - (groundDepth + 1) - 5);
 
 		}
 		
-		private function generateHill():void {
+		private function generateHills():void {
 			//TODO: base values off of cumulative hill width rather than
 			//individual segment width.
 			var hillStopsNum:int = 10;
 			var hillStops:Array = [] 
-			var segmentWidth:int;
+			var segmentWidth:int = w / hillStopsNum;
 			var maxSegmentWidth:int = 5;
 			var minSegmentWidth:int = 2;
 			var peak:int = 10;
@@ -415,10 +409,10 @@ package {
 			hillStops.push(new Point(x, y));
 			for (var i:int = 0; i < hillStopsNum; i++) {
 				
-				segmentWidth = Math.ceil((Math.random() * maxSegmentWidth) + minSegmentWidth);
+				//segmentWidth = Math.ceil((FP.random * maxSegmentWidth) + minSegmentWidth);
 				x += segmentWidth;
 				
-				if (i != hillStopsNum - 1) y  = Math.ceil(Math.random() * peak);
+				if (i != hillStopsNum - 1) y  = Math.ceil(FP.random * peak);
 				else y = 0;
 					
 				hillStops.push(new Point(x, y));
@@ -430,24 +424,6 @@ package {
 
 			generateTiles();
 			setGrid();
-//			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;
-//			
-//			var column:int;
-//			var row:int;
-//			var gid:int;
-//			
-//			//set tiles
-//			gid = 0;
-//			for(row = 0; row < h; row ++){
-//				for(column = 0; column < w; column ++){
-//					var index:int = dataList[gid] - 1;
-//					if (index >= 0) {
-//						tiles.setTile(column, row, index);
-//					}
-//					gid++;
-//				}
-//			}
-//			
 
 		}
 		
@@ -460,104 +436,12 @@ package {
 					} else {
 						grid.setTile(column, row, false);
 					}
-					trace(tiles.getTile(column, row))
+
 					gid++;
 				}
 			}
 		}
-//		
-//		public function loadTileProperties():void {
-//			var dataList:XMLList = xmlData.tileset.(@name == "jungle_tileset").tile;
-//			for (var i:int = 0; i < dataList.length(); i++){
-//				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
-//			}
-//		}
-//		
-//		public function loadScenery(_w:World):void {
-//			loadWScenery(_w, "backgroundScenery", false);
-//			loadWScenery(_w, "frontScenery", true);
-//		}
-//		
-//		public function loadWScenery(_w:World, _name:String, inFront:Boolean):void {
-//			var dataList:XMLList = xmlData.objectgroup.(@name==_name).object;
-//			for (var i:int = 0; i < dataList.length(); i++){
-//				var e:InteractionItem;
-//				for (var j:int = 0; j < GameWorld.scenery.list.length; j++){
-//					if (GameWorld.scenery.list[j].label == dataList[i].@type){
-//						e = GameWorld.scenery.list[j];
-//					}
-//				}
-//				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-//				var ii:InteractionItem = new InteractionItem();
-//				ii = GameWorld.scenery.copyItem(e, ePos);
-//				if (inFront) ii.layer = -100
-//				else ii.layer = 100;
-//				interactionItemList.push(ii);
-//				_w.add(ii);
-//			}	
-//		}
-//		
-//		public function loadEnemies(_w:World):void {
-//			if (enemiesList.length == 0){
-//				var dataList:XMLList = xmlData.objectgroup.(@name=="enemies").object;
-//				for (var i:int = 0; i < dataList.length(); i++){
-//					
-//					var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-//					var e:Enemy = new Enemy(ePos, 60);
-//					enemiesList.push(e);
-//					_w.add(e);
-//				}
-//			} else {
-//				for (var j:int = 0; j < enemiesList.length; j++){
-//					if (enemiesList[j].eliminated == false) {
-//						_w.add(enemiesList[j]);
-//					}
-//				}
-//			}
-//		}
-//		
-//		public function loadNPCs(_w:World):void {
-//			if (NPClist.length == 0){
-//				var dataList:XMLList = xmlData.objectgroup.(@name=="NPCs").object;
-//				for (var i:int = 0; i < dataList.length(); i++){
-//					var e:Entity;
-//					var list:Array = GameWorld.npcs.list;
-//					for (var j:int = 0; j < list.length; j++){
-//						if (dataList[i].@type == list[j].label) {
-//							e = new list[j]();
-//							e.x = dataList[i].@x
-//							e.y = dataList[i].@y;
-//							break;
-//						}
-//					}
-//					NPClist.push(e);
-//					_w.add(e);
-//				}
-//			} else {
-//				for (var k:int = 0; k < NPClist.length; k++){
-//					if (NPClist[k].eliminated == false) {
-//						_w.add(NPClist[k]);
-//					}
-//				}
-//			}
-//		}
-//		
-//		public function loadInteractionItems(_w:World):void {
-//			var dataList:XMLList = xmlData.objectgroup.(@name=="interactionitems").object;
-//			for (var i:int = 0; i < dataList.length(); i++){
-//				var e:InteractionItem;
-//				for (var j:int = 0; j < GameWorld.interactionItems.list.length; j++){
-//					if (GameWorld.interactionItems.list[j].label == dataList[i].@type){
-//						e = GameWorld.interactionItems.list[j];
-//					}
-//				}
-//				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
-//				var ii:InteractionItem = new InteractionItem();
-//				ii = GameWorld.interactionItems.copyItem(e, ePos);
-//				interactionItemList.push(ii);
-//				_w.add(ii);
-//			}
-//		}
+
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
 			//var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
@@ -567,24 +451,6 @@ package {
 			_player.y = 30;
 			_w.add(_player);
 		}
-		
-//		public function loadDoors(_w:GameWorld, _player:SpacemanPlayer):void{
-//			var dataList:XMLList = xmlData.objectgroup.(@name=="doors").object;
-//			for (var i:int = 0; i < dataList.length(); i ++){
-//				var j:XML = dataList[i];
-//				var d:Door = new Door(new Point(j.@x, j.@y), _w, this, _player, j.@height, j.@width);
-//				d.label = j.@name;
-//				d.destinationLevelLabel = j.properties.property.(@name=="destinationLevel").@value;
-//				d.destinationDoor = j.properties.property.(@name=="destinationDoor").@value;
-//				if (j.properties.property.(@name=="playerSpawnsToLeft").@value == "true")
-//					d.playerSpawnsToLeft = true;
-//				else d.playerSpawnsToLeft = false;
-//				
-//				doorList.push(d);
-//				_w.add(d);
-//			}
-//			doorsLoaded = true;
-//		}
 		
 		
 		//Based on Bresenham's Line Algorithm:
