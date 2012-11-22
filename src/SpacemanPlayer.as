@@ -46,6 +46,15 @@ package {
 		private var display:Graphiclist;
 		private var legsMap:Spritemap;
 		
+		private var speech:Text;
+		private var speechTimer:int;
+		private var speechLength:int;
+		
+		private var informedHunger:Boolean;
+		private var informedExtremeHunger:Boolean;
+		private var informedHealth:Boolean;
+		private var informedExtremeHealth:Boolean;
+		
 		//Stats
 		public var strength:int;
 		public var intelligence:int;
@@ -128,8 +137,7 @@ package {
 			jumpHeight = maxJump;
 			jumpRecharge = 5;
 			jumpRechargeTimer = jumpRecharge; 
-			
-			
+				
 			//Stats
 			strength = 10;
 			intelligence = 10;
@@ -175,7 +183,17 @@ package {
 			head.x = 26;
 			head.y = 14;
 			
-			display = new Graphiclist(weaponImg, legsMap, torso, head);
+			speech = new Text("Hello");
+			speech.x = x + torso.width;
+			speech.y = y - 10;
+			speechLength = 60;
+			speechTimer = 0;
+			informedHunger = false;
+			informedExtremeHunger = false;
+			informedHealth = false;
+			informedExtremeHealth = false;
+			
+			display = new Graphiclist(weaponImg, legsMap, torso, head, speech);
 			graphic = display;
 			
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
@@ -227,6 +245,7 @@ package {
 			debug();
 			checkForEnemyCollision();
 			inventoryButtons();
+			updateSpeech();
 			
 			//combat
 			shoot();
@@ -236,6 +255,20 @@ package {
 			//Interaction
 			if (Input.pressed("Use")) onUse();
 			if (Input.pressed("Toggle Flying")) toggleFlying();
+		}
+		
+		private function updateSpeech():void {
+			if (speechTimer > 0) speechTimer--;
+			if (speechTimer <= 0 && speech.text != "") onFinishedSpeech();
+		}
+		
+		private function setSpeech(str:String):void {
+			speech.text = str;
+			speechTimer = speechLength;
+		}
+		
+		private function onFinishedSpeech():void {
+			speech.text = "";
 		}
 		
 		override protected function updateCollision():void {
@@ -373,7 +406,8 @@ package {
 			//Calculating angles of head and weapon
 			if (facingLeft) { 
 				for (var i:int = 0; i < display.count; i++) {
-					Image(display.children[i]).flipped = true;
+					if (i != display.count - 1) //speech
+						Image(display.children[i]).flipped = true;
 				}
 				head.originX = 12;
 				head.originY = 12;
@@ -558,7 +592,41 @@ package {
 				injurySound.play();
 				damageTimer = 60;
 			}
+	
 			//TODO: animation
+		}
+		
+		override public function changeHealth(h:int):void {
+			super.changeHealth(h);
+			
+			if (health <= 30 && !informedHealth) {
+				setSpeech("I'm very hurt.")
+				informedHealth = true;
+			}
+			
+			if (health <= 10 && !informedExtremeHealth) {
+				setSpeech("I'm dying.")
+				informedExtremeHealth = true;
+			}
+			
+			if (health > 30) informedHealth = false;
+			if (health > 10) informedExtremeHealth = false;
+		}
+		
+		override public function changeHunger(h:int):void {
+			super.changeHunger(h);
+			if (hunger <= 30 && !informedHunger) {
+				setSpeech("I'm getting very hungry.")
+				informedHunger = true;
+			}
+			
+			if (hunger <= 10 && !informedExtremeHunger) {
+				setSpeech("I'm getting extremely hungry.")
+				informedExtremeHunger = true;
+			}
+			
+			if (hunger > 30) informedHunger = false;
+			if (hunger > 10) informedExtremeHunger = false;
 		}
 		
 		override protected function calcFallDamage(_v:int):void {
