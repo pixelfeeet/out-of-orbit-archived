@@ -33,8 +33,7 @@ package {
 	public class SpacemanPlayer extends Character {
 		
 		public var player_speed:int = PLAYER_SPEED;
-		
-		private var isCrouched:Boolean;
+
 		private var running:Boolean;
 		
 		private var standingTorso:Image;
@@ -54,6 +53,7 @@ package {
 		private var informedExtremeHunger:Boolean;
 		private var informedHealth:Boolean;
 		private var informedExtremeHealth:Boolean;
+		private var informedLevelUp:Boolean;
 		
 		//Stats
 		public var strength:int;
@@ -197,7 +197,6 @@ package {
 			graphic = display;
 			
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
-			isCrouched = false;
 			running = false;
 			
 			flying = true;
@@ -600,7 +599,7 @@ package {
 			super.changeHealth(h);
 			
 			if (health <= 30 && !informedHealth) {
-				setSpeech("I'm very hurt.")
+				setSpeech("My health is low.")
 				informedHealth = true;
 			}
 			
@@ -621,7 +620,7 @@ package {
 			}
 			
 			if (hunger <= 10 && !informedExtremeHunger) {
-				setSpeech("I'm getting extremely hungry.")
+				setSpeech("I'm extremely hungry.")
 				informedExtremeHunger = true;
 			}
 			
@@ -659,6 +658,7 @@ package {
 		}
 		
 		private function levelUp():void {
+			setSpeech("Level up!")
 			level++;
 			allocationPoints += 5;
 			levelUpTime = true;

@@ -15,7 +15,18 @@ package
 			
 			//w = xmlData.@width;
 			//h = xmlData.@height;
+			//loadTileProperties();
+			//loadTiles()
 		}
+		
+		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
+//			var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
+//			_player.x = dataList.@x;
+//			_player.y = dataList.@y;
+//
+//			_w.add(_player);
+		}
+		
 		
 		private function loadTiles():void {
 			

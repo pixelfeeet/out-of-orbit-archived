@@ -58,7 +58,7 @@ package {
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
 			
-			w = 70;
+			w = 120;
 			h = 40;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
@@ -86,11 +86,13 @@ package {
 				"midRight": 13,
 				"botLeft": 21,
 				"botMid": 22,
-				"botRight": 23
+				"botRight": 23,
+				"topLeftTuft": 4,
+				"topRightTuft": 5,
+				"bottomLeftTuft": 14,
+				"bottomRightTuft": 15
 			}};
 			
-			//loadTileProperties();
-			//loadTiles();
 			loadLevel(_w, _p);
 			doorsLoaded = false;
 			
@@ -114,50 +116,9 @@ package {
 
 		
 		private function generateTiles():void {
-			var gid:int;
-			
-			var pockets:int = 10;
-			var pocketWidth:int = 7;
-			var halfPocketWidth:int = Math.abs(pocketWidth / 2)
-			var pocketPoints:Array = [];
-			
-			//Fill the entire map in
-			//tiles.setRect(0, 0, w, h, 12);
-		
-			var column:int;
-			var row:int; 
-			
-			//Generate center points for pockets
-
-			//for (var j:int = 0; j < pockets; j++) {
-
-//			while (pocketPoints.length < pockets) {
-//				var p:Point;
-//				if (pocketPoints.length == 0) {
-//					p = randomPoint();
-//					pocketPoints.push(p);
-//				}
-//				p = randomPoint();
-//				var isolated:Boolean = true;
-//				iLoop: for (var i:int = 0; i < pocketPoints.length; i++) {
-//
-//					if (Math.abs(pocketPoints[i].x - p.x) > pocketWidth + 1
-//						|| Math.abs(pocketPoints[i].y - p.y) > pocketWidth + 1) {
-//						isolated = true;
-//					} else {
-//						isolated = false;
-//						break iLoop;
-//					}
-//				}
-//				if (isolated) pocketPoints.push(p);
-//				//trace("isolated: " + isolated);
-//				//trace("length: " + pocketPoints.length);
-//			}
-		
-			//drawPocket(pockets, pocketPoints, pocketWidth);
 
 			drawGround(groundDepth);
-			generateHills()
+			generateHillStops()
 			generateIslands();
 			fixGround();
 			setGrid();
@@ -239,32 +200,43 @@ package {
 			if (tiles.getTile(x - 1, y) == 0) return ts["midLeft"];
 			
 			//tile to the top-left is empty
-			if (tiles.getTile(x - 1, y - 1) == 0) return 4;
+			if (tiles.getTile(x - 1, y - 1) == 0) return ts["topLeftTuft"];
 
 			//tile to the top-right is empty
-			if (tiles.getTile(x + 1, y - 1) == 0) return 5;
+			if (tiles.getTile(x + 1, y - 1) == 0) return ts["topRightTuft"];
 			
 			//tile to the bottom-left is empty
-			if (tiles.getTile(x - 1, y + 1) == 0) return 14;
+			if (tiles.getTile(x - 1, y + 1) == 0) return ts["bottomLeftTuft"];
 			
 			//tile to the bottom-right is empty
-			if (tiles.getTile(x + 1, y + 1) == 0) return 15;
+			if (tiles.getTile(x + 1, y + 1) == 0) return ts["bottomRightTuft"];
 				
 			return ts["middle"];
 		}
 		
 		//TODO: add overlapping/not overlapping logic,
 		//optional parameters for different shapes -- isoceles etc.
-		private function drawIsland(minSize:int):void {
-			var isolated:Boolean = false;
-			var border:int = 1;
+		private function drawIsland(options:Object=null):void {
+			var kind:String = "vShaped"
+			var minWidth:int = 2;
+			var minHeight:int = 2;
+			var overlap:Boolean = false;
+			var border:int = 2;
+			
+			if (options) {
+				if (options["kind"]) kind = options["kind"];
+				if (options["minWidth"]) minWidth = options["minWidth"];
+				if (options["minHeight"]) minHeight = options["minHeight"];
+				if (options["overlap"]) overlap = options["overlap"];
+			}
+	
+			//Ensure no overlap
+			var isolated:Boolean;
+			isolated = false;
+			
 			var tries:int = 0;
 			var maxTries:int = 100;
-			
-			//Ensure no overlap
 			while (!isolated) {
-				var minWidth:int = minSize;
-				var minHeight:int = minSize;
 				
 				var islandWidth:int = Math.round(minWidth + (FP.random * 5));
 				var islandHeight:int = Math.round(minHeight + (FP.random * 5));
@@ -272,13 +244,15 @@ package {
 				var y:int = Math.floor((FP.random * h) - islandHeight);
 				
 				var flag:Boolean = true;
-				outsideLoop: for (var i:int = -border; i < islandWidth + border; i++) {
-					for (var j:int = -border; j < islandHeight + border; j++){
-						if (tiles.getTile(x + i, y + j) == 0) {
-							flag = true
-						} else {
-							flag = false;
-							break outsideLoop;
+				if (!overlap) {
+					outsideLoop: for (var i:int = -border; i < islandWidth + border; i++) {
+						for (var j:int = -border; j <= islandHeight + border; j++){
+							if (tiles.getTile(x + i, y + j) == 0) {
+								flag = true
+							} else {
+								flag = false;
+								break outsideLoop;
+							}
 						}
 					}
 				}
@@ -287,14 +261,33 @@ package {
 				tries++
 				if (tries >= maxTries) break;
 			}
-			tiles.setRect(x, y, islandWidth, islandHeight, 12);
+			
+			if (kind == "rect") {
+				tiles.setRect(x, y, islandWidth, islandHeight, 12);
+			} else if (kind == "vShaped") {
+				var start:Point = new Point(x, y);
+				var end:Point = new Point(x + islandWidth, y);
+				var peak:Point = new Point(x + (islandWidth / 2), y + islandHeight);
+				drawLine(start, end)
+				
+				//Randomize the direction it is drawn in
+				var roll:Number = Math.random();
+				if (roll <= 0.5) {
+					fillSlope(start, peak, false);
+					fillSlope(peak, end, false);
+				} else {
+					fillSlope(end, peak, false);
+					fillSlope(peak, start, false);
+				}
+			}
 		}
 		
 		private function generateIslands():void {
-			var islands:int = 36;
+			var islands:int = 20;
 			var minSize:int = 2;
 			for (var i:int = 0; i < islands; i++) {
-				drawIsland(minSize);
+				var roll:Number = Math.random();
+				drawIsland({"kind": "rect"});
 			}
 		}
 		
@@ -326,7 +319,7 @@ package {
 			var currentPoint:Point = new Point(start.x, start.y);
 			var width:int = 1;
 			var height:int = 1;
-			var positive:Boolean = false; //true = setTile, false = clearTile
+			var positive:Boolean = true; //true = setTile, false = clearTile
 			
 			if (options) {
 				if (options["width"]) width = options["width"];
@@ -350,26 +343,25 @@ package {
 			for (var i:int = 0; i < depth; i++) {
 				var start:Point = new Point(0, h - (i + 1));
 				var end:Point = new Point(w - 1, h - (i + 1));
-				drawLine(start, end, {"positive": true});
+				drawLine(start, end);
 			}
 		}
 		
-		private function drawSlope(start:Point, end:Point):void {
-			drawLine(start, end, {"positive": true});
+		private function drawSlope(start:Point, end:Point, fillDown:Boolean = true):void {
+			drawLine(start, end);
 		}
 		
-		private function fillSlope(start:Point, end:Point):void {
+		private function fillSlope(start:Point, end:Point, fillDown:Boolean = true):void {
 			var current:Point = new Point(start.x, start.y);
-			
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
 			for each(var po:Point in points){
 				var c:Point = po;
-				while(c.y < (h - (groundDepth))) {
+				while(tiles.getTile(c.x, c.y) == 0) {
 					tiles.setTile(c.x, c.y, 12);
-					c.y++;
+					if (fillDown) c.y++;
+					else c.y--
 				}
 			}
-			
 		}
 		
 		private function drawHill(stops:Array):void {
@@ -391,7 +383,7 @@ package {
 
 		}
 		
-		private function generateHills():void {
+		private function generateHillStops():void {
 			//TODO: base values off of cumulative hill width rather than
 			//individual segment width.
 			var hillStopsNum:int = 10;
@@ -444,9 +436,6 @@ package {
 
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
-			//var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
-			//_player.x = dataList.@x;
-			//_player.y = dataList.@y;
 			_player.x = 30;
 			_player.y = 30;
 			_w.add(_player);
@@ -506,8 +495,6 @@ package {
 			return points;
 		}
 		
-
-		
 		override public function removed():void {
 			
 			for each (var door:Door in doorList) {
@@ -524,6 +511,47 @@ package {
 			
 		}
 		
+		private function drawPockets():void {
+			var gid:int;
+			
+			var pockets:int = 10;
+			var pocketWidth:int = 7;
+			var halfPocketWidth:int = Math.abs(pocketWidth / 2)
+			var pocketPoints:Array = [];
+			
+			
+			var column:int;
+			var row:int; 
+			
+			//Generate center points for pockets
+			
+			//for (var j:int = 0; j < pockets; j++) {
+			
+			//			while (pocketPoints.length < pockets) {
+			//				var p:Point;
+			//				if (pocketPoints.length == 0) {
+			//					p = randomPoint();
+			//					pocketPoints.push(p);
+			//				}
+			//				p = randomPoint();
+			//				var isolated:Boolean = true;
+			//				iLoop: for (var i:int = 0; i < pocketPoints.length; i++) {
+			//
+			//					if (Math.abs(pocketPoints[i].x - p.x) > pocketWidth + 1
+			//						|| Math.abs(pocketPoints[i].y - p.y) > pocketWidth + 1) {
+			//						isolated = true;
+			//					} else {
+			//						isolated = false;
+			//						break iLoop;
+			//					}
+			//				}
+			//				if (isolated) pocketPoints.push(p);
+			//				//trace("isolated: " + isolated);
+			//				//trace("length: " + pocketPoints.length);
+			//			}
+			
+			//drawPocket(pockets, pocketPoints, pocketWidth);
+		}	
 	}
 	
 }

@@ -41,7 +41,7 @@ package {
 			//dataString = rawData.readUTFBytes( rawData.length );
 			//xmlData = new XML(dataString);
 			
-			w = 100;// xmlData.@width;
+			w = 120;// xmlData.@width;
 			h = 40;//xmlData.@height;
 			
 			//tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
