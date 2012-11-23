@@ -1,6 +1,7 @@
 package {
 	
 	import NPCs.NPC;
+	import NPCs.DustBall;
 	
 	import flash.display3D.IndexBuffer3D;
 	import flash.geom.Point;
@@ -103,7 +104,8 @@ package {
 			groundDepth = 0;
 			
 			generateTiles();
-			generateEnemies(_w);
+			generateNPCs(_w, "enemy");
+			generateNPCs(_w, "NPC");
 			
 			trace(FP.randomSeed);
 		}
@@ -111,7 +113,8 @@ package {
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
 			gw = _w;
 			player = _p;
-			generateEnemies(_w);
+			//generateEnemies(_w);
+			//generateNPCs(_w);
 			//loadNPCs(_w);
 			//loadDoors(_w, _p);
 			//loadInteractionItems(_w);
@@ -209,7 +212,8 @@ package {
 				} else if (tiles.getTile(x + 1, y) == 0) {
 					return ts["botRight"];
 				}
-				return ts["botMid"];
+				if (y != h - 1) return ts["botMid"];
+				else return ts["middle"];
 			}
 			
 			//tile to the right is empty
@@ -454,10 +458,11 @@ package {
 			}
 		}
 
-		public function generateEnemies(_w:World):void {
-			var enemyAmount:int = 15;
+		public function generateNPCs(_w:World, kind:String, amount:int = 15):void {
+			//TODO: add different spawning regions--in the water, on the ground, on
+			//the suspended islands etc.
 			var t:int = Settings.TILESIZE;
-			for (var i:int = 0; i < enemyAmount; i++) {
+			for (var i:int = 0; i < amount; i++) {
 				var x:int = Math.floor(FP.random * (w * t));
 				var y:int = (h * t) - t;
 				var open:Boolean = false;
@@ -470,12 +475,19 @@ package {
 					trace("x: " + int(x / t) + ", y:" + int(y / t))
 					y -= t;	
 				}
-				var ePos:Point = new Point(x, y)
-				var e:Enemy = new Enemy(ePos, 60);
-				enemiesList.push(e);
+				var pos:Point = new Point(x, y)
+				var e:Entity;
+				if (kind == "enemy") {
+					e = new Enemy(pos, 60);
+					enemiesList.push(e);
+				} else if (kind == "NPC") {
+					e = new DustBall(pos);
+					NPClist.push(e);
+				}
 				_w.add(e);
 			}
 		}
+
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
 			_player.x = 30;

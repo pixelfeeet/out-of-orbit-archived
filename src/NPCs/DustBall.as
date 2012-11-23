@@ -11,7 +11,7 @@ package NPCs {
 		
 		public static var label:String = "dust_ball"
 		public function DustBall(_position:Point=null, _health:int=100, _hunger:int=-1) {
-			super();
+			super(_position, _health, _hunger);
 			health = 20;
 			
 			spriteMap = new Spritemap(Assets.DUST_BALL, 40, 40);
