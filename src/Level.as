@@ -103,6 +103,7 @@ package {
 			groundDepth = 0;
 			
 			generateTiles();
+			generateEnemies(_w);
 			
 			trace(FP.randomSeed);
 		}
@@ -110,7 +111,7 @@ package {
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
 			gw = _w;
 			player = _p;
-			//loadEnemies(_w);
+			generateEnemies(_w);
 			//loadNPCs(_w);
 			//loadDoors(_w, _p);
 			//loadInteractionItems(_w);
@@ -132,7 +133,9 @@ package {
 		}
 		
 		override public function update():void {
-			if (Input.mousePressed) click();	
+			if (Input.mousePressed) {
+				//click();	
+			}
 		}
 		
 		private function click():void {
@@ -148,6 +151,7 @@ package {
 			}
 			fixGround();
 		}
+		
 		
 		private function removeTiles(x:int, y:int, blastRadius:int):void {
 			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
@@ -401,7 +405,7 @@ package {
 		private function generateHillStops():void {
 			//TODO: base values off of cumulative hill width rather than
 			//individual segment width.
-			var hillStopsNum:int = 15;
+			var hillStopsNum:int = 10;
 			var hillStops:Array = [];
 			var segmentWidth:int = w / hillStopsNum;
 			var maxSegmentWidth:int = 5;
@@ -450,6 +454,28 @@ package {
 			}
 		}
 
+		public function generateEnemies(_w:World):void {
+			var enemyAmount:int = 15;
+			var t:int = Settings.TILESIZE;
+			for (var i:int = 0; i < enemyAmount; i++) {
+				var x:int = Math.floor(FP.random * (w * t));
+				var y:int = (h * t) - t;
+				var open:Boolean = false;
+				while(!open) {
+					if (tiles.getTile(int(x / t), int(y / t)) == 0) {
+						open = true;
+					} else {
+						open = false;
+					}
+					trace("x: " + int(x / t) + ", y:" + int(y / t))
+					y -= t;	
+				}
+				var ePos:Point = new Point(x, y)
+				var e:Enemy = new Enemy(ePos, 60);
+				enemiesList.push(e);
+				_w.add(e);
+			}
+		}
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
 			_player.x = 30;
