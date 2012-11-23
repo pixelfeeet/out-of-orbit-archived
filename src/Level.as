@@ -23,7 +23,7 @@ package {
 	import utilities.Settings;
 	
 	public class Level extends Entity {
-		private var tiles:Tilemap;
+		public var tiles:Tilemap;
 		private var grid:Grid;
 		private var t:int; //Settings.TILESIZE
 		public var xml:Class;
@@ -59,7 +59,7 @@ package {
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
 			
-			w = 100;
+			w = 150;
 			h = 60;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
@@ -191,13 +191,13 @@ package {
 		
 		private function fixTile(x:int, y:int):int {
 			var ts:Object = jungleTiles["ground"];
-			//tile above is empty
 			if (tiles.getTile(x, y - 1) == 0) {
-				//tile to the left is also empty
+				//tile above is empty
 				if (tiles.getTile(x - 1, y) == 0) {
+					//tile to the left is also empty
 					return ts["topLeft"];
-				//tile to the right is also empty
 				} else if (tiles.getTile(x + 1, y) == 0) {
+					//tile to the right is also empty
 					return ts["topRight"];
 				}
 				return ts["topMid"];
@@ -254,8 +254,7 @@ package {
 			}
 	
 			//Ensure no overlap
-			var isolated:Boolean;
-			isolated = false;
+			var isolated:Boolean = false;
 			
 			var tries:int = 0;
 			var maxTries:int = 100;

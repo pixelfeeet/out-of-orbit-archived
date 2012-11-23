@@ -92,7 +92,7 @@ package ui {
 			
 			graphic = display;
 			
-			layer = -100;
+			layer = -1500;
 		}
 		
 		override public function update():void {

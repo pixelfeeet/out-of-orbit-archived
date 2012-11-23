@@ -75,8 +75,9 @@ package {
 		
 		//debug movement
 		private var flying:Boolean;
-		//jetpack movement
+		//other movement
 		private var jetpacking:Boolean;
+		private var swimming:Boolean;
 		
 		//Inventory
 		public static var inventory:Inventory;
@@ -129,7 +130,7 @@ package {
 			
 			type = "Player";
 			
-			PLAYER_SPEED = 840;
+			PLAYER_SPEED = 400;
 			player_speed = PLAYER_SPEED;
 			JUMP = 580;
 			
@@ -183,7 +184,7 @@ package {
 			head.x = 26;
 			head.y = 14;
 			
-			speech = new Text("Hello");
+			speech = new Text("");
 			speech.x = x + torso.width;
 			speech.y = y - 10;
 			speechLength = 60;
@@ -201,6 +202,7 @@ package {
 			
 			flying = true;
 			jetpacking = false;
+			swimming = false;
 			
 			//Input Definitions
 			Input.define("Left", Key.A);
@@ -427,7 +429,7 @@ package {
 			}
 			
 			//Play the animation
-			if (!onGround){
+			if (!onGround || swimming){
 				legsMap.play("jumping");
 			} else if (FP.sign(velocity.x) != 0) {
 				if (!facingLeft) {
@@ -487,9 +489,30 @@ package {
 				running = false;
 			}
 			
-			//Jump = W
-			jump();
-
+			//Check if player is in water
+			if (w.currentLevel.tiles.getTile(x / t, (y / t) + 1) == 20) {
+				swimming = true;
+				player_speed = PLAYER_SPEED * 0.4;
+				//acceleration.y = 
+				setSpeech("I can't swim.")
+				
+				//DEBUG MOVEMENT
+				if (Input.check(Key.W)) {
+					yInput -= 1;
+				}
+				if (Input.check(Key.S)) {
+					yInput += 1;
+				}
+				
+				velocity.y = player_speed * yInput + (GRAVITY * 0.5); //This isn't normally here
+				
+			} else {
+				swimming = false;
+				jump();
+				if (!flying) player_speed = PLAYER_SPEED;
+				else player_speed = PLAYER_SPEED * 2
+				acceleration.y = GRAVITY;
+			}
 			velocity.x = player_speed * xInput;
 
 		}
@@ -520,7 +543,6 @@ package {
 			if (Input.check(Key.S)) {
 				yInput += 1;
 			}
-
 			
 			velocity.y = player_speed * yInput; //This isn't normally here
 			velocity.x = player_speed * xInput;
