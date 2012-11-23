@@ -22,14 +22,15 @@ package {
 
 		private var w:int;
 		private var h:int;
-		
+		private var level:Level;
 		private var tiles:Tilemap;
 		
-		public function Background(_color:uint) {
+		public function Background(_level:Level) {
 			super();
+			level = _level;
 			
 			t = Settings.TILESIZE;
-			color = _color;
+			color = level.backgroundColor;
 			
 			init();
 			layer = 100;
@@ -41,8 +42,8 @@ package {
 			//dataString = rawData.readUTFBytes( rawData.length );
 			//xmlData = new XML(dataString);
 			
-			w = 120;// xmlData.@width;
-			h = 40;//xmlData.@height;
+			w = level.w;// xmlData.@width;
+			h = level.h;//xmlData.@height;
 			
 			//tiles = new Tilemap(Assets.CAVE_TILESET, w * t, h * t, t, t);
 			graphic = Image.createRect(w * t, h * t, color, 1);

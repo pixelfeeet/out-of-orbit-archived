@@ -38,8 +38,8 @@ package {
 		
 		public var label:String;
 		
-		private var w:int;
-		private var h:int;
+		public var w:int;
+		public var h:int;
 		
 		public var backgroundColor:uint;
 		
@@ -58,12 +58,12 @@ package {
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
 			
-			w = 120;
-			h = 40;
+			w = 100;
+			h = 60;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			graphic = new Graphiclist(tiles);
-			layer = -10;
+			layer = -1000;
 			
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
 			mask = grid;
@@ -91,12 +91,16 @@ package {
 				"topRightTuft": 5,
 				"bottomLeftTuft": 14,
 				"bottomRightTuft": 15
-			}};
+			},
+				"constructionBlock": 10,
+				"water": 20
+			};
 			
+			backgroundColor = 0xa29a8d;
 			loadLevel(_w, _p);
 			doorsLoaded = false;
 			
-			groundDepth = 3;
+			groundDepth = 0;
 			
 			generateTiles();
 			
@@ -117,8 +121,9 @@ package {
 		
 		private function generateTiles():void {
 
-			drawGround(groundDepth);
+			//drawGround(groundDepth);
 			generateHillStops()
+			generateWater();
 			generateIslands();
 			fixGround();
 			setGrid();
@@ -151,9 +156,19 @@ package {
 		}
 		
 		private function addTiles(x:int, y:int, blastRadius:int):void {
-			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 12);
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, jungleTiles["constructionBlock"]);
 			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, true)
 			fixGround();
+		}
+		
+		private function generateWater():void {
+			var waterLevel:int = 8;
+			
+			for (var x:int = 0; x < w; x++){
+				for (var y:int = h - waterLevel; y <  h; y++){
+					if (tiles.getTile(x, y) == 0) tiles.setTile(x, y, jungleTiles["water"]);	
+				}
+			}
 		}
 		
 		private function fixGround():void {
@@ -356,7 +371,7 @@ package {
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
 			for each(var po:Point in points){
 				var c:Point = po;
-				while(tiles.getTile(c.x, c.y) == 0) {
+				while(tiles.getTile(c.x, c.y) == 0 && c.y < h) {
 					tiles.setTile(c.x, c.y, 12);
 					if (fillDown) c.y++;
 					else c.y--
@@ -376,8 +391,8 @@ package {
 				var offsetX:int;
 				if (i == 0) offsetX = 0;
 				else offsetX = 1;
-				start = new Point(stops[i].x + offsetX, h - (groundDepth + 1) - stops[i].y);
-				end = new Point(stops[i + 1].x, h - (groundDepth + 1) - stops[i + 1].y)
+				start = new Point(stops[i].x + offsetX, h - groundDepth - 1 - stops[i].y);
+				end = new Point(stops[i + 1].x, h - groundDepth - 1 - stops[i + 1].y)
 				fillSlope(start, end);
 			}
 
@@ -386,12 +401,12 @@ package {
 		private function generateHillStops():void {
 			//TODO: base values off of cumulative hill width rather than
 			//individual segment width.
-			var hillStopsNum:int = 10;
-			var hillStops:Array = [] 
+			var hillStopsNum:int = 15;
+			var hillStops:Array = [];
 			var segmentWidth:int = w / hillStopsNum;
 			var maxSegmentWidth:int = 5;
 			var minSegmentWidth:int = 2;
-			var peak:int = 10;
+			var peak:int = 18;
 			var leftoverHeight:int = peak;
 			var startX:int = 6;
 			var startY:int = 0;
@@ -423,7 +438,8 @@ package {
 			var gid:int = 0;
 			for(var row:int = 0; row < h; row++){
 				for(var column:int = 0; column < w; column++){
-					if (tiles.getTile(column, row) != 0) {
+					if (tiles.getTile(column, row) != 0 &&
+						tiles.getTile(column, row) != jungleTiles["water"]) {
 						grid.setTile(column, row, true);
 					} else {
 						grid.setTile(column, row, false);
