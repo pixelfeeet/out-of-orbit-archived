@@ -1,7 +1,7 @@
 package {
 	
-	import NPCs.NPC;
 	import NPCs.DustBall;
+	import NPCs.NPC;
 	
 	import flash.display3D.IndexBuffer3D;
 	import flash.geom.Point;
@@ -55,6 +55,7 @@ package {
 		private var groundDepth:int;
 		
 		private var jungleTiles:Object;
+		private var waterLevel:int;
 		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
@@ -102,10 +103,11 @@ package {
 			doorsLoaded = false;
 			
 			groundDepth = 0;
+			waterLevel = 8;
 			
 			generateTiles();
-			generateNPCs(_w, "enemy");
-			generateNPCs(_w, "NPC");
+			generateNPCs(_w, {"kind": "enemy"});
+			generateNPCs(_w, {"kind": "NPC"});
 			
 			trace(FP.randomSeed);
 		}
@@ -169,7 +171,6 @@ package {
 		}
 		
 		private function generateWater():void {
-			var waterLevel:int = 8;
 			
 			for (var x:int = 0; x < w; x++){
 				for (var y:int = h - waterLevel; y <  h; y++){
@@ -457,24 +458,23 @@ package {
 			}
 		}
 
-		public function generateNPCs(_w:World, kind:String, amount:int = 15):void {
+		public function generateNPCs(_w:World, options:Object):void {
 			//TODO: add different spawning regions--in the water, on the ground, on
 			//the suspended islands etc.
+			var kind:String = "enemy";
+			var region:String = "groundLevel"
+			var amount:int = 15;
+				
+			if(options) {
+				if (options["kind"]) kind = options["kind"];
+				if (options["amount"]) amount = options["amount"];
+				if (options["region"]) region = options["region"];
+			}
+				
 			var t:int = Settings.TILESIZE;
 			for (var i:int = 0; i < amount; i++) {
-				var x:int = Math.floor(FP.random * (w * t));
-				var y:int = (h * t) - t;
-				var open:Boolean = false;
-				while(!open) {
-					if (tiles.getTile(int(x / t), int(y / t)) == 0) {
-						open = true;
-					} else {
-						open = false;
-					}
-					trace("x: " + int(x / t) + ", y:" + int(y / t))
-					y -= t;	
-				}
-				var pos:Point = new Point(x, y)
+
+				var pos:Point = findSpawn();
 				var e:Entity;
 				if (kind == "enemy") {
 					e = new Enemy(pos, 60);
@@ -485,6 +485,49 @@ package {
 				}
 				_w.add(e);
 			}
+		}
+		
+		private function findSpawn(region:String = "water"):Point {
+			var x:int;
+			var y:int;
+			var open:Boolean;
+			
+			if (region == "groundLevel") {
+				x = Math.floor(FP.random * (w * t));
+				y = (h * t) - t;
+				open = false;
+				while(!open) {
+					if (tiles.getTile(int(x / t), int(y / t)) == 0) {
+						open = true;
+					} else if (tiles.getTile(int(x / t), int(y / t)) == 20) {
+						//don't spawn in water
+						x += t;
+						open = false;
+					} else {
+						open = false;
+					}
+					trace("x: " + int(x / t) + ", y:" + int(y / t));
+					y -= t;	
+				}
+			} else if (region == "water") {
+				x = Math.floor(FP.random * (w * t));
+				y = (h * t) - (waterLevel * t);
+				open = false;
+				var tries:int = 200;
+				while (!open){
+					if (tiles.getTile(int(x / t), int(y / t)) == 20) {
+						open = true;
+					} else {
+						open = false;
+					}
+					trace("x: " + int(x / t) + ", y:" + int(y / t));
+					x += t;
+					
+					tries--;
+					if (tries == 0) open = true;
+				}
+			}
+			return new Point(x, y);
 		}
 
 		
