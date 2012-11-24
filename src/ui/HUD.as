@@ -19,13 +19,15 @@ package ui {
 	
 	public class HUD extends Entity {
 		
-		private var healthHUD:Text;
-		private var hungerHUD:Text;
-		private var expHUD:Text;
-		private var levelHUD:Text;
+		private var healthHUD:Graphic;
+		private var healthHUDbg:Graphic;
+		private var hungerHUD:Graphic;
+		private var hungerHUDbg:Graphic;
 		private var bulletsHUD:Text;
 		private var scrapsHUD:Text;
-		private var jumpHUD:Text;
+		private var fuelHUDbg:Graphic;
+		private var fuelHUD:Graphic;
+		private var fuelText:Text;
 		
 		private var player:SpacemanPlayer;
 		 
@@ -54,22 +56,22 @@ package ui {
 			//a static variable, or something.
 			player = _player;
 			w = _w;
+
+			healthHUDbg = Image.createRect(204, 14, 0xeeeeee, 1.0);
+			healthHUDbg.x = 8;
+			healthHUDbg.y = 8;
 			
-			healthHUD = new Text("Health: " + player.getHealth(), 10, 10, 200, 50)
-			healthHUD.color = 0x6B6B6B;
-			healthHUD.size = 32
+			healthHUD = Image.createRect(player.getHealth(), 10, 0xbb3333, 0.8);
+			healthHUD.x = 10;
+			healthHUD.y = 10;
 				
-			hungerHUD = new Text("Hunger: " + player.getHunger(), FP.screen.width - 210, 10); 
-			hungerHUD.color = 0x6B6B6B;
-			hungerHUD.size = 32;
-			
-			expHUD = new Text("EXP: " + player.getPlayerExperience(), 10, 50);
-			expHUD.color = 0x6B6B6B;
-			expHUD.size = 24;
-			
-			levelHUD = new Text("Level: " + player.getLevel(), 10, 80);
-			levelHUD.color = 0x6B6B6B;
-			levelHUD.size = 24;
+			hungerHUDbg = Image.createRect(204, 14, 0xeeeeee, 1.0);
+			hungerHUDbg.x = 8;
+			hungerHUDbg.y = 28;
+
+			hungerHUD = Image.createRect(player.getHunger(), 10, 0x444433, 0.8); 
+			hungerHUD.x = 10;
+			hungerHUD.y = 30;
 			
 			bulletsHUD = new Text("Ammo: " + player.ammunition, 10, 100);
 			bulletsHUD.color = 0x6b6b6b;
@@ -79,9 +81,20 @@ package ui {
 			scrapsHUD.color = 0x6b6b6b;
 			scrapsHUD.size = 22;
 			
-			jumpHUD = new Text("Fuel: " + player.jumpHeight, 10, 146);
+			fuelHUDbg = Image.createRect(34, (player.jumpHeight * 0.7) + 4, 0xeeeeee, 1.0)
+			Image(fuelHUDbg).originY = player.jumpHeight;
+			fuelHUDbg.x = FP.screen.width - 42;
+			fuelHUDbg.y = 38 + (player.jumpHeight * 0.7);
 			
-			display = new Graphiclist(healthHUD, hungerHUD, expHUD, levelHUD, bulletsHUD, scrapsHUD, jumpHUD);
+			fuelHUD = Image.createRect(30, player.jumpHeight, 0x222222, 0.8);
+			Image(fuelHUD).originY = player.jumpHeight;
+			fuelHUD.x = FP.screen.width - 40;
+			fuelHUD.y = player.jumpHeight - 20;
+			
+			fuelText = new Text("FUEL", FP.screen.width - 42, 82);
+			
+			display = new Graphiclist(healthHUDbg, healthHUD, hungerHUDbg, hungerHUD,
+				bulletsHUD, scrapsHUD, fuelHUDbg, fuelHUD, fuelText);
 			
 			inventoryDisplay = new Array(player.inventoryLength);
 			inventoryBoxesInitiated = false;
@@ -120,13 +133,14 @@ package ui {
 		}
 		
 		private function updateHealth():void{
-			hungerHUD.text = "Hunger: " + player.getHunger();
-			healthHUD.text = "Health: " + player.getHealth();
-			expHUD.text = "EXP: " + player.getPlayerExperience();
-			levelHUD.text = "Level: " + player.getLevel();
+			//hungerHUD.text = "Hunger: " + player.getHunger();
+			//healthHUD.text = "Health: " + player.getHealth();
+			Image(healthHUD).scaleX = player.getHealth() / 50;
+			Image(hungerHUD).scaleX = player.getHunger() / 50;
 			bulletsHUD.text = "Ammo: " + player.weapon.getAmmo();
 			scrapsHUD.text = "Scraps: " + player.scraps;
-			jumpHUD.text = "Jump: " + player.jumpHeight;
+			//fuelHUD.text = "Fuel: " + player.jumpHeight;
+			Image(fuelHUD).scaleY = player.jumpHeight * 0.007;
 		}
 		
 		private function initInventoryBoxes():void {

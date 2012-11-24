@@ -130,7 +130,8 @@ package {
 			//drawGround(groundDepth);
 			generateHillStops()
 			generateWater();
-			generateIslands();
+			drawBerg();
+			//generateIslands();
 			fixGround();
 			setGrid();
 			
@@ -157,6 +158,30 @@ package {
 			fixGround();
 		}
 		
+		private function drawBerg():void {
+			var width:int = 20;
+			var start:Point = new Point (Math.floor(Math.random() * w) - width, h - 25);
+			var end:Point = new Point(start.x + width, h - 25);
+			var border:int = 4;
+			var currentPoint:Point;
+			drawLine(start, end);
+
+			drawHill([start,
+				new Point(start.x + 5, start.y - (Math.random() * 8)),
+				new Point(start.x + 10, start.y - (Math.random() * 8)),
+				new Point(start.x + 15, start.y - (Math.random() * 8)),
+				end], false);
+
+			var y:int;		
+			for (var x:int = start.x; x <= start.x + width; x++) {
+				y = start.y + 1;
+				while(tiles.getTile(x, y + border) == 0) {
+					tiles.setTile(x, y, jungleTiles["ground"]["middle"]);
+					y++;
+				}
+				
+			}
+		}
 		
 		private function removeTiles(x:int, y:int, blastRadius:int):void {
 			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
@@ -374,12 +399,13 @@ package {
 			drawLine(start, end);
 		}
 		
-		private function fillSlope(start:Point, end:Point, fillDown:Boolean = true):void {
+		private function fillSlope(start:Point, end:Point, fillDown:Boolean = true, baseline:int = -1):void {
 			var current:Point = new Point(start.x, start.y);
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
+			if (baseline == -1) baseline = h;
 			for each(var po:Point in points){
 				var c:Point = po;
-				while(tiles.getTile(c.x, c.y) == 0 && c.y < h) {
+				while(tiles.getTile(c.x, c.y) == 0 && c.y < baseline) {
 					tiles.setTile(c.x, c.y, 12);
 					if (fillDown) c.y++;
 					else c.y--
@@ -387,7 +413,7 @@ package {
 			}
 		}
 		
-		private function drawHill(stops:Array):void {
+		private function drawHill(stops:Array, relativeToGround:Boolean = true):void {
 			var start:Point;
 			var end:Point;
 			for (var i:int = 0; i < stops.length - 1; i++){
@@ -396,11 +422,17 @@ package {
 				 * top of each other, so after the first point they need to be offset
 				 * by 1
 				 */
-				var offsetX:int;
-				if (i == 0) offsetX = 0;
-				else offsetX = 1;
-				start = new Point(stops[i].x + offsetX, h - groundDepth - 1 - stops[i].y);
-				end = new Point(stops[i + 1].x, h - groundDepth - 1 - stops[i + 1].y)
+//				var offsetX:int;
+//				if (i == 0) offsetX = 0;
+//				else offsetX = 1;
+				var newStartY:int;
+				var newEndY:int;
+				if (relativeToGround) newStartY = h - groundDepth - 1 - stops[i].y;
+				else newStartY = stops[i].y;
+				if (relativeToGround) newEndY = h - groundDepth - 1 - stops[i + 1].y;
+				else newEndY = stops[i + 1].y;
+				start = new Point(stops[i].x, newStartY);
+				end = new Point(stops[i + 1].x, newEndY)
 				fillSlope(start, end);
 			}
 

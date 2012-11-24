@@ -9,7 +9,6 @@ package ui {
 	import net.flashpunk.graphics.Text;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-
 	
 	import ui.Button;
 	
