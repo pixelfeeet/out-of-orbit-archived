@@ -160,8 +160,9 @@ package {
 		
 		private function drawBerg():void {
 			var width:int = 20;
-			var start:Point = new Point (Math.floor(Math.random() * w) - width, h - 25);
-			var end:Point = new Point(start.x + width, h - 25);
+			var susHeight:int = 25 //suspention height
+			var start:Point = new Point (Math.floor(Math.random() * w) - width, h - susHeight);
+			var end:Point = new Point(start.x + width, h - susHeight);
 			var border:int = 4;
 			var currentPoint:Point;
 			drawLine(start, end);
@@ -179,7 +180,6 @@ package {
 					tiles.setTile(x, y, jungleTiles["ground"]["middle"]);
 					y++;
 				}
-				
 			}
 		}
 		
@@ -196,7 +196,6 @@ package {
 		}
 		
 		private function generateWater():void {
-			
 			for (var x:int = 0; x < w; x++){
 				for (var y:int = h - waterLevel; y <  h; y++){
 					if (tiles.getTile(x, y) == 0) tiles.setTile(x, y, jungleTiles["water"]);	

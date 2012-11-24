@@ -81,15 +81,15 @@ package ui {
 			scrapsHUD.color = 0x6b6b6b;
 			scrapsHUD.size = 22;
 			
-			fuelHUDbg = Image.createRect(34, (player.jumpHeight * 0.7) + 4, 0xeeeeee, 1.0)
-			Image(fuelHUDbg).originY = player.jumpHeight;
+			fuelHUDbg = Image.createRect(34, (player.jetFuel * 0.7) + 4, 0xeeeeee, 1.0)
+			Image(fuelHUDbg).originY = player.jetFuel;
 			fuelHUDbg.x = FP.screen.width - 42;
-			fuelHUDbg.y = 38 + (player.jumpHeight * 0.7);
+			fuelHUDbg.y = 38 + (player.jetFuel * 0.7);
 			
-			fuelHUD = Image.createRect(30, player.jumpHeight, 0x222222, 0.8);
-			Image(fuelHUD).originY = player.jumpHeight;
+			fuelHUD = Image.createRect(30, player.jetFuel, 0x222222, 0.8);
+			Image(fuelHUD).originY = player.jetFuel;
 			fuelHUD.x = FP.screen.width - 40;
-			fuelHUD.y = player.jumpHeight - 20;
+			fuelHUD.y = player.jetFuel - 20;
 			
 			fuelText = new Text("FUEL", FP.screen.width - 42, 82);
 			
@@ -140,7 +140,7 @@ package ui {
 			bulletsHUD.text = "Ammo: " + player.weapon.getAmmo();
 			scrapsHUD.text = "Scraps: " + player.scraps;
 			//fuelHUD.text = "Fuel: " + player.jumpHeight;
-			Image(fuelHUD).scaleY = player.jumpHeight * 0.007;
+			Image(fuelHUD).scaleY = player.jetFuel * 0.007;
 		}
 		
 		private function initInventoryBoxes():void {

@@ -109,10 +109,12 @@ package {
 		//World
 		private var w:GameWorld;
 		
-		public var jumpHeight:int;
-		private var maxJump:int;
-		private var jumpRecharge:int;
-		private var jumpRechargeTimer:int;
+		public var jetFuel:int;
+		private var fuelCapacity:int;
+		
+		private var jetRecharge:int;
+		private var jetRechargeTimer:int;
+		private var jetBurnedOut:Boolean; //When fuel hits 0
 		
 		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
 			
@@ -133,10 +135,11 @@ package {
 			player_speed = PLAYER_SPEED;
 			JUMP = 580;
 			
-			maxJump = 100;
-			jumpHeight = maxJump;
-			jumpRecharge = 5;
-			jumpRechargeTimer = jumpRecharge; 
+			fuelCapacity = 100;
+			jetFuel = fuelCapacity;
+			jetRecharge = 5;
+			jetRechargeTimer = jetRecharge; 
+			jetBurnedOut = false;
 				
 			//Stats
 			strength = 10;
@@ -578,9 +581,15 @@ package {
 		override protected function jump():void {
 			if (Input.check("Jump")) {
 				if (Input.check(Key.SHIFT)) {
-					if (jumpHeight >= 0) {
+					if (jetFuel <= 0) {
+						jetBurnedOut = true;
+					} else if (jetFuel == 100) {
+						jetBurnedOut = false;
+					}
+					
+					if (!jetBurnedOut) {
 						jetpacking = true;
-						jumpHeight--;
+						jetFuel--;
 						velocity.y = -JUMP;
 					}
 				} else {
@@ -590,14 +599,15 @@ package {
 						jumpSound.play();
 					}
 				}
-			} if (jetpacking) {
-				if (jumpRechargeTimer <= 0) { 
-					if (jumpHeight < maxJump) {
-						jumpHeight++;
+			}
+			if (jetpacking) {
+				if (jetRechargeTimer <= 0) { 
+					if (jetFuel < fuelCapacity) {
+						jetFuel++;
 					}
-					jumpRechargeTimer = jumpRecharge;
+					jetRechargeTimer = jetRecharge;
 				} else {
-					jumpRechargeTimer--;
+					jetRechargeTimer--;
 				}
 			}
 			
