@@ -8,9 +8,6 @@ package ui {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
-	import punk.ui.PunkButton;
-	import punk.ui.PunkWindow;
-	
 	import ui.Button;
 	
 	public class PauseMenu extends Entity {
