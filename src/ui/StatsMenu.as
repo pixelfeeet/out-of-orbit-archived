@@ -58,11 +58,15 @@ package ui {
 		private var list:Object;
 		private var levelUpTime:Boolean;
 		
+		private var titleText:Text;
+		
 		public function StatsMenu(_w:GameWorld) {
 			super();
 			
 			w = _w;
 			p = w.getPlayer();
+			
+			titleText = new Text("Stats", 10, 10, {size: 30});
 			
 			strength = p.strength;
 			agility = p.agility;
@@ -78,7 +82,7 @@ package ui {
 			var bg:Graphic = Image.createRect(800, 400, 0x333333, 0.8);
 			
 			playerHealth = new Text("Health: " + p.getHealth() + "/"
-				+ p.getMaxHealth(), 10, 10,
+				+ p.getMaxHealth(), 250, 40,
 				{ size: 22, color: 0xffffff, align: "left" });
 			
 			playerHunger = new Text("Hunger: " + p.getHunger() + "/"
@@ -101,16 +105,15 @@ package ui {
 			playerEXP = new Text("EXP: " + p.getExperience(), 800 - 120, 40,
 			{ size: 20, color: 0xffffff, align: "right" });
 			
-			graphicList = new Graphiclist(bg, playerHealth, playerHunger,
+			graphicList = new Graphiclist(bg, titleText, playerHealth, playerHunger,
 				playerLevel, playerEXP, points);
+			layer = -1110;
 			
 			panel = new Entity(0, 0, graphicList);
 			panel.setHitboxTo(graphicList.children[0]);
-			panel.layer = -550;
+			panel.layer = -1100;
 
 			allocationPoints = p.allocationPoints;
-			//resumeButton = new Button(0, 0, "Resume", onResume);
-			//resumeButton.layer = -555;
 		}
 				
 		public function show():void {
@@ -133,7 +136,7 @@ package ui {
 			
 			levelUpButton.x = panel.x + 330;
 			levelUpButton.y = panel.y + 140;
-			levelUpButton.layer = -555;
+			levelUpButton.layer = -1110;
 			
 			if (p.levelUpTime) levelUpButton.visible = true;
 			else levelUpButton.visible = false;
@@ -177,7 +180,7 @@ package ui {
 					alterPoints, {"attr": attribute, "i": 1},
 					{"normal": rightArrow, "hover": rightArrow, "down": rightArrow});
 
-				row["sub"].layer = row["add"].layer = -555;
+				row["sub"].layer = row["add"].layer = -1110;
 			
 				i++;
 				

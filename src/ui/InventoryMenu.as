@@ -56,14 +56,14 @@ package ui {
 			
 			panel = new Entity(0, 0, Image.createRect(500, 200, 0x333333, 0.8));
 			panel.setHitboxTo(panel.graphic);
-			panel.layer = -550;
+			panel.layer = -1100;
 
 			inventoryDisplay = new Array(player.inventoryLength);
 			scrapConverter = new ScrapConverter(w);
 
 			display = new Graphiclist();
 			graphic = display;
-			layer = -560;
+			layer = -1110;
 		}
 		
 		override public function update():void {

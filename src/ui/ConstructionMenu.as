@@ -31,7 +31,7 @@ package ui {
 			
 			panel = new Entity(0, 0, Image.createRect(700, 400, 0x333333, 0.8));
 			panel.setHitboxTo(panel.graphic);
-			panel.layer = -550;
+			panel.layer = -1100;
 			
 			availableItems = [];
 			boxes = [];
@@ -39,13 +39,13 @@ package ui {
 			
 			constructButton = new Button(panel.x + 100,
 				panel.y + Image(panel.graphic).height, "Construct", onConstruct);
-			constructButton.layer = -560;
+			constructButton.layer = -1110;
 			
 			captionText = new Text("Caption", panel.x + 5, panel.y + 100);
 			display = new Graphiclist(captionText);
 			graphic = display;
 			setHitboxTo(display);
-			layer = -560;
+			layer = -1100;
 		}
 		
 		override public function update():void {
@@ -102,7 +102,7 @@ package ui {
 			for (var i:int = 0; i < itemList.length; i++){
 				var box:ConstructionBox = new ConstructionBox(new Point(5 + panel.x + (i * 55),
 					panel.y + 5), w);
-				box.layer = -550;
+				box.layer = -1110;
 				boxes.push(box);
 				FP.world.add(box);
 			}
@@ -112,7 +112,7 @@ package ui {
 				var e:InventoryItem = GameWorld.inventoryItems.copyItem(itemList[i]);
 				e.x = panel.x + 5 + (i * 55);// + (Image(e.graphic).width / 2);
 				e.y = panel.y + 5;// + (Image(e.graphic).height / 2);
-				e.layer = -560;
+				e.layer = -1120;
 				availableItems.push(e);
 				FP.world.add(e);
 			}

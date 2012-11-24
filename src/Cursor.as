@@ -17,7 +17,7 @@ package {
 			reticule = new Image(Assets.CURSOR);
 			graphic = reticule;
 			Mouse.hide();
-			layer = -1000;
+			layer = -1500;
 			carryingItem = false;
 		}
 		

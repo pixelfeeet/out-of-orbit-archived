@@ -65,7 +65,7 @@ package {
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			graphic = new Graphiclist(tiles);
-			layer = -1000;
+			layer = -600;
 			
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
 			mask = grid;

@@ -92,7 +92,7 @@ package ui {
 			
 			graphic = display;
 			
-			layer = -1500;
+			layer = -1000;
 		}
 		
 		override public function update():void {
@@ -135,7 +135,7 @@ package ui {
 			for (var i:int = 0; i < inventoryDisplay.length; i++) {
 				var boxGraphics:Object = {};
 				var box:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60), w, false);
-				box.layer = -100;
+				box.layer = -1000;
 				var text:Text = new Text(inventory[i].length, 10 + (i * 55), FP.screen.height - 60);
 				boxGraphics = {"box": box, "text": text};
 				inventoryBoxes.push(boxGraphics);

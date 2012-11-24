@@ -28,12 +28,12 @@ package ui {
 
 			panel = new Entity(0, 0, Image.createRect(500, 200, 0x333333, 0.8));
 			panel.setHitboxTo(panel.graphic);
-			panel.layer = -550;
+			panel.layer = -1100;
 			
 			quitButton = new Button(0, 0, "Quit", onQuit);
 			resumeButton = new Button(0, 0, "Resume", onResume);
 			
-			quitButton.layer = resumeButton.layer = -555;
+			quitButton.layer = resumeButton.layer = -1110;
 		}
 		
 		override public function update():void {

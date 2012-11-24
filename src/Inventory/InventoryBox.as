@@ -29,7 +29,7 @@ package Inventory {
 			setHitboxTo(graphic);
 			
 			selected = false;
-			layer = 1;
+			layer = -1110;
 		}
 		
 		override public function update():void {

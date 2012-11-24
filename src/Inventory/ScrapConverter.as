@@ -17,7 +17,7 @@ package Inventory {
 			w = _w;
 			graphic = Image.createRect(50, 50, 0xffffff, 0.8);
 			setHitboxTo(graphic);
-			layer = -560;
+			layer = -1110;
 		}
 		
 		override public function update():void {

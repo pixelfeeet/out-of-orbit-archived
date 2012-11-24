@@ -29,7 +29,7 @@ package Inventory {
 			stackable = true;
 			useSound = new Sfx(Assets.USE);
 			scrapValue = 10;
-			layer = -205;
+			layer = -1010;
 		}
 		
 		public function onUse():void {	

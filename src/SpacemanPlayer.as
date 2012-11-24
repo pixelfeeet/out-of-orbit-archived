@@ -81,7 +81,6 @@ package {
 		
 		//Inventory
 		public static var inventory:Inventory;
-		public static var weaponInventory:WeaponInventory;
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		public var weaponInventoryLength:int;
@@ -234,7 +233,7 @@ package {
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
 			
-			layer = -400 //debug layer
+			layer = -500
 		}
 		
 		override public function update():void {
