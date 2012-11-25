@@ -2,10 +2,11 @@ package {
 	
 	import Inventory.Inventory;
 	
+	import NPCs.Enemy;
+	
 	import Weapons.Weapon;
 	
 	import data.Weapons;
-	import NPCs.Enemy;
 	
 	import flash.display.Graphics;
 	import flash.display.Shape;
@@ -54,11 +55,25 @@ package {
 		private var informedExtremeHealth:Boolean;
 		private var informedLevelUp:Boolean;
 		
+		public var jetFuel:int;
+		private var fuelCapacity:int;
+		
+		private var jetRecharge:int;
+		private var jetRechargeTimer:int;
+		public var jetBurnedOut:Boolean; //When fuel hits 0
+		
 		//Stats
 		public var strength:int;
 		public var intelligence:int;
 		public var dexterity:int;
 		public var agility:int;
+		
+		public var armor:int; // resistance to damage -- 3pts
+		//fuelCapacity -- 2pts
+		//jumpHeight -- 2pts
+		public var marksmanship:int; //damage shooting does - 3pts
+		public var constructing:int; //Skill at contstructing - 5pts
+		public var inventoryCapacity:int; //length of inventory array - 10pts
 		
 		public var statsList:Object;
 		
@@ -107,13 +122,6 @@ package {
 		//World
 		private var w:GameWorld;
 		
-		public var jetFuel:int;
-		private var fuelCapacity:int;
-		
-		private var jetRecharge:int;
-		private var jetRechargeTimer:int;
-		public var jetBurnedOut:Boolean; //When fuel hits 0
-		
 		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
 			
 			//Essentials
@@ -130,7 +138,7 @@ package {
 			type = "Player";
 			
 			SPEED = 400;
-			speed = SPEED;
+			vSpeed = SPEED;
 			JUMP = 580;
 			
 			fuelCapacity = 100;
@@ -380,10 +388,10 @@ package {
 				velocity.x = 0;
 				velocity.y = 0;
 				xSpeed = 0;
-				speed = 840;
+				vSpeed = 840;
 			} else {
 				flying = false;
-				speed = 400;
+				vSpeed = 400;
 			}
 		}
 		
@@ -488,10 +496,6 @@ package {
 				running = false;
 			}
 			
-			if (w.currentLevel.tiles.getTile(x / t, (y / t) + 1) == 20) isInWater = true;
-			else isInWater = false;
-			
-			
 			//Check if player is in water
 			if (isInWater) {
 				//player_speed = PLAYER_SPEED * 0.4;
@@ -506,14 +510,14 @@ package {
 					yInput += 1;
 				}
 				
-				velocity.y = speed * yInput + gravity;
+				velocity.y = vSpeed * yInput + vGravity;
 			} else {
 				jump();
-				if (!flying) speed = SPEED;
-				else speed = SPEED * 2
+				if (!flying) vSpeed = SPEED;
+				else vSpeed = SPEED * 2
 				acceleration.y = GRAVITY;
 			}
-			velocity.x = speed * xInput;
+			velocity.x = vSpeed * xInput;
 
 		}
 		
@@ -544,8 +548,8 @@ package {
 				yInput += 1;
 			}
 			
-			velocity.y = speed * yInput; //This isn't normally here
-			velocity.x = speed * xInput;
+			velocity.y = vSpeed * yInput; //This isn't normally here
+			velocity.x = vSpeed * xInput;
 		}
 		
 		override protected function land():void {

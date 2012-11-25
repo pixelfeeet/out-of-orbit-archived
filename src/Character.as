@@ -13,8 +13,9 @@ package
 		protected var SPEED:int;
 		protected var JUMP:int;
 		
-		protected var speed:int;
-		protected var gravity:int; //changes based on location
+		protected var vSpeed:int;
+		protected var vGravity:int;
+		protected var vJump:int;
 		protected var acceleration:Point;
 		public var velocity:Point;
 		
@@ -54,8 +55,9 @@ package
 			
 			acceleration = new Point();
 			velocity = new Point();
-			gravity = GRAVITY;
-			speed = SPEED;
+			vGravity = GRAVITY;
+			vSpeed = SPEED;
+			vJump = JUMP;
 			
 			animations = new Animations;
 
@@ -166,14 +168,20 @@ package
 		}
 		
 		protected function updateMovement():void{
+			if (GameWorld(FP.world).currentLevel.tiles.getTile(x / t, (y / t) + 1) == 20) isInWater = true;
+			else isInWater = false;
+			
 			if (isInWater) {
-				gravity = GRAVITY / 2;
-				speed = SPEED / 2;
+				vGravity = GRAVITY / 2;
+				vSpeed = SPEED / 2;
+				vJump = JUMP / 2;
 			} else {
-				gravity = GRAVITY;
-				speed = SPEED;
+				vGravity = GRAVITY;
+				vSpeed = SPEED;
+				vJump = JUMP;
 			}
 
+			//xSpeed = vSpeed;
 			velocity.x = xSpeed;
 			acceleration.y = GRAVITY;
 			velocity.y += acceleration.y;

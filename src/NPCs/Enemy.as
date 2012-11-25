@@ -49,12 +49,12 @@ package NPCs {
 			
 			if (distanceFrom(GameWorld.player) <= viewDistance){
 				if (Math.abs(targetCharacter.x - x) <= 20) velocity.x = 0;
-				else if (targetCharacter.x > x) velocity.x = SPEED;
-				else velocity.x = -SPEED;
+				else if (targetCharacter.x > x) velocity.x = vSpeed;
+				else velocity.x = -vSpeed;
 				
-				if (velocity.x == 0) jump();
+				if (vSpeed != 0 && velocity.x == 0) jump();
 			} else {
-				speed = 0;
+				vSpeed = 0;
 			}
 		
 		}

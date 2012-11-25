@@ -23,8 +23,8 @@ package NPCs {
 		}
 		
 		override protected function updateGraphic():void {
-			if (FP.sign(speed) > 0) Image(graphic).flipped = false;
-			else if (FP.sign(speed) < 0) Image(graphic).flipped = true;	
+			if (FP.sign(vSpeed) > 0) Image(graphic).flipped = false;
+			else if (FP.sign(vSpeed) < 0) Image(graphic).flipped = true;	
 			if (velocity.x == 0) spriteMap.play("standing");
 			else spriteMap.play("moving");
 		}
@@ -36,15 +36,15 @@ package NPCs {
 				if (movementTimer == 0) {
 					if (FP.sign(xSpeed) != 0) {
 						xSpeed = 0;
-						movementTimer = movementFrequency * Math.ceil(Math.random() * 3);
+						movementTimer = movementFrequency * Math.ceil(Math.random() * 5);
 					} else {
 						var r:Number = Math.random() * 2;
 						if (r < 1) { 
-							xSpeed = -speed;
-							movementTimer = movementFrequency;
+							xSpeed = -vSpeed;
+							movementTimer = Math.ceil(Math.random() * 50) + 50;
 						} else {
-							xSpeed = speed;
-							movementTimer = movementFrequency;
+							xSpeed = vSpeed;
+							movementTimer = Math.ceil(Math.random() * 50) + 50;
 						}
 					}
 				} else {

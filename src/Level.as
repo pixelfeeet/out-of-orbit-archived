@@ -1,8 +1,8 @@
 package {
 	
 	import NPCs.DustBall;
-	import NPCs.NPC;
 	import NPCs.Enemy;
+	import NPCs.NPC;
 	
 	import flash.display3D.IndexBuffer3D;
 	import flash.geom.Point;
@@ -131,8 +131,8 @@ package {
 			//drawGround(groundDepth);
 			generateHillStops()
 			generateWater();
-			drawBerg();
-			//generateIslands();
+			drawBergs();
+			generateIslands();
 			fixGround();
 			setGrid();
 			
@@ -159,8 +159,15 @@ package {
 			fixGround();
 		}
 		
+		private function drawBergs():void {
+			var bergAmount:int = 5;
+			for (var i:int = 0; i < bergAmount; i++) {
+				drawBerg();
+			}
+		}
+		
 		private function drawBerg():void {
-			var width:int = 20;
+			var width:int = Math.floor(Math.random() * 10) + 15;
 			var susHeight:int = 25 //suspention height
 			var start:Point = new Point (Math.floor(Math.random() * w) - width, h - susHeight);
 			var end:Point = new Point(start.x + width, h - susHeight);
@@ -169,9 +176,9 @@ package {
 			drawLine(start, end);
 
 			drawHill([start,
-				new Point(start.x + 5, start.y - (Math.random() * 8)),
-				new Point(start.x + 10, start.y - (Math.random() * 8)),
-				new Point(start.x + 15, start.y - (Math.random() * 8)),
+				new Point(start.x + (width * 0.25), start.y - (Math.random() * 8)),
+				new Point(start.x + (width * 0.5), start.y - (Math.random() * 8)),
+				new Point(start.x + (width * 0.75), start.y - (Math.random() * 8)),
 				end], false);
 
 			var y:int;		
@@ -331,7 +338,7 @@ package {
 		}
 		
 		private function generateIslands():void {
-			var islands:int = 20;
+			var islands:int = 60;
 			var minSize:int = 2;
 			for (var i:int = 0; i < islands; i++) {
 				var roll:Number = Math.random();
