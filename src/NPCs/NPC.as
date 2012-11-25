@@ -82,12 +82,12 @@ package NPCs {
 					FP.world.add(item);
 				} else {
 					var myClass:Class = getDefinitionByName(dropItems[i].toString()) as Class;
-					//trace(dropItems[i].toString())
+
 					var anItem:Entity = new myClass();
 					var p:Point = new Point(x + ((i + 1) * 10), y + i);
 					anItem.x = p.x;
 					anItem.y = p.y;
-					//var ammo:Ammunition = new Ammunition(new Point(x + ((i + 1) * 10), y + i));
+
 					trace("The new item is: " + anItem);
 					FP.world.add(anItem);
 				}

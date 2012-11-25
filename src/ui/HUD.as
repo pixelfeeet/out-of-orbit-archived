@@ -141,6 +141,8 @@ package ui {
 			scrapsHUD.text = "Scraps: " + player.scraps;
 			//fuelHUD.text = "Fuel: " + player.jumpHeight;
 			Image(fuelHUD).scaleY = player.jetFuel * 0.007;
+			if (player.jetBurnedOut) Image(fuelHUD).color = 0xee4433;
+			else Image(fuelHUD).color = 0x222222;
 		}
 		
 		private function initInventoryBoxes():void {

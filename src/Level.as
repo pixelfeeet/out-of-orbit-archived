@@ -518,7 +518,7 @@ package {
 			}
 		}
 		
-		private function findSpawn(region:String = "water"):Point {
+		private function findSpawn(region:String = "groundLevel"):Point {
 			var x:int;
 			var y:int;
 			var open:Boolean;

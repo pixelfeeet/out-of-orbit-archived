@@ -114,7 +114,7 @@ package {
 		
 		private var jetRecharge:int;
 		private var jetRechargeTimer:int;
-		private var jetBurnedOut:Boolean; //When fuel hits 0
+		public var jetBurnedOut:Boolean; //When fuel hits 0
 		
 		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
 			
@@ -581,11 +581,6 @@ package {
 		override protected function jump():void {
 			if (Input.check("Jump")) {
 				if (Input.check(Key.SHIFT)) {
-					if (jetFuel <= 0) {
-						jetBurnedOut = true;
-					} else if (jetFuel == 100) {
-						jetBurnedOut = false;
-					}
 					
 					if (!jetBurnedOut) {
 						jetpacking = true;
@@ -609,6 +604,12 @@ package {
 				} else {
 					jetRechargeTimer--;
 				}
+			}
+			
+			if (jetFuel <= 0) {
+				jetBurnedOut = true;
+			} else if (jetFuel == 100) {
+				jetBurnedOut = false;
 			}
 			
 		}
