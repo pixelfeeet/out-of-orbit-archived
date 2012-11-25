@@ -26,7 +26,7 @@ package NPCs {
 		public function NPC(_position:Point = null, _health:int=100, _hunger:int=-1) {
 			if(!_position) _position = new Point(0,0);
 			super(_position, _health, _hunger);
-			PLAYER_SPEED = 50;
+			SPEED = 50;
 			JUMP = 300;
 			dropItems = generateDropItems();
 			expValue = 2;

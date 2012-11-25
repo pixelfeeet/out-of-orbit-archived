@@ -10,9 +10,11 @@ package
 	public class Character extends Entity {
 		
 		protected const GRAVITY:int = 14;
-		protected var PLAYER_SPEED:int;
+		protected var SPEED:int;
 		protected var JUMP:int;
 		
+		protected var speed:int;
+		protected var gravity:int; //changes based on location
 		protected var acceleration:Point;
 		public var velocity:Point;
 		
@@ -36,13 +38,14 @@ package
 		
 		protected var xSpeed:int;
 		
+		protected var isInWater:Boolean;
+		
 		protected var t:int; //Settings.TILESIZE
 		
 		private var player:SpacemanPlayer;
 
 		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
-			
 			super();
 			player = GameWorld.player;
 			
@@ -51,10 +54,13 @@ package
 			
 			acceleration = new Point();
 			velocity = new Point();
+			gravity = GRAVITY;
+			speed = SPEED;
 			
 			animations = new Animations;
 
 			onGround = false;
+			isInWater = false;
 			
 			//ESSENTIALS
 			health = _health;
@@ -80,10 +86,7 @@ package
 		}
 		
 		protected function updateCollision():void {
-			
-			//TODO: don't let character move offscreen.
-			// or do?
-			
+
 			//HORIZONTAL MOVEMENT
 			x += velocity.x * FP.elapsed;
 			
@@ -159,7 +162,16 @@ package
 			}
 		}
 		
-		protected function updateMovement():void{	
+		protected function updateMovement():void{
+			if (isInWater) {
+				gravity = GRAVITY / 2;
+				speed = SPEED / 2;
+			} else {
+				gravity = GRAVITY;
+				speed = SPEED;
+			}
+			
+			xSpeed = speed;
 			velocity.x = xSpeed;
 			acceleration.y = GRAVITY;
 			velocity.y += acceleration.y;

@@ -2,6 +2,7 @@ package {
 	
 	import NPCs.DustBall;
 	import NPCs.NPC;
+	import NPCs.Enemy;
 	
 	import flash.display3D.IndexBuffer3D;
 	import flash.geom.Point;

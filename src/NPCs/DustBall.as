@@ -37,10 +37,10 @@ package NPCs {
 						} else {
 							var r:Number = Math.random() * 2;
 							if (r < 1) { 
-								xSpeed = -PLAYER_SPEED;
+								xSpeed = -SPEED;
 								movementTimer = movementFrequency;
 							} else {
-								xSpeed = PLAYER_SPEED;
+								xSpeed = SPEED;
 								movementTimer = movementFrequency;
 							}
 							spriteMap.play("moving");

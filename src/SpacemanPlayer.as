@@ -5,6 +5,7 @@ package {
 	import Weapons.Weapon;
 	
 	import data.Weapons;
+	import NPCs.Enemy;
 	
 	import flash.display.Graphics;
 	import flash.display.Shape;
@@ -31,8 +32,6 @@ package {
 	import utilities.Settings;
 	
 	public class SpacemanPlayer extends Character {
-		
-		public var player_speed:int = PLAYER_SPEED;
 
 		private var running:Boolean;
 		
@@ -77,8 +76,7 @@ package {
 		private var flying:Boolean;
 		//other movement
 		private var jetpacking:Boolean;
-		private var swimming:Boolean;
-		
+
 		//Inventory
 		public static var inventory:Inventory;
 		public var reachDistance:int;
@@ -131,8 +129,8 @@ package {
 			
 			type = "Player";
 			
-			PLAYER_SPEED = 400;
-			player_speed = PLAYER_SPEED;
+			SPEED = 400;
+			speed = SPEED;
 			JUMP = 580;
 			
 			fuelCapacity = 100;
@@ -204,7 +202,6 @@ package {
 			
 			flying = true;
 			jetpacking = false;
-			swimming = false;
 			
 			//Input Definitions
 			Input.define("Left", Key.A);
@@ -379,14 +376,14 @@ package {
 		
 		private function toggleFlying():void {
 			if (!flying) {
+				flying = true;
 				velocity.x = 0;
 				velocity.y = 0;
 				xSpeed = 0;
-				flying = true;
-				player_speed = 840;
+				speed = 840;
 			} else {
 				flying = false;
-				player_speed = 400;
+				speed = 400;
 			}
 		}
 		
@@ -431,7 +428,7 @@ package {
 			}
 			
 			//Play the animation
-			if (!onGround || swimming){
+			if (!onGround || isInWater){
 				legsMap.play("jumping");
 			} else if (FP.sign(velocity.x) != 0) {
 				if (!facingLeft) {
@@ -491,10 +488,13 @@ package {
 				running = false;
 			}
 			
+			if (w.currentLevel.tiles.getTile(x / t, (y / t) + 1) == 20) isInWater = true;
+			else isInWater = false;
+			
+			
 			//Check if player is in water
-			if (w.currentLevel.tiles.getTile(x / t, (y / t) + 1) == 20) {
-				swimming = true;
-				player_speed = PLAYER_SPEED * 0.4;
+			if (isInWater) {
+				//player_speed = PLAYER_SPEED * 0.4;
 				//acceleration.y = 
 				setSpeech("I can't swim.")
 				
@@ -506,16 +506,14 @@ package {
 					yInput += 1;
 				}
 				
-				velocity.y = player_speed * yInput + (GRAVITY * 0.5); //This isn't normally here
-				
+				velocity.y = speed * yInput + gravity;
 			} else {
-				swimming = false;
 				jump();
-				if (!flying) player_speed = PLAYER_SPEED;
-				else player_speed = PLAYER_SPEED * 2
+				if (!flying) speed = SPEED;
+				else speed = SPEED * 2
 				acceleration.y = GRAVITY;
 			}
-			velocity.x = player_speed * xInput;
+			velocity.x = speed * xInput;
 
 		}
 		
@@ -546,8 +544,8 @@ package {
 				yInput += 1;
 			}
 			
-			velocity.y = player_speed * yInput; //This isn't normally here
-			velocity.x = player_speed * xInput;
+			velocity.y = speed * yInput; //This isn't normally here
+			velocity.x = speed * xInput;
 		}
 		
 		override protected function land():void {

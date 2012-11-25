@@ -11,15 +11,14 @@ package NPCs {
 	
 	public class Enemy extends NPC {
 		
-		//the character this enemy will attack --usually
-		//the player.
+		//the character this enemy will attack -- at this point only the player.
 		public var targetCharacter:Entity;
 		public var viewDistance:int;
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
 			if (!_position) _position = new Point(0, 0);
 			super(_position, _health);
-			PLAYER_SPEED = 25;
+			SPEED = 25;
 			JUMP = 300;
 			
 			hungerTimer = -1;
