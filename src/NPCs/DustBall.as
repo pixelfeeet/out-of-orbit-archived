@@ -22,35 +22,36 @@ package NPCs {
 			setHitboxTo(graphic);
 		}
 		
-		override protected function initBehavior():void {
-			behavior = function():void {
-				if (movementFrequency != 0) {
-					if (xSpeed != 0 && velocity.x == 0) jump();
-					if (FP.sign(xSpeed) > 0) Image(graphic).flipped = false;
-					else if (FP.sign(xSpeed) < 0) Image(graphic).flipped = true;
-					
-					if (movementTimer == 0) {
-						if (FP.sign(xSpeed) != 0) {
-							xSpeed = 0
-							spriteMap.play("standing");
-							movementTimer = movementFrequency * Math.ceil(Math.random() * 3);
-						} else {
-							var r:Number = Math.random() * 2;
-							if (r < 1) { 
-								xSpeed = -SPEED;
-								movementTimer = movementFrequency;
-							} else {
-								xSpeed = SPEED;
-								movementTimer = movementFrequency;
-							}
-							spriteMap.play("moving");
-						}
-						
+		override protected function updateGraphic():void {
+			if (FP.sign(speed) > 0) Image(graphic).flipped = false;
+			else if (FP.sign(speed) < 0) Image(graphic).flipped = true;	
+			if (velocity.x == 0) spriteMap.play("standing");
+			else spriteMap.play("moving");
+		}
+		
+		override protected function updateMovement():void {
+			if (movementFrequency != 0) {
+				if (xSpeed != 0 && velocity.x == 0) jump();
+				
+				if (movementTimer == 0) {
+					if (FP.sign(xSpeed) != 0) {
+						xSpeed = 0;
+						movementTimer = movementFrequency * Math.ceil(Math.random() * 3);
 					} else {
-						movementTimer--;
-					}	
-				}
+						var r:Number = Math.random() * 2;
+						if (r < 1) { 
+							xSpeed = -speed;
+							movementTimer = movementFrequency;
+						} else {
+							xSpeed = speed;
+							movementTimer = movementFrequency;
+						}
+					}
+				} else {
+					movementTimer--;
+				}	
 			}
+			super.updateMovement();
 		}
 	}
 }

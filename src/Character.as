@@ -79,11 +79,14 @@ package
 		override public function update():void {
 			updateMovement();
 			updateCollision();
+			updateGraphic();
 			if (health != -1) checkForDamage();
 			if (hunger != -1) updateHunger();
 			
 			super.update();
 		}
+		
+		protected function updateGraphic():void {}
 		
 		protected function updateCollision():void {
 
@@ -170,8 +173,7 @@ package
 				gravity = GRAVITY;
 				speed = SPEED;
 			}
-			
-			xSpeed = speed;
+
 			velocity.x = xSpeed;
 			acceleration.y = GRAVITY;
 			velocity.y += acceleration.y;

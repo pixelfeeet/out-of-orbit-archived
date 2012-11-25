@@ -397,7 +397,7 @@ package {
 			if (Input.mouseDown) weapon.shoot();
 		}
 
-		private function updateGraphic():void {
+		override protected function updateGraphic():void {
 			
 			//Get the player to face the cursor horizontally
 			if (Input.mouseX < x + halfWidth - FP.camera.x) facingLeft = true;
@@ -572,6 +572,10 @@ package {
 			//DEBUG: heal
 			if (Input.pressed(Key.H)) {
 				changeHealth(10);
+			}
+			
+			if (Input.pressed(Key.M)) {
+				scraps += 100;
 			}
 			
 		}
