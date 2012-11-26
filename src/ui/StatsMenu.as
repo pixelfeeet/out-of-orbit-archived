@@ -34,14 +34,19 @@ package ui {
 		private var statsList:Object;
 
 		//player variables
-		private var playerIntelligence:Text;
-		private var playerDexterity:Text;
-		private var playerAgility:Text;
+//		private var playerIntelligence:Text;
+//		private var playerDexterity:Text;
+//		private var playerAgility:Text;
 		
 		private var playerEXP:Text;
 		private var playerLevel:Text;
 		private var playerHealth:Text;
 		private var playerHunger:Text;
+		
+		private var playerFuel:Text;
+		private var playerArmor:Text;
+		private var playerMarksmanship:Text;
+		private var playerBuilding:Text;
 		
 		private var levelUpButton:Button;
 		
@@ -70,8 +75,9 @@ package ui {
 			intelligence = p.intelligence;
 			dexterity = p.dexterity;
 			
-			statsList = {"strength": strength, "agility": agility,
-				"intelligence": intelligence, "dexterity": dexterity};
+//			statsList = {"strength": strength, "agility": agility,
+//				"intelligence": intelligence, "dexterity": dexterity};
+			
 			
 			leftArrow = Assets.ARROW_LEFT;
 			rightArrow = Assets.ARROW_RIGHT;
@@ -89,6 +95,8 @@ package ui {
 			//playerIntelligence = new Text("Intelligence: " + p.intelligence, 10, 60);
 			//playerDexterity = new Text("Dexterity: " + p.dexterity, 10, 80);
 			//playerAgility = new Text("Agility: " + p.agility, 10, 100);
+			
+			playerArmor = new Text("Armor: " + p.armor, 10, 60);
 			
 			points = new Text(allocationPoints + " allocation points.", 10, 360);
 			points.size = 26;
@@ -126,8 +134,9 @@ package ui {
 			panel.x = FP.camera.x + (FP.screen.width /2) - (panel.width / 2);
 			panel.y = FP.camera.y + 10 + (FP.screen.height / 2) - (panel.height / 2);
 			
-			statsList = {"strength": strength, "agility": agility,
-				"intelligence": intelligence, "dexterity": dexterity};
+			//statsList = {"strength": strength, "agility": agility,
+			//	"intelligence": intelligence, "dexterity": dexterity};
+			statsList = p.statsList;
 			
 			list = createStatsUI();
 			
@@ -161,20 +170,26 @@ package ui {
 		private function createStatsUI():Object {
 			var i:int = 1;
 			var list:Object = {};
-			for (var attribute:String in statsList) {
+			for (var index:Object in statsList) {
+				//OLD
 				//attribute == the key
 				//statsList[attribute] == value	
+				//NEW
+				var name:String = statsList[index]["name"];
+				var value:int = statsList[index]["value"];
+				var points:int = statsList[index]["points"];
+				
 				var row:Object = {};
 				row["sub"] = new Button(panel.x + 10 , panel.y + 40 + (i * 20), "",
-					alterPoints, {"attr": attribute, "i": -1},
+					alterPoints, {"index": index, "points": -points},
 					{"normal": leftArrow, "hover": leftArrow, "down": leftArrow})
 					
-				row["text"] = new Text(attribute + ": ", 25, 35 + i * 20);
+				row["name"] = new Text(name + ": ", 25, 35 + i * 20, {size: "18"});
 				
-				row["attribute"] = new Text(statsList[attribute], 135, 35 + i * 20);
+				row["value"] = new Text(String(value), 155, 35 + i * 20, {size: "18", align: "right"});
 				
-				row["add"] = new Button(panel.x + 160, panel.y + 40 + (i * 20), "",
-					alterPoints, {"attr": attribute, "i": 1},
+				row["add"] = new Button(panel.x + 200, panel.y + 40 + (i * 20), "",
+					alterPoints, {"index": index, "points": points},
 					{"normal": rightArrow, "hover": rightArrow, "down": rightArrow});
 
 				row["sub"].layer = row["add"].layer = -1110;
@@ -182,22 +197,22 @@ package ui {
 				i++;
 				
 				FP.world.add(row["sub"]);
-				graphicList.add(row["text"]);
-				graphicList.add(row["attribute"]);
+				graphicList.add(row["name"]);
+				graphicList.add(row["value"]);
 				FP.world.add(row["add"]);
 				
 				row["sub"].visible = levelUpTime;
 				row["add"].visible = levelUpTime;
 				
-				list[attribute] = row;
+				list[index] = row;
 			}
 			return list;
 		}
 		
 		private function alterPoints(params:Object):void{
 			if(allocationPoints > 0) {
-				statsList[params["attr"]] += params["i"];
-				allocationPoints -= params["i"];
+				statsList[params["index"]]["value"] += params["points"];
+				allocationPoints -= params["points"];
 				//trace(statsList[params["attr"]] + ": " + params["i"]);
 			}
 			updateText();
@@ -207,8 +222,8 @@ package ui {
 			playerHealth.text = "Health: " + p.getHealth() + "/" + p.getMaxHealth();
 			playerHunger.text = "Hunger: " + p.getHunger() + "/" + p.getMaxHunger();
 			
-			for (var attr:String in statsList){
-				list[attr]["attribute"].text = statsList[attr];
+			for (var index:String in statsList){
+				list[index]["value"].text = statsList[index]["value"];
 			}
 
 			playerEXP.text = "EXP: " + p.getExperience();
@@ -218,14 +233,14 @@ package ui {
 		}
 		
 		public function onConfirm():void {
-			if(allocationPoints == 0) {
-				p.strength = statsList["strength"];
-				p.agility = statsList["agility"];
-				p.intelligence = statsList["intelligence"];
-				p.dexterity = statsList["dexterity"];
-			for (var attr:String in statsList){
-				p.statsList[attr] = statsList[attr];
-			}	
+			if (allocationPoints == 0) {
+//				p.strength = statsList["strength"];
+//				p.agility = statsList["agility"];
+//				p.intelligence = statsList["intelligence"];
+//				p.dexterity = statsList["dexterity"];
+				for (var attr:String in statsList){
+					p.statsList[attr] = statsList[attr];
+				}	
 				p.allocationPoints = 0;
 				p.levelUpTime = false;
 			}
@@ -244,10 +259,10 @@ package ui {
 		public function remove():void {
 			FP.world.remove(levelUpButton);
 			FP.world.remove(panel); 
-			for (var attr:String in list){
-				FP.world.remove(list[attr]["sub"]);
-				list[attr]["attribute"].text = "";
-				FP.world.remove(list[attr]["add"]);
+			for (var index:String in list){
+				FP.world.remove(list[index]["sub"]);
+				list[index]["value"].text = "";
+				FP.world.remove(list[index]["add"]);
 			}
 		}
 		

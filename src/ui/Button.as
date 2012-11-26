@@ -53,12 +53,10 @@ package ui {
 			setHitboxTo(normalStamp);
 		}
 		
-		override public function update():void
-		{
+		override public function update():void {
 			super.update();
 			
-			if (collidePoint(x, y, world.mouseX, world.mouseY))
-			{
+			if (collidePoint(x, y, world.mouseX, world.mouseY)) {
 				if (Input.mousePressed) clicked = true;
 				
 				if (clicked) changeState(DOWN);
@@ -66,8 +64,7 @@ package ui {
 				
 				if (clicked && Input.mouseReleased) click();
 			}
-			else
-			{
+			else {
 				if (clicked) changeState(HOVER);
 				else changeState(NORMAL);
 			}
@@ -75,19 +72,15 @@ package ui {
 			if (Input.mouseReleased) clicked = false;
 		}
 		
-		protected function click():void
-		{
-			if (callback != null)
-			{
+		protected function click():void {
+			if (callback != null) {
 				if (params != null) callback(params);
 				else callback();
 			}
 		}
 		
-		protected function changeState(state:int = 0):void
-		{
-			switch(state)
-			{
+		protected function changeState(state:int = 0):void {
+			switch(state) {
 				case NORMAL:
 					graphic = normal;
 					break;
@@ -100,12 +93,9 @@ package ui {
 			}
 		}
 		
-		protected function renderGraphic(graphic:Graphic):void
-		{
-			if (graphic && graphic.visible)
-			{
-				if (graphic.relative)
-				{
+		protected function renderGraphic(graphic:Graphic):void {
+			if (graphic && graphic.visible) {
+				if (graphic.relative) {
 					_point.x = x;
 					_point.y = y;
 				}
@@ -115,13 +105,12 @@ package ui {
 				graphic.render(renderTarget ? renderTarget : FP.buffer, _point, _camera);
 			}
 		}
+		
 		protected var _point:Point = FP.point;
 		protected var _camera:Point = FP.point2;
 		
-		override public function render():void
-		{
+		override public function render():void {
 			super.render();
-			
 			renderGraphic(label);
 		}
 	}

@@ -75,7 +75,7 @@ package {
 		public var constructing:int; //Skill at contstructing - 5pts
 		public var inventoryCapacity:int; //length of inventory array - 10pts
 		
-		public var statsList:Object;
+		public var statsList:Array;
 		
 		private var experience:int;
 		private var level:int;
@@ -153,8 +153,21 @@ package {
 			dexterity = 10;
 			agility = 10;
 			
-			statsList = {"strength": strength, "agility": agility,
-				"intelligence": intelligence, "dexterity": dexterity};
+			armor = 10;
+			
+//			public var armor:int; // resistance to damage -- 3pts
+//			//fuelCapacity -- 2pts
+//			//jumpHeight -- 2pts
+//			public var marksmanship:int; //damage shooting does - 3pts
+//			public var constructing:int; //Skill at contstructing - 5pts
+//			public var inventoryCapacity:int; //length of inventory array - 10pts
+			
+//			statsList = {"strength": strength, "agility": agility,
+//				"intelligence": intelligence, "dexterity": dexterity};
+			statsList = [
+				{"name": "fuelCapacity", "value": fuelCapacity, "points": 3},
+				{"name": "armor", "value": armor, "points": 3}
+			];
 			
 			/*
 			Graphiclist components
