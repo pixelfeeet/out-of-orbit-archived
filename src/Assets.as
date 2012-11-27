@@ -30,6 +30,15 @@ package {
 		[Embed(source = 'assets/shrub1.png')] public static const SHRUB1:Class;	
 		[Embed(source = 'assets/shrub2.png')] public static const SHRUB2:Class;
 		
+		[Embed(source = 'assets/rock1.png')] public static const ROCK1:Class;
+		[Embed(source = 'assets/rock2.png')] public static const ROCK2:Class;
+		[Embed(source = 'assets/rock3.png')] public static const ROCK3:Class;
+		[Embed(source = 'assets/rock4.png')] public static const ROCK4:Class;
+		[Embed(source = 'assets/rock5.png')] public static const ROCK5:Class;
+		[Embed(source = 'assets/rock6.png')] public static const ROCK6:Class;
+		[Embed(source = 'assets/rock7.png')] public static const ROCK7:Class;
+		[Embed(source = 'assets/rock8.png')] public static const ROCK8:Class;
+		
 		//Sounds
 		[Embed(source = "sounds/land.mp3")] public static const LAND:Class;
 		[Embed(source = "sounds/injury.mp3")] public static const INJURY:Class;

@@ -165,8 +165,9 @@ package {
 //			statsList = {"strength": strength, "agility": agility,
 //				"intelligence": intelligence, "dexterity": dexterity};
 			statsList = [
-				{"name": "fuelCapacity", "value": fuelCapacity, "points": 3},
-				{"name": "armor", "value": armor, "points": 3}
+				{"name": "Fuel Capacity", "value": fuelCapacity, "points": 3},
+				{"name": "Armor", "value": armor, "points": 3},
+				{"name": "Max Ammo", "value": null, "points": 2}
 			];
 			
 			/*

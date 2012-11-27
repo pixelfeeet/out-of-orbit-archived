@@ -58,6 +58,9 @@ package {
 		private var jungleTiles:Object;
 		private var waterLevel:int;
 		
+		private var rocks:Array;
+		private var flatGround:Array;
+		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
 			
@@ -128,6 +131,8 @@ package {
 		
 		private function generateTiles():void {
 
+			flatGround = [];
+			
 			//drawGround(groundDepth);
 			generateHillStops()
 			generateWater();
@@ -135,6 +140,36 @@ package {
 			generateIslands();
 			fixGround();
 			setGrid();
+			
+			rocks = [
+				new Image(Assets.ROCK1),
+				new Image(Assets.ROCK2),
+				new Image(Assets.ROCK3),
+				new Image(Assets.ROCK4),
+				new Image(Assets.ROCK5),
+				new Image(Assets.ROCK6),
+				new Image(Assets.ROCK7),
+				new Image(Assets.ROCK8)
+			];
+			
+			for (var i:int = 0; i < flatGround.length; i++){
+				var roll:int = Math.floor(Math.random() * 3)
+				var layerRoll:int = Math.floor(Math.random() * 2);
+				if (roll <= 1) {
+					var rockIndex:int = Math.floor(Math.random() * rocks.length);
+					var rock:Character = new Character(new Point(flatGround[i].x * t, (flatGround[i].y * t) - t));
+					rock.graphic = rocks[rockIndex];
+					rock.setHitboxTo(rock.graphic);
+					//player layer == -500
+					if (layerRoll < 1) rock.layer = -550;
+					else rock.layer = -100;
+					gw.add(rock);
+				}
+			}
+			
+			var r1:Character = new Character(new Point(100, 100))
+			r1.graphic = new Image(Assets.ROCK1);
+			r1.setHitboxTo(r1.graphic);
 			
 			setHitboxTo(grid);
 		}
@@ -233,6 +268,7 @@ package {
 					//tile to the right is also empty
 					return ts["topRight"];
 				}
+				flatGround.push(new Point(x, y));
 				return ts["topMid"];
 			}
 			
