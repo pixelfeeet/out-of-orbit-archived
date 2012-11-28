@@ -10,6 +10,8 @@ package
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.tweens.misc.ColorTween;
 	
+	import utilities.Settings;
+	
 	public class LightMask extends Entity {
 		
 		public var image:Image
@@ -29,11 +31,15 @@ package
 		public var dayOpacity:Number;
 		public var nightOpacity:Number;
 		
+		private var updateFreq:int;
+		private var updateTimer:int;
+		
 		public function LightMask(w:GameWorld, x:Number=0, y:Number=0) {
 			super(x, y);
-			
-			dayLength = nightLength = 600; //frames
-			duskLength = dawnLength = 10; //seconds
+			//TODO: Make this lightmask the size of the screen, rather than of the level,
+			//and fix its positions
+			dayLength = nightLength = 5; //seconds
+			duskLength = dawnLength = 5; //seconds
 			dayTimer = -1;
 			nightTimer = -1;
 			
@@ -42,6 +48,9 @@ package
 			
 			dayOpacity = 0.0;
 			nightOpacity = 0.5;
+			
+			updateFreq = Settings.FRAMERATE; //1 update/second
+			updateTimer = updateFreq;
 			
 			image = Image.createRect(w.currentLevel.width, w.currentLevel.height, dayColor, dayOpacity)
 			graphic = image;
@@ -55,23 +64,28 @@ package
 		}
 		
 		override public function update():void {
-			if (timeTween) {
-				image.color = timeTween.color;
-				image.alpha = timeTween.alpha;
-			}
-			
-			if (dayTimer != -1) {
-				dayTimer --;
-				if (dayTimer == 0) {
-					onDusk();
+			if (updateTimer <= 0) {
+				if (timeTween) {
+					image.color = timeTween.color;
+					image.alpha = timeTween.alpha;
 				}
-			}
-			
-			if (nightTimer != -1) {
-				nightTimer --;
-				if (nightTimer == 0) {
-					onDawn();
+				
+				if (dayTimer != -1) {
+					dayTimer --;
+					if (dayTimer == 0) {
+						onDusk();
+					}
 				}
+				
+				if (nightTimer != -1) {
+					nightTimer --;
+					if (nightTimer == 0) {
+						onDawn();
+					}
+				}
+				updateTimer = updateFreq;
+			} else {
+				updateTimer--;
 			}
 		}
 		
