@@ -170,7 +170,9 @@ package {
 					trace(flatGround[i].x + 2 + ", " + flatGround[i].y + ": "
 						+ tiles.getTile(flatGround[i].x + 2, flatGround[i].y))
 					
-					if (tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
+					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 
+						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0
+						&& tiles.getTile(flatGround[i].x + 3, flatGround[i].y) != 0) {
 						//large rocks
 						rockIndex = Math.floor(Math.random() * largeRocks.length);
 						rock.graphic = largeRocks[rockIndex];
