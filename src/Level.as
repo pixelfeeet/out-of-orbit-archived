@@ -143,21 +143,21 @@ package {
 		private function generateRocks():void {
 			
 			var smallRocks:Array = [
-				new Image(Assets.ROCK1),
-				new Image(Assets.ROCK3),
-				new Image(Assets.ROCK5),
-				new Image(Assets.ROCK6),
-				new Image(Assets.ROCK7),
-				new Image(Assets.ROCK8),
+				Assets.ROCK1,
+				Assets.ROCK3,
+				Assets.ROCK5,
+				Assets.ROCK6,
+				Assets.ROCK7,
+				Assets.ROCK8,
 			]
 			
 			var largeRocks:Array = [
-				new Image(Assets.ROCK2),
-				new Image(Assets.ROCK4),
+				Assets.ROCK2,
+				Assets.ROCK4,
 			]
 			
 			for (var i:int = 0; i < flatGround.length; i++){
-				var roll:int = Math.floor(Math.random() * 2)
+				var roll:int = Math.floor(Math.random() * 6)
 				if (roll <= 1) {
 					//TODO: 1. check how much space there surrounding this tile and
 					//choose an appropriately-sized rock
@@ -170,24 +170,34 @@ package {
 					trace(flatGround[i].x + 2 + ", " + flatGround[i].y + ": "
 						+ tiles.getTile(flatGround[i].x + 2, flatGround[i].y))
 					
+					
 					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 
-						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0
-						&& tiles.getTile(flatGround[i].x + 3, flatGround[i].y) != 0) {
+						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
 						//large rocks
 						rockIndex = Math.floor(Math.random() * largeRocks.length);
-						rock.graphic = largeRocks[rockIndex];
+						rock.graphic = new Image(largeRocks[rockIndex]);
 					} else {
 						//small rocks
 						rockIndex = Math.floor(Math.random() * smallRocks.length);
-						rock.graphic = smallRocks[rockIndex];
+						rock.graphic = new Image(smallRocks[rockIndex]);
 					}
-					var layerRoll:int = Math.floor(Math.random() * 2);
+					
+					var layerRoll:Number = Math.random();
+					
+					if (layerRoll <= 0.5) {
+						
+						Image(rock.graphic).color = 0xffffff;
+						rock.layer = -550;
+					} else {
+						
+						Image(rock.graphic).color = 0xbbaabb;
+						rock.layer = -100;
+					}
+					
 					
 					rock.setHitboxTo(rock.graphic);
 					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
-					//player layer == -500
-					if (layerRoll < 1) rock.layer = -550;
-					else rock.layer = -100;
+					
 					gw.add(rock);
 				}
 			}

@@ -105,8 +105,8 @@ package {
 			//Sound
 			FP.volume = 0.05;
 			
-			//lightMask = new LightMask(this);
-			//add(lightMask);
+			lightMask = new LightMask(this);
+			add(lightMask);
 		}
 		
 		override public function update():void {
@@ -228,8 +228,6 @@ package {
 					player.y = door.y + 10;
 				}
 			}
-			
-			lightMask.resize(destinationLevel.width, destinationLevel.height);
 		}
 		
 	}

@@ -52,11 +52,11 @@ package
 			updateFreq = Settings.FRAMERATE; //1 update/second
 			updateTimer = updateFreq;
 			
-			image = Image.createRect(w.currentLevel.width, w.currentLevel.height, dayColor, dayOpacity)
+			image = Image.createRect(FP.screen.width, FP.screen.height, dayColor, dayOpacity)
 			graphic = image;
 			initTimeCycle();
 			
-			layer = -200;
+			layer = -600;
 		}
 		
 		public function initTimeCycle():void {
@@ -64,6 +64,8 @@ package
 		}
 		
 		override public function update():void {
+			x = FP.camera.x;
+			y = FP.camera.y;
 			if (updateTimer <= 0) {
 				if (timeTween) {
 					image.color = timeTween.color;
@@ -109,11 +111,5 @@ package
 			dayTimer = dayLength;
 		}
 		
-		public function resize(_width:int, _height:int):void {
-			var currentColor:uint = image.color;
-			var currentOpacity:Number = image.alpha;
-			image = Image.createRect(_width, _height, currentColor, currentOpacity);
-			graphic = image;
-		}
 	}
 }

@@ -1,7 +1,6 @@
 package data {
 	import net.flashpunk.graphics.Image;
 	import flash.geom.Point;
-	import Weapons.Ammunition;
 	
 	public class InteractionItems {
 		
