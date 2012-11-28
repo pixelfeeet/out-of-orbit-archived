@@ -58,7 +58,6 @@ package {
 		private var jungleTiles:Object;
 		private var waterLevel:int;
 		
-		private var rocks:Array;
 		private var flatGround:Array;
 		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
@@ -136,6 +135,12 @@ package {
 			generateIslands();
 			fixGround();
 			setGrid();
+			generateRocks();
+
+			setHitboxTo(grid);
+		}
+		
+		private function generateRocks():void {
 			
 			var smallRocks:Array = [
 				new Image(Assets.ROCK1),
@@ -145,7 +150,7 @@ package {
 				new Image(Assets.ROCK7),
 				new Image(Assets.ROCK8),
 			]
-				
+			
 			var largeRocks:Array = [
 				new Image(Assets.ROCK2),
 				new Image(Assets.ROCK4),
@@ -184,12 +189,6 @@ package {
 					gw.add(rock);
 				}
 			}
-			
-			var r1:Character = new Character(new Point(100, 100))
-			r1.graphic = new Image(Assets.ROCK1);
-			r1.setHitboxTo(r1.graphic);
-			
-			setHitboxTo(grid);
 		}
 		
 		override public function update():void {
@@ -200,7 +199,7 @@ package {
 		
 		private function click():void {
 			var x:int = Math.floor((FP.camera.x + Input.mouseX) / Settings.TILESIZE);
-			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE)
+			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE);
 			var blastRadius:int = 2;
 			if (Input.check(Key.SHIFT)) {
 				removeTiles(x, y, blastRadius);
