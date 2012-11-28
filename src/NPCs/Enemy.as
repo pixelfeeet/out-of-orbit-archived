@@ -8,6 +8,7 @@ package NPCs {
 	
 	import utilities.Settings;
 	import utilities.UtilityFunctions;
+	import Weapons.Ammunition;
 	
 	public class Enemy extends NPC {
 		

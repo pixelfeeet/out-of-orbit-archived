@@ -29,8 +29,6 @@ package
 		
 		protected var onGround:Boolean;
 		
-		protected var animations:Animations;
-		
 		protected var damageTimer:int;
 		
 		protected var hungerTimer:int;
@@ -58,8 +56,6 @@ package
 			vGravity = GRAVITY;
 			vSpeed = SPEED;
 			vJump = JUMP;
-			
-			animations = new Animations;
 
 			onGround = false;
 			isInWater = false;
