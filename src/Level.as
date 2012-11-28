@@ -112,15 +112,11 @@ package {
 			generateTiles();
 			generateNPCs(_w, {"kind": "enemy"});
 			generateNPCs(_w, {"kind": "NPC"});
-			
-			trace(FP.randomSeed);
 		}
 		
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
 			gw = _w;
 			player = _p;
-			//generateEnemies(_w);
-			//generateNPCs(_w);
 			//loadNPCs(_w);
 			//loadDoors(_w, _p);
 			//loadInteractionItems(_w);
@@ -141,25 +137,47 @@ package {
 			fixGround();
 			setGrid();
 			
-			rocks = [
+			var smallRocks:Array = [
 				new Image(Assets.ROCK1),
-				new Image(Assets.ROCK2),
 				new Image(Assets.ROCK3),
-				new Image(Assets.ROCK4),
 				new Image(Assets.ROCK5),
 				new Image(Assets.ROCK6),
 				new Image(Assets.ROCK7),
-				new Image(Assets.ROCK8)
-			];
+				new Image(Assets.ROCK8),
+			]
+				
+			var largeRocks:Array = [
+				new Image(Assets.ROCK2),
+				new Image(Assets.ROCK4),
+			]
 			
 			for (var i:int = 0; i < flatGround.length; i++){
-				var roll:int = Math.floor(Math.random() * 3)
-				var layerRoll:int = Math.floor(Math.random() * 2);
+				var roll:int = Math.floor(Math.random() * 2)
 				if (roll <= 1) {
-					var rockIndex:int = Math.floor(Math.random() * rocks.length);
-					var rock:Character = new Character(new Point(flatGround[i].x * t, (flatGround[i].y * t) - t));
-					rock.graphic = rocks[rockIndex];
+					//TODO: 1. check how much space there surrounding this tile and
+					//choose an appropriately-sized rock
+					// 2. Rather than using the same images, there should be a separate
+					// selection of rocks be rendered behind the player
+					// that are darker/less saturated, to help with the visual clarity.
+					var rock:Character = new Character(new Point(0, 0));
+					var rockIndex:int;
+					
+					trace(flatGround[i].x + 2 + ", " + flatGround[i].y + ": "
+						+ tiles.getTile(flatGround[i].x + 2, flatGround[i].y))
+					
+					if (tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
+						//large rocks
+						rockIndex = Math.floor(Math.random() * largeRocks.length);
+						rock.graphic = largeRocks[rockIndex];
+					} else {
+						//small rocks
+						rockIndex = Math.floor(Math.random() * smallRocks.length);
+						rock.graphic = smallRocks[rockIndex];
+					}
+					var layerRoll:int = Math.floor(Math.random() * 2);
+					
 					rock.setHitboxTo(rock.graphic);
+					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
 					//player layer == -500
 					if (layerRoll < 1) rock.layer = -550;
 					else rock.layer = -100;
@@ -581,7 +599,6 @@ package {
 					} else {
 						open = false;
 					}
-					trace("x: " + int(x / t) + ", y:" + int(y / t));
 					y -= t;	
 				}
 			} else if (region == "water") {
@@ -595,7 +612,6 @@ package {
 					} else {
 						open = false;
 					}
-					trace("x: " + int(x / t) + ", y:" + int(y / t));
 					x += t;
 					
 					tries--;

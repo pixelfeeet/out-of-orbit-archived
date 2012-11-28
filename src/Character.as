@@ -282,6 +282,11 @@ package
 		protected function cLength(a:Point, b:Point):Number {
 			return Math.sqrt(((b.x - a.x) * (b.x - a.x)) + (b.y - a.y) * (b.y - a.y));
 		}
+		
+		public function setPosition(p:Point):void {
+			x = p.x;
+			y = p.y;
+		}
 
 		
 	}

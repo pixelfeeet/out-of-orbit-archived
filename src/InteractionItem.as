@@ -110,10 +110,5 @@ package {
 			}
 		}
 		
-		public function setPosition(_position:Point):void{
-			x = _position.x;
-			y = _position.y;
-		}
-		
 	}
 }
