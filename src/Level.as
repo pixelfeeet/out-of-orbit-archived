@@ -56,6 +56,7 @@ package {
 		private var groundDepth:int;
 		
 		private var jungleTiles:Object;
+		private var notSolids:Array;
 		private var waterLevel:int;
 		
 		private var flatGround:Array;
@@ -83,23 +84,32 @@ package {
 			NPClist = [];
 			
 			jungleTiles = {"ground": {
-				"topLeft": 1,
-				"topMid": 2,
-				"topRight": 3,
-				"midLeft": 11,
-				"middle": 12,
-				"midRight": 13,
-				"botLeft": 21,
-				"botMid": 22,
-				"botRight": 23,
-				"topLeftTuft": 4,
-				"topRightTuft": 5,
-				"bottomLeftTuft": 14,
-				"bottomRightTuft": 15
-			},
+					"topLeft": 1,
+					"topMid": 2,
+					"topRight": 3,
+					"midLeft": 11,
+					"middle": 12,
+					"midRight": 13,
+					"botLeft": 21,
+					"botMid": 22,
+					"botRight": 23,
+					"topLeftTuft": 4,
+					"topRightTuft": 5,
+					"bottomLeftTuft": 14,
+					"bottomRightTuft": 15
+				},
+				"structure": {
+					"block": 7,
+					"bg": 17
+				},
 				"constructionBlock": 10,
-				"water": 20
+				"water": 30
 			};
+			
+			notSolids = [
+				0,
+				jungleTiles["structure"]["bg"]
+			];
 			
 			backgroundColor = 0xa29a8d;
 			loadLevel(_w, _p);
@@ -133,11 +143,29 @@ package {
 			generateWater();
 			drawBergs();
 			generateIslands();
+			generateStructure();
+			generateAbandonedShip();
 			fixGround();
 			setGrid();
 			generateRocks();
 
 			setHitboxTo(grid);
+		}
+		
+		private function generateStructure():void {
+			var wallWidth:int = 1;
+			
+			var structWidth:int = (Math.random() * 10) + 5;
+			var structHeight:int = (Math.random() * 10) + 5;
+			var structX:int = Math.random() * (w - structWidth);
+			var structY:int = Math.random() * (h - structHeight);
+			tiles.setRect(structX, structY, structWidth, structHeight, jungleTiles["structure"]["block"]);
+			tiles.setRect(structX + wallWidth, structY + wallWidth,
+			structWidth - (wallWidth * 2), structHeight - (wallWidth * 2), jungleTiles["structure"]["bg"]);
+		}
+		
+		private function generateAbandonedShip():void {
+			
 		}
 		
 		private function generateRocks():void {
@@ -161,9 +189,6 @@ package {
 				if (roll <= 1) {
 					//TODO: 1. check how much space there surrounding this tile and
 					//choose an appropriately-sized rock
-					// 2. Rather than using the same images, there should be a separate
-					// selection of rocks be rendered behind the player
-					// that are darker/less saturated, to help with the visual clarity.
 					var rock:Character = new Character(new Point(0, 0));
 					var rockIndex:int;
 					

@@ -524,7 +524,7 @@ package {
 					yInput += 1;
 				}
 				
-				velocity.y = vSpeed * yInput + vGravity;
+				velocity.y = (vSpeed * yInput) + vGravity;
 			} else {
 				jump();
 				if (!flying) vSpeed = SPEED;

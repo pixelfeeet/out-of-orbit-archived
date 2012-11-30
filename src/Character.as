@@ -164,13 +164,13 @@ package
 		}
 		
 		protected function updateMovement():void{
-			if (GameWorld(FP.world).currentLevel.tiles.getTile(x / t, (y / t) + 1) == 20) isInWater = true;
+			if (GameWorld(FP.world).currentLevel.tiles.getTile(x / t, (y / t) + 1) == 30) isInWater = true;
 			else isInWater = false;
 			
 			if (isInWater) {
-				vGravity = GRAVITY / 2;
-				vSpeed = SPEED / 2;
-				vJump = JUMP / 2;
+				vGravity = GRAVITY * 3;
+				vSpeed = SPEED * 0.7;
+				vJump = JUMP * 0.7;
 			} else {
 				vGravity = GRAVITY;
 				vSpeed = SPEED;
