@@ -52,6 +52,8 @@ package
 		private var _w:GameWorld;
 		private var time:String; //"Day" or "Night"
 		
+		public var lightSourceList:Array;
+		
 		public function LightMask(w:GameWorld, x:Number=0, y:Number=0) {
 			super(x, y);
 			//TODO: Make this lightmask the size of the screen, rather than of the level,
@@ -78,7 +80,7 @@ package
 			initTimeCycle();
 			
 			p = _w.getPlayer();
-			lightRadius = 100;
+			lightSourceList = [p];
 			
 			rect = new Rectangle();
 			screenRect = new Rectangle();
@@ -99,26 +101,28 @@ package
 		}
 		
 		override public function update():void {
-			if (time == "Night") drawLightSource();
+			if (time == "Night") {
+
+					drawLightSource();
+				
+			}
 			dayNightCycle();
 		}
 		
 		private function drawLightSource():void {
 			bmp.fillRect(screenRect, 0xFFFFFFFF);
-			offLeft = p.x - FP.camera.x + (_w.getPlayer().width / 2);
-			offTop = p.y - FP.camera.y + (_w.getPlayer().height / 2) - 20;
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 3, 0xaaffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 6, 0x99ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 9, 0x88ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 12, 0x77ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 15, 0x66ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 18, 0x55ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 21, 0x44ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 24, 0x33ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 27, 0x22ffffff);
-			drawBitmapCircle(bmp, offLeft, offTop, lightRadius - 30, 0x11ffffff);
-			bmpMask = new Image(bmp);
-			image.drawMask = bmp;
+			for each(var e:Character in lightSourceList) {
+				offLeft = e.x - FP.camera.x + (e.width / 2);
+				offTop = e.y - FP.camera.y + (e.height / 2) - 20;
+//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 5, 0xddffffff);
+//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 10, 0xaaffffff);
+//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 15, 0x77ffffff);
+//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 20, 0x44ffffff);
+//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 25, 0x11ffffff);
+				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius, 0x11ffffff);
+				bmpMask = new Image(bmp);
+				image.drawMask = bmp;
+			}
 		}
 		
 		private function dayNightCycle():void {

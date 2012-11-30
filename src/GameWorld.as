@@ -56,7 +56,7 @@ package {
 		private var adjusted:Boolean;
 		
 		private var background:Background;
-		private var lightMask:LightMask;
+		public var lightMask:LightMask;
 		
 		public var currentLevel:Level;
 		public var cursor:Cursor;
@@ -76,6 +76,9 @@ package {
 			pauseMenuShowing = false;
 			statsMenuShowing = false;
 			constructionMenuShowing = false;
+			
+			lightMask = new LightMask(this);
+			add(lightMask);
 			
 			//add(player);
 			currentLevel = new Level(this, player);
@@ -106,9 +109,6 @@ package {
 			
 			//Sound
 			FP.volume = 0.05;
-			
-			lightMask = new LightMask(this);
-			add(lightMask);
 		}
 		
 		override public function update():void {

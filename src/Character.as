@@ -42,6 +42,8 @@ package
 		protected var t:int; //Settings.TILESIZE
 		
 		private var player:SpacemanPlayer;
+		
+		public var lightRadius:int;
 
 		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
@@ -70,6 +72,8 @@ package
 			maxHunger = hunger;
 			minHunger = 0;
 			hungerTimer = 0;
+			
+			lightRadius = 100;
 			
 			t = Settings.TILESIZE;	
 		}

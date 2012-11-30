@@ -207,6 +207,9 @@ package {
 						rock.graphic = new Image(smallRocks[rockIndex]);
 					}
 					
+					if (gw.lightMask.lightSourceList.length < 5)
+						gw.lightMask.lightSourceList.push(rock)
+					
 					var layerRoll:Number = Math.random();
 					
 					if (layerRoll <= 0.5) {
