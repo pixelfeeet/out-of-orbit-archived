@@ -7,8 +7,6 @@ package NPCs {
 	import net.flashpunk.graphics.Spritemap;
 	
 	public class DustBall extends NPC {
-		//TODO: fix the bug that causes the dustballs only to face right
-		// even when they're moving left.
 		protected var spriteMap:Spritemap;
 		
 		public static var label:String = "dust_ball"
