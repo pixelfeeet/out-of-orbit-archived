@@ -25,8 +25,8 @@ package NPCs {
 		}
 		
 		override protected function updateGraphic():void {
-			if (FP.sign(vSpeed) > 0) Image(graphic).flipped = false;
-			else if (FP.sign(vSpeed) < 0) Image(graphic).flipped = true;	
+			if (FP.sign(xSpeed) > 0) Image(graphic).flipped = false;
+			else if (FP.sign(xSpeed) < 0) Image(graphic).flipped = true;	
 			if (velocity.x == 0) spriteMap.play("standing");
 			else spriteMap.play("moving");
 		}
