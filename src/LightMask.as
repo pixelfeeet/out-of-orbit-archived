@@ -56,8 +56,7 @@ package
 		
 		public function LightMask(w:GameWorld, x:Number=0, y:Number=0) {
 			super(x, y);
-			//TODO: Make this lightmask the size of the screen, rather than of the level,
-			//and fix its positions
+			//TODO: fix the the light sources not moving after dawn begins
 			dayLength = nightLength = 5; //seconds
 			duskLength = dawnLength = 5; //seconds
 			dayTimer = -1;
@@ -85,15 +84,17 @@ package
 			rect = new Rectangle();
 			screenRect = new Rectangle();
 			bmp = new BitmapData(FP.screen.width, FP.screen.height, true, 0);
+			
 			rect.left = screenRect.left = 0;
 			rect.top = screenRect.top = 0;
 			rect.width = screenRect.width = FP.screen.width;
 			rect.height = screenRect.height = FP.screen.height;
+			
 			bmp.fillRect(rect, 0xEEFFFFFF);
 			bmpMask = new Image(bmp);
 			image.drawMask = bmp;
 			
-			layer = -600;
+			layer = -700;
 		}
 		
 		public function initTimeCycle():void {
@@ -101,11 +102,7 @@ package
 		}
 		
 		override public function update():void {
-			if (time == "Night") {
-
-					drawLightSource();
-				
-			}
+			if (time != "Day") drawLightSource();
 			dayNightCycle();
 		}
 		
@@ -114,11 +111,6 @@ package
 			for each(var e:Character in lightSourceList) {
 				offLeft = e.x - FP.camera.x + (e.width / 2);
 				offTop = e.y - FP.camera.y + (e.height / 2) - 20;
-//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 5, 0xddffffff);
-//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 10, 0xaaffffff);
-//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 15, 0x77ffffff);
-//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 20, 0x44ffffff);
-//				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius - 25, 0x11ffffff);
 				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius, 0x11ffffff);
 				bmpMask = new Image(bmp);
 				image.drawMask = bmp;
@@ -135,18 +127,15 @@ package
 				}
 				
 				if (dayTimer != -1) {
-					dayTimer --;
-					if (dayTimer == 0) {
-						onDusk();
-					}
+					dayTimer--;
+					if (dayTimer == 0) onDusk();
 				}
 				
 				if (nightTimer != -1) {
-					nightTimer --;
-					if (nightTimer == 0) {
-						onDawn();
-					}
+					nightTimer--;
+					if (nightTimer == 0) onDawn();
 				}
+				
 				updateTimer = updateFreq;
 			} else {
 				updateTimer--;
@@ -154,35 +143,37 @@ package
 		}
 		
 		public function onDawn():void {
-			time = "Day";
+			time = "Dawn";
 			timeTween = new ColorTween(onDay);
 			timeTween.tween(dawnLength, nightColor, dayColor, nightOpacity, dayOpacity);
 			addTween(timeTween, true);	
 		}
 		
 		public function onDusk():void {
-			time = "Night";
+			time = "Dusk";
 			timeTween = new ColorTween(onNight);
 			timeTween.tween(duskLength, dayColor, nightColor, dayOpacity, nightOpacity);
 			addTween(timeTween, true);
 		}
 		
 		public function onNight():void {
+			time = "Night";
 			nightTimer = nightLength;
 		}
 		
 		public function onDay():void {
+			time = "Day";
 			dayTimer = dayLength;
 		}
 		
 		private function drawBitmapCircle(target:BitmapData, cX:Number, cY:Number, r:Number, color:Number):void {
 			var x:Number = 0;
 			var y:Number = 0;
-			var r2:Number = r * r;
-			for (x=1; x<r; x++) {
-				y = Math.ceil(Math.sqrt(r2 - x*x));
-				rect.topLeft = new Point(cX-x, cY-y);
-				rect.size = new Point(2*x, 2*y);
+			var r2:Number = r * r ;
+			for (x = 1; x < r; x++) {
+				y = Math.ceil(Math.sqrt(r2 - x * x));
+				rect.topLeft = new Point(cX - x, cY - y);
+				rect.size = new Point(2 * x, 2 * y);
 				target.fillRect(rect, color);
 			}
 		}
