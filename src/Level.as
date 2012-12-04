@@ -4,7 +4,6 @@ package {
 	import NPCs.Enemy;
 	import NPCs.NPC;
 	
-	import flash.display3D.IndexBuffer3D;
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	import flash.xml.XMLNode;
@@ -132,19 +131,33 @@ package {
 			//loadScenery(_w);
 			loadPlayer(_w, _p);
 		}
-
+		
+		private function generateSnippets():void {
+			var ls:LevelSnippet = new LevelSnippet(Assets.TEMPLE);
+			var temple:Array = ls.loadTiles();
+			var tOrigin:Point = new Point(0,0); //temple origin;
+			//TODO: 1. Calculate start position based off of height and width values
+			// taken from the xmldata itself.
+			// 2. Be smarter about placement: i.e. above ground level, and fill in
+			// any empty blocks underneath
+			tOrigin.x = Math.floor(Math.random() * w);
+			tOrigin.y = h - Math.floor(Math.random() * 10) - 10;
+			for (var i:int = 0; i < temple.length; i++){
+				tiles.setTile(temple[i]["x"] + tOrigin.x, temple[i]["y"] + tOrigin.y, temple[i]["index"]);
+			}
+		}
 		
 		private function generateTiles():void {
 
 			flatGround = [];
-			
+
 			//drawGround(groundDepth);
 			generateHillStops()
 			generateWater();
 			drawBergs();
 			generateIslands();
-			generateStructure();
-			generateAbandonedShip();
+			//generateStructure();
+			generateSnippets();
 			fixGround();
 			setGrid();
 			generateRocks();
@@ -152,21 +165,7 @@ package {
 			setHitboxTo(grid);
 		}
 		
-		private function generateStructure():void {
-			var wallWidth:int = 1;
-			
-			var structWidth:int = (Math.random() * 10) + 5;
-			var structHeight:int = (Math.random() * 10) + 5;
-			var structX:int = Math.random() * (w - structWidth);
-			var structY:int = Math.random() * (h - structHeight);
-			tiles.setRect(structX, structY, structWidth, structHeight, jungleTiles["structure"]["block"]);
-			tiles.setRect(structX + wallWidth, structY + wallWidth,
-			structWidth - (wallWidth * 2), structHeight - (wallWidth * 2), jungleTiles["structure"]["bg"]);
-		}
-		
-		private function generateAbandonedShip():void {
-			
-		}
+		private function generateAbandonedShip():void { }
 		
 		private function generateRocks():void {
 			

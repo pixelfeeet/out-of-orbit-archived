@@ -52,7 +52,7 @@ package
 		private var _w:GameWorld;
 		private var time:String; //"Day" or "Night"
 		
-		public var lightSourceList:Array;
+		public var beaconList:Array;
 		
 		public function LightMask(w:GameWorld, x:Number=0, y:Number=0) {
 			super(x, y);
@@ -79,7 +79,7 @@ package
 			initTimeCycle();
 			
 			p = _w.getPlayer();
-			lightSourceList = [p];
+			beaconList = [p];
 			
 			rect = new Rectangle();
 			screenRect = new Rectangle();
@@ -108,7 +108,7 @@ package
 		
 		private function drawLightSource():void {
 			bmp.fillRect(screenRect, 0xFFFFFFFF);
-			for each(var e:Character in lightSourceList) {
+			for each(var e:Character in beaconList) {
 				offLeft = e.x - FP.camera.x + (e.width / 2);
 				offTop = e.y - FP.camera.y + (e.height / 2) - 20;
 				drawBitmapCircle(bmp, offLeft, offTop, e.lightRadius, 0x11ffffff);

@@ -1,22 +1,43 @@
-package
-{
-	import net.flashpunk.Entity;
-	import net.flashpunk.Graphic;
-	import net.flashpunk.Mask;
+package {
+	import flash.geom.Point;
+	import flash.utils.ByteArray;
+	import flash.xml.XMLNode;
 	
-	public class StaticLevel extends Entity
-	{
-		public function StaticLevel(_w:GameWorld, _p:SpacemanPlayer, _xml) {
+	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
+	import net.flashpunk.Graphic;
+	import net.flashpunk.World;
+	import net.flashpunk.graphics.Graphiclist;
+	import net.flashpunk.graphics.Image;
+	import net.flashpunk.graphics.Tilemap;
+	import net.flashpunk.masks.Grid;
+	import net.flashpunk.tweens.misc.VarTween;
+	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
+	
+	public class StaticLevel extends Entity {
+		public var tiles:Tilemap;
+		private var grid:Grid;
+		private var t:int; //Settings.TILESIZE
+		public var xml:Class;
+		
+		private var rawData:ByteArray;
+		private var dataString:String;
+		private var xmlData:XML;
+		
+		private var w:int;
+		private var h:int;
+		public function StaticLevel(_xml:Class) {
 			super();
-			//xml = _xml;
-			//rawData = new xml;
-			//dataString = rawData.readUTFBytes(rawData.length);
-			//xmlData = new XML(dataString);
+			xml = _xml;
+			rawData = new xml;
+			dataString = rawData.readUTFBytes(rawData.length);
+			xmlData = new XML(dataString);
 			
-			//w = xmlData.@width;
-			//h = xmlData.@height;
+			w = xmlData.@width;
+			h = xmlData.@height;
 			//loadTileProperties();
-			//loadTiles()
+			loadTiles()
 		}
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{

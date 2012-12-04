@@ -122,6 +122,10 @@ package {
 		//World
 		private var w:GameWorld;
 		
+		private var jetSound:Sfx;
+		private var jetSoundInterval:int;
+		private var jetSoundTimer:int;
+		
 		public function SpacemanPlayer(_world:GameWorld, _position:Point = null) {
 			
 			//Essentials
@@ -256,6 +260,10 @@ package {
 			walkSound = new Sfx(Assets.BLIP);
 			
 			layer = -500
+				
+			//jetSound = new Sfx(Assets.SHOOT);
+			//jetSoundInterval = 5;
+			//jetSoundTimer = jetSoundInterval;
 		}
 		
 		override public function update():void {
@@ -531,6 +539,9 @@ package {
 				else vSpeed = SPEED * 2
 				acceleration.y = GRAVITY;
 			}
+			
+			//acceleration.x = (vSpeed * xInput) / 5;
+			//velocity.x += acceleration.x
 			velocity.x = vSpeed * xInput;
 
 		}
@@ -605,6 +616,14 @@ package {
 					if (!jetBurnedOut) {
 						jetpacking = true;
 						jetFuel--;
+						/*
+						if (jetSoundTimer <= 0) {
+							jetSound.play();
+							jetSoundTimer = jetSoundInterval;
+						} else {
+							jetSoundTimer--;
+						}
+						*/
 						velocity.y = -JUMP;
 					}
 				} else {

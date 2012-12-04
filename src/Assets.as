@@ -11,6 +11,9 @@ package {
 		[Embed(source = 'assets/space.tmx', mimeType = "application/octet-stream")] public static const SPACE_MAP:Class;
 		[Embed(source = 'assets/jungle.tmx', mimeType = "application/octet-stream")] public static const JUNGLE:Class;
 		
+		//Level Snippets
+		[Embed(source = 'assets/temple.tmx', mimeType = "application/octet-stream")] public static const TEMPLE:Class;
+		
 		//Spaceman parts	
 		[Embed(source = 'assets/spaceman_parts/legs_map.png')] public static const LEGS_MAP:Class;
 		[Embed(source = 'assets/spaceman_parts/standing_torso.png')] public static const TORSO:Class;
