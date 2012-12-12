@@ -1,4 +1,4 @@
-###Description
+##Description
 <p>Out of Orbit (working title) is a 2D exploration-heavy survival game, currently under development by me.  The player guides an unnamed cosmonaut who has crash-landed on an strange, foreign planet, and must help him surivive, regain his skills, and eventually fix his ship and return home.</p>
 <p>Here are some of the features the full game will include:</p>
 <ul>
