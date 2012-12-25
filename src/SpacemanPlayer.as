@@ -616,14 +616,6 @@ package {
 					if (!jetBurnedOut) {
 						jetpacking = true;
 						jetFuel--;
-						/*
-						if (jetSoundTimer <= 0) {
-							jetSound.play();
-							jetSoundTimer = jetSoundInterval;
-						} else {
-							jetSoundTimer--;
-						}
-						*/
 						velocity.y = -JUMP;
 					}
 				} else {

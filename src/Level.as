@@ -82,7 +82,8 @@ package {
 			enemiesList = [];
 			NPClist = [];
 			
-			jungleTiles = {"ground": {
+			jungleTiles = {
+				"ground": {
 					"topLeft": 1,
 					"topMid": 2,
 					"topRight": 3,
@@ -110,126 +111,59 @@ package {
 				jungleTiles["structure"]["bg"]
 			];
 			
-			backgroundColor = 0xa29a8d;
-			loadLevel(_w, _p);
-			doorsLoaded = false;
-			
+			backgroundColor = 0xa29a8d;			
 			groundDepth = 0;
 			waterLevel = 8;
 			
-			generateTiles();
-			generateNPCs(_w, {"kind": "enemy"});
-			generateNPCs(_w, {"kind": "NPC"});
+			loadLevel(_w, _p);
 		}
 		
 		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
 			gw = _w;
 			player = _p;
-			//loadNPCs(_w);
-			//loadDoors(_w, _p);
-			//loadInteractionItems(_w);
-			//loadScenery(_w);
 			loadPlayer(_w, _p);
-		}
-		
-		private function generateSnippets():void {
-			var ls:LevelSnippet = new LevelSnippet(Assets.TEMPLE);
-			var temple:Array = ls.loadTiles();
-			var tOrigin:Point = new Point(0,0); //temple origin;
-			//TODO: 1. Calculate start position based off of height and width values
-			// taken from the xmldata itself.
-			// 2. Be smarter about placement: i.e. above ground level, and fill in
-			// any empty blocks underneath
-			tOrigin.x = Math.floor(Math.random() * w);
-			tOrigin.y = h - Math.floor(Math.random() * 10) - 10;
-			for (var i:int = 0; i < temple.length; i++){
-				tiles.setTile(temple[i]["x"] + tOrigin.x, temple[i]["y"] + tOrigin.y, temple[i]["index"]);
-			}
+			generateTiles();
+			generateNPCs(_w, {"kind": "enemy"});
+			generateNPCs(_w, {"kind": "NPC"});
 		}
 		
 		private function generateTiles():void {
-
 			flatGround = [];
-
-			//drawGround(groundDepth);
+			
+			//draw tiles
 			generateHillStops()
 			generateWater();
-			drawBergs();
 			generateIslands();
-			//generateStructure();
-			generateSnippets();
+
+			//pretty the ground up/set grid/hitbox
 			fixGround();
 			setGrid();
-			generateRocks();
-
 			setHitboxTo(grid);
-		}
-		
-		private function generateAbandonedShip():void { }
-		
-		private function generateRocks():void {
 			
-			var smallRocks:Array = [
-				Assets.ROCK1,
-				Assets.ROCK3,
-				Assets.ROCK5,
-				Assets.ROCK6,
-				Assets.ROCK7,
-				Assets.ROCK8,
-			]
-			
-			var largeRocks:Array = [
-				Assets.ROCK2,
-				Assets.ROCK4,
-			]
-			
-			for (var i:int = 0; i < flatGround.length; i++){
-				var roll:int = Math.floor(Math.random() * 6)
-				if (roll <= 1) {
-					//TODO: 1. check how much space there surrounding this tile and
-					//choose an appropriately-sized rock
-					var rock:Character = new Character(new Point(0, 0));
-					var rockIndex:int;
-					
-					trace(flatGround[i].x + 2 + ", " + flatGround[i].y + ": "
-						+ tiles.getTile(flatGround[i].x + 2, flatGround[i].y))
-					
-					
-					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 
-						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
-						//large rocks
-						rockIndex = Math.floor(Math.random() * largeRocks.length);
-						rock.graphic = new Image(largeRocks[rockIndex]);
-					} else {
-						//small rocks
-						rockIndex = Math.floor(Math.random() * smallRocks.length);
-						rock.graphic = new Image(smallRocks[rockIndex]);
-					}
-					
-					var layerRoll:Number = Math.random();
-					
-					if (layerRoll <= 0.5) {
-						
-						Image(rock.graphic).color = 0xffffff;
-						rock.layer = -550;
-					} else {
-						
-						Image(rock.graphic).color = 0xbbaabb;
-						rock.layer = -100;
-					}
-					
-					
-					rock.setHitboxTo(rock.graphic);
-					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
-					
-					gw.add(rock);
-				}
-			}
+			//add scenery
+			generateRocks();
 		}
 		
 		override public function update():void {
-			if (Input.mousePressed) {
-				//click();	
+			if (Input.mousePressed) return void; //click();
+		}
+		
+		private function loadTiles():void {
+			generateTiles();
+			setGrid();
+		}
+		
+		
+		private function setGrid():void {
+			var gid:int = 0;
+			for(var row:int = 0; row < h; row++){
+				for(var column:int = 0; column < w; column++){
+					if (tiles.getTile(column, row) != 0 &&
+						tiles.getTile(column, row) != jungleTiles["water"]) {
+						grid.setTile(column, row, true);
+					} else grid.setTile(column, row, false);
+					gid++;
+				}
 			}
 		}
 		
@@ -239,14 +173,15 @@ package {
 			var blastRadius:int = 2;
 			if (Input.check(Key.SHIFT)) {
 				removeTiles(x, y, blastRadius);
-			} else{
-				if (!collide("Player", x, y)) {
-					addTiles(x, y, blastRadius);
-				}
+			} else {
+				if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
 			}
 			fixGround();
 		}
 		
+		/**
+		 * Draw tiles
+		 */
 		private function drawBergs():void {
 			var bergAmount:int = 5;
 			for (var i:int = 0; i < bergAmount; i++) {
@@ -279,18 +214,6 @@ package {
 			}
 		}
 		
-		private function removeTiles(x:int, y:int, blastRadius:int):void {
-			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
-			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, false)
-			fixGround();
-		}
-		
-		private function addTiles(x:int, y:int, blastRadius:int):void {
-			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, jungleTiles["constructionBlock"]);
-			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, true)
-			fixGround();
-		}
-		
 		private function generateWater():void {
 			for (var x:int = 0; x < w; x++){
 				for (var y:int = h - waterLevel; y <  h; y++){
@@ -299,6 +222,43 @@ package {
 			}
 		}
 		
+		/**
+		 * Player terrain manipulation
+		 */
+		private function addTiles(x:int, y:int, blastRadius:int):void {
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, jungleTiles["constructionBlock"]);
+			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, true)
+			fixGround();
+		}
+		
+		private function removeTiles(x:int, y:int, blastRadius:int):void {
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
+			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, false)
+			fixGround();
+		}
+		
+		/**
+		 * TODO
+		 * 1. Calculate start position based off of height and width values
+		 * taken from the xmldata itself.
+		 * 2. Be smarter about placement: i.e. above ground level, and fill in
+		 * any empty blocks underneath
+		 */
+		private function generateSnippets():void {
+			var ls:LevelSnippet = new LevelSnippet(Assets.TEMPLE);
+			var temple:Array = ls.loadTiles();
+			var tOrigin:Point = new Point(0,0); //temple origin;
+			tOrigin.x = Math.floor(Math.random() * w);
+			tOrigin.y = h - Math.floor(Math.random() * 10) - 10;
+			for (var i:int = 0; i < temple.length; i++){
+				tiles.setTile(temple[i]["x"] + tOrigin.x, temple[i]["y"] + tOrigin.y, temple[i]["index"]);
+			}
+		}
+		
+		/**
+		 * Fix tile
+		 */
+		//Iterate through each tile and call fixTile on ground tiles
 		private function fixGround():void {
 			for (var x:int = 0; x < w; x++){
 				for (var y:int = 0; y < h; y++){
@@ -310,6 +270,9 @@ package {
 			}
 		}
 		
+		/**
+		 * TODO: Refactor
+		 */
 		private function fixTile(x:int, y:int):int {
 			var ts:Object = jungleTiles["ground"];
 			if (tiles.getTile(x, y - 1) == 0) {
@@ -359,8 +322,11 @@ package {
 			return ts["middle"];
 		}
 		
-		//TODO: add overlapping/not overlapping logic,
-		//optional parameters for different shapes -- isoceles etc.
+		/**
+		 * TODO:
+		 * 1. Add more shapes
+		 * 2. REFACTOR -- this function is a bit too long
+		 */
 		private function drawIsland(options:Object=null):void {
 			var kind:String = "vShaped"
 			var minWidth:int = 2;
@@ -401,7 +367,6 @@ package {
 					}
 				}
 				isolated = flag;
-				
 				tries++
 				if (tries >= maxTries) break;
 			}
@@ -431,31 +396,8 @@ package {
 			var minSize:int = 2;
 			for (var i:int = 0; i < islands; i++) {
 				var roll:Number = Math.random();
-				drawIsland({"kind": "rect"});
-			}
-		}
-		
-		private function randomPoint():Point {
-			var x:int = Math.ceil(FP.random * w);
-			var y:int = Math.ceil(FP.random * h);
-			return new Point(x, y);
-		}
-		
-		private function drawPocket(pockets:int, pocketPoints:Array, pocketWidth:int):void {
-			for (var pocket:int = 0; pocket < pockets; pocket++) {
-				var _x:int = pocketPoints[pocket].x;
-				var _y:int = pocketPoints[pocket].y;
-				
-				var startX:int = _x - (pocketWidth / 2);
-				var startY:int = _y - (pocketWidth / 2);
-				
-				startX = _x - Math.floor(pocketWidth / 2);
-				startY = _y - Math.floor(pocketWidth / 2);
-				for (var column:int = startX; column < startX + pocketWidth; column++){
-					for (var row:int = startY; row < startY + pocketWidth; row++) {
-						tiles.clearTile(column, row);
-					}
-				}
+				if (roll < 0.5) drawIsland({"kind": "rect"});
+				else drawIsland({"kind": "vShaped"});
 			}
 		}
 		
@@ -491,6 +433,9 @@ package {
 			}
 		}
 		
+		/**
+		 * Is this useless now?
+		 */
 		private function drawSlope(start:Point, end:Point, fillDown:Boolean = true):void {
 			drawLine(start, end);
 		}
@@ -518,9 +463,6 @@ package {
 				 * top of each other, so after the first point they need to be offset
 				 * by 1
 				 */
-//				var offsetX:int;
-//				if (i == 0) offsetX = 0;
-//				else offsetX = 1;
 				var newStartY:int;
 				var newEndY:int;
 				if (relativeToGround) newStartY = h - groundDepth - 1 - stops[i].y;
@@ -531,12 +473,13 @@ package {
 				end = new Point(stops[i + 1].x, newEndY)
 				fillSlope(start, end);
 			}
-
 		}
-		
+
+		/**
+		 * TODO: base values off of cumulative hill width rather than
+		 * individual segment width.
+		 */
 		private function generateHillStops():void {
-			//TODO: base values off of cumulative hill width rather than
-			//individual segment width.
 			var hillStopsNum:int = 10;
 			var hillStops:Array = [];
 			var segmentWidth:int = w / hillStopsNum;
@@ -551,40 +494,85 @@ package {
 			var y:int = startY;
 			hillStops.push(new Point(x, y));
 			for (var i:int = 0; i < hillStopsNum; i++) {
-				
 				//segmentWidth = Math.ceil((FP.random * maxSegmentWidth) + minSegmentWidth);
-				x += segmentWidth;
-				
+				x += segmentWidth;				
 				if (i != hillStopsNum - 1) y  = Math.ceil(FP.random * peak);
 				else y = 0;
-					
 				hillStops.push(new Point(x, y));
 			}
 			drawHill(hillStops);
 		}
 		
-		private function loadTiles():void {
-
-			generateTiles();
-			setGrid();
-
-		}
+		private function buildTree():void { }
+		private function buildForest():void { }
+		private function buildFloatingFarm():void { }
+		private function buildAbandonedShip():void { }
 		
-		private function setGrid():void {
-			var gid:int = 0;
-			for(var row:int = 0; row < h; row++){
-				for(var column:int = 0; column < w; column++){
-					if (tiles.getTile(column, row) != 0 &&
-						tiles.getTile(column, row) != jungleTiles["water"]) {
-						grid.setTile(column, row, true);
+		/**
+		 * Generate Scenery
+		 */
+		
+		/**
+		 * TODO
+		 * 1. check how much space there surrounding this tile and
+		 * choose an appropriately-sized rock
+		 * 2.put smallrocks and largeRocks somewhere else
+		 */
+		private function generateRocks():void {
+			var smallRocks:Array = [
+				Assets.ROCK1,
+				Assets.ROCK3,
+				Assets.ROCK5,
+				Assets.ROCK6,
+				Assets.ROCK7,
+				Assets.ROCK8,
+			]
+			
+			var largeRocks:Array = [
+				Assets.ROCK2,
+				Assets.ROCK4,
+			]
+			
+			for (var i:int = 0; i < flatGround.length; i++){
+				var roll:int = Math.floor(Math.random() * 6)
+				if (roll <= 1) {
+					var rock:Character = new Character(new Point(0, 0));
+					var rockIndex:int;
+					
+					trace(flatGround[i].x + 2 + ", " + flatGround[i].y + ": "
+						+ tiles.getTile(flatGround[i].x + 2, flatGround[i].y))
+					
+					
+					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 
+						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
+						//large rocks
+						rockIndex = Math.floor(Math.random() * largeRocks.length);
+						rock.graphic = new Image(largeRocks[rockIndex]);
 					} else {
-						grid.setTile(column, row, false);
+						//small rocks
+						rockIndex = Math.floor(Math.random() * smallRocks.length);
+						rock.graphic = new Image(smallRocks[rockIndex]);
 					}
-
-					gid++;
+					
+					var layerRoll:Number = Math.random();
+					
+					if (layerRoll <= 0.5) {
+						Image(rock.graphic).color = 0xffffff;
+						rock.layer = -550;
+					} else {
+						Image(rock.graphic).color = 0xbbaabb;
+						rock.layer = -100;
+					}
+				
+					
+					rock.setHitboxTo(rock.graphic);
+					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
+					
+					gw.add(rock);
 				}
 			}
 		}
+		
 
 		public function generateNPCs(_w:World, options:Object):void {
 			//TODO: add different spawning regions--in the water, on the ground, on
