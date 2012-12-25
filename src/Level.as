@@ -58,6 +58,9 @@ package {
 		private var notSolids:Array;
 		private var waterLevel:int;
 		
+		private var smallRocks:Array;
+		private var largeRocks:Array;
+		
 		private var flatGround:Array;
 		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
@@ -102,6 +105,10 @@ package {
 					"block": 7,
 					"bg": 17
 				},
+				"plants": {
+					"treeTrunk": 8,
+					"treeLeaves": 9
+				},
 				"constructionBlock": 10,
 				"water": 30
 			};
@@ -109,6 +116,20 @@ package {
 			notSolids = [
 				0,
 				jungleTiles["structure"]["bg"]
+			];
+			
+			smallRocks = [
+				Assets.ROCK1,
+				Assets.ROCK3,
+				Assets.ROCK5,
+				Assets.ROCK6,
+				Assets.ROCK7,
+				Assets.ROCK8,
+			];
+			
+			largeRocks = [
+				Assets.ROCK2,
+				Assets.ROCK4,
 			];
 			
 			backgroundColor = 0xa29a8d;			
@@ -123,8 +144,8 @@ package {
 			player = _p;
 			loadPlayer(_w, _p);
 			generateTiles();
-			generateNPCs(_w, {"kind": "enemy"});
-			generateNPCs(_w, {"kind": "NPC"});
+			generateNPCs({"kind": "enemy"});
+			generateNPCs({"kind": "NPC"});
 		}
 		
 		private function generateTiles():void {
@@ -133,8 +154,8 @@ package {
 			//draw tiles
 			generateHillStops()
 			generateWater();
-			generateIslands();
-
+			//generateIslands();
+			
 			//pretty the ground up/set grid/hitbox
 			fixGround();
 			setGrid();
@@ -142,6 +163,7 @@ package {
 			
 			//add scenery
 			generateRocks();
+			buildForest();
 		}
 		
 		override public function update():void {
@@ -197,13 +219,13 @@ package {
 			var border:int = 4;
 			var currentPoint:Point;
 			drawLine(start, end);
-
+			
 			drawHill([start,
 				new Point(start.x + (width * 0.25), start.y - (Math.random() * 8)),
 				new Point(start.x + (width * 0.5), start.y - (Math.random() * 8)),
 				new Point(start.x + (width * 0.75), start.y - (Math.random() * 8)),
 				end], false);
-
+			
 			var y:int;		
 			for (var x:int = start.x; x <= start.x + width; x++) {
 				y = start.y + 1;
@@ -309,7 +331,7 @@ package {
 			
 			//tile to the top-left is empty
 			if (tiles.getTile(x - 1, y - 1) == 0) return ts["topLeftTuft"];
-
+			
 			//tile to the top-right is empty
 			if (tiles.getTile(x + 1, y - 1) == 0) return ts["topRightTuft"];
 			
@@ -318,7 +340,7 @@ package {
 			
 			//tile to the bottom-right is empty
 			if (tiles.getTile(x + 1, y + 1) == 0) return ts["bottomRightTuft"];
-				
+			
 			return ts["middle"];
 		}
 		
@@ -340,7 +362,7 @@ package {
 				if (options["minHeight"]) minHeight = options["minHeight"];
 				if (options["overlap"]) overlap = options["overlap"];
 			}
-	
+			
 			//Ensure no overlap
 			var isolated:Boolean = false;
 			
@@ -391,6 +413,11 @@ package {
 			}
 		}
 		
+		/**
+		 * TODO:
+		 * 1. Add variable to control the lowest height an island can
+		 * be drawn at
+		 */
 		private function generateIslands():void {
 			var islands:int = 60;
 			var minSize:int = 2;
@@ -398,6 +425,14 @@ package {
 				var roll:Number = Math.random();
 				if (roll < 0.5) drawIsland({"kind": "rect"});
 				else drawIsland({"kind": "vShaped"});
+			}
+		}
+		
+		private function drawGround(depth:int):void {
+			for (var i:int = 0; i < depth; i++) {
+				var start:Point = new Point(0, h - (i + 1));
+				var end:Point = new Point(w - 1, h - (i + 1));
+				drawLine(start, end);
 			}
 		}
 		
@@ -415,7 +450,6 @@ package {
 			
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
 			for each(var po:Point in points){
-				
 				for (var w:int = 0; w < width; w++){
 					for (var h:int = 0; h < height; h++){
 						if (positive) tiles.setTile(po.x + w, po.y + h, 12)
@@ -423,21 +457,6 @@ package {
 					}
 				}
 			}
-		}
-		
-		private function drawGround(depth:int):void {
-			for (var i:int = 0; i < depth; i++) {
-				var start:Point = new Point(0, h - (i + 1));
-				var end:Point = new Point(w - 1, h - (i + 1));
-				drawLine(start, end);
-			}
-		}
-		
-		/**
-		 * Is this useless now?
-		 */
-		private function drawSlope(start:Point, end:Point, fillDown:Boolean = true):void {
-			drawLine(start, end);
 		}
 		
 		private function fillSlope(start:Point, end:Point, fillDown:Boolean = true, baseline:int = -1):void {
@@ -458,11 +477,6 @@ package {
 			var start:Point;
 			var end:Point;
 			for (var i:int = 0; i < stops.length - 1; i++){
-				/**
-				 * The current fill algorithm breaks if the x points are drawn on
-				 * top of each other, so after the first point they need to be offset
-				 * by 1
-				 */
 				var newStartY:int;
 				var newEndY:int;
 				if (relativeToGround) newStartY = h - groundDepth - 1 - stops[i].y;
@@ -474,7 +488,7 @@ package {
 				fillSlope(start, end);
 			}
 		}
-
+		
 		/**
 		 * TODO: base values off of cumulative hill width rather than
 		 * individual segment width.
@@ -494,7 +508,6 @@ package {
 			var y:int = startY;
 			hillStops.push(new Point(x, y));
 			for (var i:int = 0; i < hillStopsNum; i++) {
-				//segmentWidth = Math.ceil((FP.random * maxSegmentWidth) + minSegmentWidth);
 				x += segmentWidth;				
 				if (i != hillStopsNum - 1) y  = Math.ceil(FP.random * peak);
 				else y = 0;
@@ -503,8 +516,62 @@ package {
 			drawHill(hillStops);
 		}
 		
-		private function buildTree():void { }
-		private function buildForest():void { }
+		private function buildForest():void {
+			var treeNum:int = 20;
+			var index:int = 0;
+			while (index < treeNum) {
+				var b:Boolean = buildTree(); //b == tree built successfully
+				if (b) index++;
+			}
+		}
+		
+		/**
+		 * TODO
+		 * 1. Draw the canopy (leaves)
+		 * 2. Don't draw this tree if:
+		 * 		a) If there is another tree within 2(?) blocks if this one
+		 * 		b) There isn't enough room to draw most of the tree.
+		 * 3. Do all the checking before building the tree
+		 */
+		private function buildTree():Boolean {
+			var _x:int = Math.random() * w;
+			var _y:int = h - 1;
+			var padding:int = 2; //min distance between trees
+			var trunkHeight:int = 6 + (Math.random() * 4);
+			//Find ground level
+			while (tiles.getTile(_x, _y) != 0) {
+				var t:int = tiles.getTile(_x, _y);
+				if (t == jungleTiles["plants"]["treeTrunk"] ||
+					t == jungleTiles["water"])
+					return false;
+				else _y--;
+			}
+			//ground level found; remember where the base of the tree is
+			var baseY:int = _y;
+			//preliminary checking
+			while (_y >= baseY - trunkHeight) {
+				if (tiles.getTile(_x + 1, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					tiles.getTile(_x + 2, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					tiles.getTile(_x - 1, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					tiles.getTile(_x - 2, _y) == jungleTiles["plants"]["treeTrunk"])
+					return false;
+				else _y--;
+			}
+			
+			//actual tree building
+			_y = baseY;
+			while (_y >= baseY - trunkHeight) {
+				if (tiles.getTile(_x, _y) == 0)
+					tiles.setTile(_x, _y, jungleTiles["plants"]["treeTrunk"]);
+				else break;
+				_y--;
+			}
+			
+			if (tiles.getTile(_x, _y) == 0)
+				tiles.setTile(_x, _y, jungleTiles["plants"]["treeLeaves"]);
+			return true;
+		}
+		
 		private function buildFloatingFarm():void { }
 		private function buildAbandonedShip():void { }
 		
@@ -516,32 +583,13 @@ package {
 		 * TODO
 		 * 1. check how much space there surrounding this tile and
 		 * choose an appropriately-sized rock
-		 * 2.put smallrocks and largeRocks somewhere else
 		 */
 		private function generateRocks():void {
-			var smallRocks:Array = [
-				Assets.ROCK1,
-				Assets.ROCK3,
-				Assets.ROCK5,
-				Assets.ROCK6,
-				Assets.ROCK7,
-				Assets.ROCK8,
-			]
-			
-			var largeRocks:Array = [
-				Assets.ROCK2,
-				Assets.ROCK4,
-			]
-			
 			for (var i:int = 0; i < flatGround.length; i++){
 				var roll:int = Math.floor(Math.random() * 6)
 				if (roll <= 1) {
 					var rock:Character = new Character(new Point(0, 0));
 					var rockIndex:int;
-					
-					trace(flatGround[i].x + 2 + ", " + flatGround[i].y + ": "
-						+ tiles.getTile(flatGround[i].x + 2, flatGround[i].y))
-					
 					
 					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 
 						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
@@ -563,33 +611,32 @@ package {
 						Image(rock.graphic).color = 0xbbaabb;
 						rock.layer = -100;
 					}
-				
 					
 					rock.setHitboxTo(rock.graphic);
 					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
-					
 					gw.add(rock);
 				}
 			}
 		}
 		
-
-		public function generateNPCs(_w:World, options:Object):void {
+		/**
+		 * NPC Generation
+		 */
+		public function generateNPCs(options:Object):void {
 			//TODO: add different spawning regions--in the water, on the ground, on
 			//the suspended islands etc.
 			var kind:String = "enemy";
 			var region:String = "groundLevel"
 			var amount:int = 15;
-				
-			if(options) {
+			
+			if (options) {
 				if (options["kind"]) kind = options["kind"];
 				if (options["amount"]) amount = options["amount"];
 				if (options["region"]) region = options["region"];
 			}
-				
+			
 			var t:int = Settings.TILESIZE;
 			for (var i:int = 0; i < amount; i++) {
-
 				var pos:Point = findSpawn();
 				var e:Entity;
 				if (kind == "enemy") {
@@ -599,7 +646,7 @@ package {
 					e = new DustBall(pos);
 					NPClist.push(e);
 				}
-				_w.add(e);
+				gw.add(e);
 			}
 		}
 		
@@ -613,15 +660,13 @@ package {
 				y = (h * t) - t;
 				open = false;
 				while(!open) {
-					if (tiles.getTile(int(x / t), int(y / t)) == 0) {
-						open = true;
-					} else if (tiles.getTile(int(x / t), int(y / t)) == 20) {
+					if (tiles.getTile(int(x / t), int(y / t)) == 0) open = true;
+					else if (tiles.getTile(int(x / t), int(y / t)) == 20) {
 						//don't spawn in water
 						x += t;
 						open = false;
-					} else {
-						open = false;
-					}
+					} else open = false;
+					
 					y -= t;	
 				}
 			} else if (region == "water") {
@@ -630,20 +675,17 @@ package {
 				open = false;
 				var tries:int = 200;
 				while (!open){
-					if (tiles.getTile(int(x / t), int(y / t)) == 20) {
-						open = true;
-					} else {
-						open = false;
-					}
-					x += t;
+					if (tiles.getTile(int(x / t), int(y / t)) == 20) open = true;
+					else open = false;
 					
+					x += t;					
 					tries--;
 					if (tries == 0) open = true;
 				}
 			}
 			return new Point(x, y);
 		}
-
+		
 		
 		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
 			_player.x = 30;
@@ -652,28 +694,25 @@ package {
 		}
 		
 		
-		//Based on Bresenham's Line Algorithm:
-		// http://roguebasin.roguelikedevelopment.org/index.php?title=Bresenham%27s_Line_Algorithm
+		/** Based on Bresenham's Line Algorithm:
+		 * http://roguebasin.roguelikedevelopment.org/index.php?title=Bresenham%27s_Line_Algorithm
+		 */
 		private function getLine(x0:int, x1:int, y0:int, y1:int):Array {
 			var points:Array = []
 			var steep:Boolean = (Math.abs(y1-y0)) > (Math.abs(x1-x0))
 			var placeHolder:int;
 			if (steep) {
-				//x0, y0 = y0, x0;
 				placeHolder = x0;
 				x0 = y0;
 				y0 = placeHolder;
-				//x1, y1 = y1, x1;
 				placeHolder = x1;
 				x1 = y1;
 				y1 = placeHolder;
 			}
 			if (x0 > x1) {
-				//x0, x1 = x1, x0;
 				placeHolder = x0;
 				x0 = x1;
 				x1 = placeHolder;
-				//y0, y1 = y1, y0;
 				placeHolder = y0;
 				y0 = y1;
 				y1 = placeHolder;
@@ -683,85 +722,30 @@ package {
 			var error:int = (deltax / 2)
 			var y:int = y0
 			var ystep:Number;
-			if (y0 < y1) {
-				ystep = 1
-			} else {
-				ystep = -1
-			}
+			if (y0 < y1) ystep = 1
+			else ystep = -1
+			
 			for (var x:int = x0; x <= x1; x++) {
 				var o:Point;
-				if (steep) {
-					points.push(new Point(y, x));
-				} else {
-					points.push(new Point(x, y));
-				}
+				if (steep) points.push(new Point(y, x));
+				else points.push(new Point(x, y));
+				
 				error -= deltay;
 				if (error < 0) {
 					y += ystep
 					error += deltax
 				}
 			}
-
+			
 			return points;
 		}
 		
 		override public function removed():void {
-			
-			for each (var door:Door in doorList) {
-				FP.world.remove(door);
-			}
-			
-			for each (var item:InteractionItem in interactionItemList) {
-				FP.world.remove(item);
-			}
-			
-			for each (var enemy:Enemy in enemiesList) {
-				FP.world.remove(enemy);
-			}
-			
+			for each (var door:Door in doorList) FP.world.remove(door);
+			for each (var item:InteractionItem in interactionItemList) FP.world.remove(item);
+			for each (var enemy:Enemy in enemiesList) FP.world.remove(enemy);			
 		}
 		
-		private function drawPockets():void {
-			var gid:int;
-			
-			var pockets:int = 10;
-			var pocketWidth:int = 7;
-			var halfPocketWidth:int = Math.abs(pocketWidth / 2)
-			var pocketPoints:Array = [];
-			
-			
-			var column:int;
-			var row:int; 
-			
-			//Generate center points for pockets
-			
-			//for (var j:int = 0; j < pockets; j++) {
-			
-			//			while (pocketPoints.length < pockets) {
-			//				var p:Point;
-			//				if (pocketPoints.length == 0) {
-			//					p = randomPoint();
-			//					pocketPoints.push(p);
-			//				}
-			//				p = randomPoint();
-			//				var isolated:Boolean = true;
-			//				iLoop: for (var i:int = 0; i < pocketPoints.length; i++) {
-			//
-			//					if (Math.abs(pocketPoints[i].x - p.x) > pocketWidth + 1
-			//						|| Math.abs(pocketPoints[i].y - p.y) > pocketWidth + 1) {
-			//						isolated = true;
-			//					} else {
-			//						isolated = false;
-			//						break iLoop;
-			//					}
-			//				}
-			//				if (isolated) pocketPoints.push(p);
-			//				//trace("isolated: " + isolated);
-			//				//trace("length: " + pocketPoints.length);
-			//			}
-			
-			//drawPocket(pockets, pocketPoints, pocketWidth);
-		}	
 	}
 	
 }
