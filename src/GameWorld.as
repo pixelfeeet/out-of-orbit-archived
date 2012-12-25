@@ -217,7 +217,7 @@ package {
 			
 			remove(currentLevel);
 			background.init();
-			destinationLevel.loadLevel(this, player);
+			destinationLevel.loadLevel();
 			add(destinationLevel);
 			
 			for each (var door:Door in destinationLevel.doorList) {

@@ -63,6 +63,8 @@ package {
 		
 		private var flatGround:Array;
 		
+		private var treeNum:int; //amount of trees in level 
+		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
 			
@@ -135,17 +137,25 @@ package {
 			backgroundColor = 0xa29a8d;			
 			groundDepth = 0;
 			waterLevel = 8;
+			treeNum = 20;
 			
-			loadLevel(_w, _p);
-		}
-		
-		public function loadLevel(_w:GameWorld, _p:SpacemanPlayer):void {
 			gw = _w;
 			player = _p;
-			loadPlayer(_w, _p);
+			loadLevel();
+		}
+		
+		public function loadLevel():void {
+			loadPlayer();
 			generateTiles();
+			//These should be two different functions?
 			generateNPCs({"kind": "enemy"});
 			generateNPCs({"kind": "NPC"});
+		}
+		
+		public function loadPlayer():void{
+			player.x = 30;
+			player.y = 30;
+			gw.add(player);
 		}
 		
 		private function generateTiles():void {
@@ -170,12 +180,6 @@ package {
 			if (Input.mousePressed) return void; //click();
 		}
 		
-		private function loadTiles():void {
-			generateTiles();
-			setGrid();
-		}
-		
-		
 		private function setGrid():void {
 			var gid:int = 0;
 			for(var row:int = 0; row < h; row++){
@@ -193,12 +197,18 @@ package {
 			var x:int = Math.floor((FP.camera.x + Input.mouseX) / Settings.TILESIZE);
 			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE);
 			var blastRadius:int = 2;
-			if (Input.check(Key.SHIFT)) {
-				removeTiles(x, y, blastRadius);
-			} else {
-				if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
-			}
+			//if (Input.check(Key.SHIFT)) removeTiles(x, y, blastRadius);
+			//else if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
+		
 			fixGround();
+		}
+
+		/**
+		 * Returns true if tile is solid, false if not
+		 */
+		private function checkSolid(x:int, y:int):Boolean {
+			
+			return false;
 		}
 		
 		/**
@@ -272,9 +282,8 @@ package {
 			var tOrigin:Point = new Point(0,0); //temple origin;
 			tOrigin.x = Math.floor(Math.random() * w);
 			tOrigin.y = h - Math.floor(Math.random() * 10) - 10;
-			for (var i:int = 0; i < temple.length; i++){
+			for (var i:int = 0; i < temple.length; i++)
 				tiles.setTile(temple[i]["x"] + tOrigin.x, temple[i]["y"] + tOrigin.y, temple[i]["index"]);
-			}
 		}
 		
 		/**
@@ -517,7 +526,6 @@ package {
 		}
 		
 		private function buildForest():void {
-			var treeNum:int = 20;
 			var index:int = 0;
 			while (index < treeNum) {
 				var b:Boolean = buildTree(); //b == tree built successfully
@@ -531,12 +539,15 @@ package {
 		 * 2. Don't draw this tree if:
 		 * 		a) If there is another tree within 2(?) blocks if this one
 		 * 		b) There isn't enough room to draw most of the tree.
-		 * 3. Do all the checking before building the tree
+		 * 3. Use the same sort of layring as with the rocks
 		 */
 		private function buildTree():Boolean {
 			var _x:int = Math.random() * w;
 			var _y:int = h - 1;
 			var padding:int = 2; //min distance between trees
+			var leavesWidth:int = 2 + (Math.random() * 2); //radius
+			var leavesHeight:int = 2 + (Math.random() * 4); //full height
+			var trunkWidth:int = 1;
 			var trunkHeight:int = 6 + (Math.random() * 4);
 			//Find ground level
 			while (tiles.getTile(_x, _y) != 0) {
@@ -559,16 +570,23 @@ package {
 			}
 			
 			//actual tree building
+			//trunk
 			_y = baseY;
 			while (_y >= baseY - trunkHeight) {
 				if (tiles.getTile(_x, _y) == 0)
 					tiles.setTile(_x, _y, jungleTiles["plants"]["treeTrunk"]);
-				else break;
+				else return true;
 				_y--;
 			}
+		
+			//leaves
+			var leavesBaseY:int = _y;
+			var leavesX:int = _x - leavesWidth;
+			for (_y = leavesBaseY; _y > leavesBaseY - leavesHeight; _y--)
+				for (_x = leavesX; _x < leavesX + (leavesWidth * 2) + trunkWidth; _x++)
+					if (tiles.getTile(_x, _y) == 0)
+						tiles.setTile(_x, _y, jungleTiles["plants"]["treeLeaves"]);	
 			
-			if (tiles.getTile(_x, _y) == 0)
-				tiles.setTile(_x, _y, jungleTiles["plants"]["treeLeaves"]);
 			return true;
 		}
 		
@@ -603,20 +621,24 @@ package {
 					}
 					
 					var layerRoll:Number = Math.random();
-					
-					if (layerRoll <= 0.5) {
-						Image(rock.graphic).color = 0xffffff;
-						rock.layer = -550;
-					} else {
-						Image(rock.graphic).color = 0xbbaabb;
-						rock.layer = -100;
-					}
+					if (layerRoll <= 0.5) renderBehind(rock);
+					else renderInFront(rock);
 					
 					rock.setHitboxTo(rock.graphic);
 					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
 					gw.add(rock);
 				}
 			}
+		}
+		
+		private function renderBehind(e:Entity):void {
+			Image(e.graphic).color = 0xbbaabb;
+			e.layer = -100;
+		}
+		
+		private function renderInFront(e:Entity):void {
+			Image(e.graphic).color = 0xffffff;
+			e.layer = -550;
 		}
 		
 		/**
@@ -685,14 +707,6 @@ package {
 			}
 			return new Point(x, y);
 		}
-		
-		
-		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
-			_player.x = 30;
-			_player.y = 30;
-			_w.add(_player);
-		}
-		
 		
 		/** Based on Bresenham's Line Algorithm:
 		 * http://roguebasin.roguelikedevelopment.org/index.php?title=Bresenham%27s_Line_Algorithm
