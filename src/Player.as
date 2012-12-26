@@ -27,6 +27,7 @@ package {
 	import net.flashpunk.utils.Draw;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import net.flashpunk.graphics.Tilemap;
 	
 	import ui.HUD;
 	
@@ -34,8 +35,6 @@ package {
 	
 	public class Player extends Character {
 
-		private var running:Boolean;
-		
 		private var standingTorso:Image;
 		private var standingLegs:Image;
 		private var torso:Image;
@@ -72,10 +71,8 @@ package {
 		public var allocationPoints:int;
 		public var levelUpTime:Boolean;
 		
-		//debug movement
-		private var debugFlying:Boolean;
-		//other movement
-		private var jetpacking:Boolean;
+		//Movement
+		private var movementState:String;
 
 		//Inventory
 		public static var inventory:Inventory;
@@ -117,6 +114,8 @@ package {
 			super(_position, health, hunger);
 			
 			type = "Player";
+			
+			movementState = "debugFlying";
 			
 			SPEED = 400;
 			vSpeed = SPEED;
@@ -196,10 +195,6 @@ package {
 			graphic = display;
 			
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
-			running = false;
-			
-			debugFlying = true;
-			jetpacking = false;
 			
 			//Input Definitions
 			Input.define("Left", Key.A);
@@ -239,7 +234,7 @@ package {
 		override public function update():void {
 			super.update();
 
-			if (!debugFlying) updateMovement();
+			if (movementState != "debugFlying") updateMovement();
 			else debugMovement();
 			
 			updateGraphic();
@@ -271,7 +266,7 @@ package {
 		private function onFinishedSpeech():void { speech.text = ""; }
 		
 		override protected function updateCollision():void {
-			if (!debugFlying) super.updateCollision();
+			if (movementState != "debugFlying") super.updateCollision();
 			else {
 				x += velocity.x * FP.elapsed;
 				y += velocity.y * FP.elapsed;
@@ -318,16 +313,12 @@ package {
 		}
 		
 		private function toggleFlying():void {
-			if (!debugFlying) {
-				debugFlying = true;
+			if (movementState != "debugFlying") {
 				velocity.x = 0;
 				velocity.y = 0;
 				xSpeed = 0;
 				vSpeed = 840;
-			} else {
-				debugFlying = false;
-				vSpeed = 400;
-			}
+			} else vSpeed = 400;
 		}
 		
 		protected function checkForEnemyCollision():void {
@@ -405,19 +396,19 @@ package {
 		}
 			
 		override protected function updateMovement():void {
-			if (!debugFlying) super.updateMovement();
+			if (movementState != "debugFlying") super.updateMovement();
 			var xInput:int = 0;
-			var yInput:int = 0;2
+			var yInput:int = 0;
 			//WSAD: MOVEMENT
 			if (Input.check("Left")) {
 				xInput -= 1;
-				if(!Input.check("Right")) running = true;
-			} else running = false;
+				if(!Input.check("Right")) movementState = "running";
+			} else movementState = "standing"
 			
 			if (Input.check("Right")) {
 				xInput += 1;
-				if(!Input.check("Left")) running = true;
-			} else running = false;
+				if(!Input.check("Left")) movementState = "running";
+			} else movementState = "standing"
 			
 			//Check if player is in water
 			if (isInWater) {
@@ -429,7 +420,7 @@ package {
 				velocity.y = (vSpeed * yInput) + vGravity;
 			} else {
 				jump();
-				if (!debugFlying) vSpeed = SPEED;
+				if (movementState != "debugFlying") vSpeed = SPEED;
 				else vSpeed = SPEED * 2
 				acceleration.y = GRAVITY;
 			}
@@ -444,12 +435,12 @@ package {
 			//WSAD: MOVEMENT
 			if (Input.check("Left")) {
 				xInput -= 1;
-				if(!Input.check("Right")) running = true;
-			} else running = false;
+				if(!Input.check("Right")) movementState = "running";
+			} else movementState = "standing";
 			if (Input.check("Right")) {
 				xInput += 1;
-				if(!Input.check("Left")) running = true;
-			} else running = false;
+				if(!Input.check("Left")) movementState = "running";
+			} else movementState = "standing";
 			
 			//DEBUG MOVEMENT
 			if (Input.check(Key.W)) yInput -= 1;
@@ -478,7 +469,7 @@ package {
 			if (Input.check("Jump")) {
 				if (Input.check(Key.SHIFT)) {
 					if (!jetBurnedOut) {
-						jetpacking = true;
+						movementState = "jetpacking";
 						jetFuel--;
 						velocity.y = -JUMP;
 					}
@@ -490,7 +481,7 @@ package {
 					}
 				}
 			}
-			if (jetpacking) {
+			if (movementState == "jetpacking") {
 				if (jetRechargeTimer <= 0) { 
 					if (jetFuel < fuelCapacity) jetFuel++;
 					jetRechargeTimer = jetRecharge;
@@ -500,7 +491,7 @@ package {
 			if (jetFuel <= 0) jetBurnedOut = true;
 			else if (jetFuel == 100) jetBurnedOut = false;
 		}
-		
+
 		//tentative idea: getHurt includes enemy-inflicted damage-
 		//specific animations, takeDamage displays only the default,
 		//i.e. red flash.
