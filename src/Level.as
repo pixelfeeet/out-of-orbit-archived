@@ -35,7 +35,6 @@ package {
 		private var solidList:Array;
 		private var gw:GameWorld;
 		private var player:SpacemanPlayer;
-		private var doorsLoaded:Boolean;
 		
 		public var label:String;
 		
@@ -62,8 +61,13 @@ package {
 		private var largeRocks:Array;
 		
 		private var flatGround:Array;
+		private var backTiles:Tilemap;
+		private var backLayer:Entity;
 		
 		private var treeNum:int; //amount of trees in level 
+		
+		private var shadowColor:uint;
+		private var lightColor:uint;
 		
 		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
 			t = Settings.TILESIZE;
@@ -72,6 +76,7 @@ package {
 			h = 60;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
+			backTiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			graphic = new Graphiclist(tiles);
 			layer = -600;
 			
@@ -117,6 +122,7 @@ package {
 			
 			notSolids = [
 				0,
+				jungleTiles["water"],
 				jungleTiles["structure"]["bg"]
 			];
 			
@@ -138,6 +144,9 @@ package {
 			groundDepth = 0;
 			waterLevel = 8;
 			treeNum = 20;
+			
+			shadowColor = 0xbbaabb;
+			lightColor = 0xffffff;
 			
 			gw = _w;
 			player = _p;
@@ -161,6 +170,7 @@ package {
 		private function generateTiles():void {
 			flatGround = [];
 			
+			initBackLayer();
 			//draw tiles
 			generateHillStops()
 			generateWater();
@@ -177,17 +187,15 @@ package {
 		}
 		
 		override public function update():void {
-			if (Input.mousePressed) return void; //click();
+			if (Input.mousePressed) click();
 		}
 		
 		private function setGrid():void {
 			var gid:int = 0;
 			for(var row:int = 0; row < h; row++){
 				for(var column:int = 0; column < w; column++){
-					if (tiles.getTile(column, row) != 0 &&
-						tiles.getTile(column, row) != jungleTiles["water"]) {
-						grid.setTile(column, row, true);
-					} else grid.setTile(column, row, false);
+					if (checkSolid(column, row)) grid.setTile(column, row, true);
+					else grid.setTile(column, row, false);
 					gid++;
 				}
 			}
@@ -207,20 +215,29 @@ package {
 		 * Returns true if tile is solid, false if not
 		 */
 		private function checkSolid(x:int, y:int):Boolean {
-			
-			return false;
+			var flag:Boolean = true;
+			for (var i:int = 0; i < notSolids.length; i++) {
+				if (tiles.getTile(x, y) == notSolids[i]) {
+					flag = false;
+					break;
+ 				} else flag = true;
+			}
+			return flag;
 		}
 		
 		/**
 		 * Draw tiles
 		 */
-		private function drawBergs():void {
+		private function buildBergs():void {
 			var bergAmount:int = 5;
-			for (var i:int = 0; i < bergAmount; i++) {
-				drawBerg();
-			}
+			for (var i:int = 0; i < bergAmount; i++) drawBerg();
 		}
-		
+
+		/**
+		 * TODO:
+		 * 1. Remove the hard-coded values in drawHill
+		 * 2. Return values like drawTree
+		 */
 		private function drawBerg():void {
 			var width:int = Math.floor(Math.random() * 10) + 15;
 			var susHeight:int = 25 //suspention height
@@ -247,11 +264,9 @@ package {
 		}
 		
 		private function generateWater():void {
-			for (var x:int = 0; x < w; x++){
-				for (var y:int = h - waterLevel; y <  h; y++){
-					if (tiles.getTile(x, y) == 0) tiles.setTile(x, y, jungleTiles["water"]);	
-				}
-			}
+			for (var x:int = 0; x < w; x++)
+				for (var y:int = h - waterLevel; y <  h; y++)
+					if (tiles.getTile(x, y) == 0) tiles.setTile(x, y, jungleTiles["water"]);
 		}
 		
 		/**
@@ -280,8 +295,10 @@ package {
 			var ls:LevelSnippet = new LevelSnippet(Assets.TEMPLE);
 			var temple:Array = ls.loadTiles();
 			var tOrigin:Point = new Point(0,0); //temple origin;
+			
 			tOrigin.x = Math.floor(Math.random() * w);
 			tOrigin.y = h - Math.floor(Math.random() * 10) - 10;
+			
 			for (var i:int = 0; i < temple.length; i++)
 				tiles.setTile(temple[i]["x"] + tOrigin.x, temple[i]["y"] + tOrigin.y, temple[i]["index"]);
 		}
@@ -353,10 +370,29 @@ package {
 			return ts["middle"];
 		}
 		
+		private function initBackLayer():void {
+			backLayer = new Entity(0, 0);
+			backLayer.graphic = backTiles;
+			backLayer.layer = -100;
+			gw.add(backLayer);
+		}
+
+		
+		private function renderBehind(e:Entity):void {
+			Image(e.graphic).color = shadowColor;
+			e.layer = -100;
+		}
+		
+		private function renderInFront(e:Entity):void {
+			Image(e.graphic).color = lightColor;
+			e.layer = -550;
+		}
+		
+		
 		/**
 		 * TODO:
 		 * 1. Add more shapes
-		 * 2. REFACTOR -- this function is a bit too long
+		 * 2. REFACTOR -- this function is probably too long
 		 */
 		private function drawIsland(options:Object=null):void {
 			var kind:String = "vShaped"
@@ -384,27 +420,24 @@ package {
 				var x:int = Math.floor((FP.random * w) - islandWidth);
 				var y:int = Math.floor((FP.random * h) - islandHeight);
 				
-				var flag:Boolean = true;
+				isolated = false;
 				if (!overlap) {
 					outsideLoop: for (var i:int = -border; i < islandWidth + border; i++) {
 						for (var j:int = -border; j <= islandHeight + border; j++){
-							if (tiles.getTile(x + i, y + j) == 0) {
-								flag = true
-							} else {
-								flag = false;
+							if (tiles.getTile(x + i, y + j) == 0) isolated = true;
+							else {
+								isolated = false;
 								break outsideLoop;
 							}
 						}
 					}
 				}
-				isolated = flag;
 				tries++
 				if (tries >= maxTries) break;
 			}
 			
-			if (kind == "rect") {
-				tiles.setRect(x, y, islandWidth, islandHeight, 12);
-			} else if (kind == "vShaped") {
+			if (kind == "rect") tiles.setRect(x, y, islandWidth, islandHeight, 12);
+			else if (kind == "vShaped") {
 				var start:Point = new Point(x, y);
 				var end:Point = new Point(x + islandWidth, y);
 				var peak:Point = new Point(x + (islandWidth / 2), y + islandHeight);
@@ -434,14 +467,6 @@ package {
 				var roll:Number = Math.random();
 				if (roll < 0.5) drawIsland({"kind": "rect"});
 				else drawIsland({"kind": "vShaped"});
-			}
-		}
-		
-		private function drawGround(depth:int):void {
-			for (var i:int = 0; i < depth; i++) {
-				var start:Point = new Point(0, h - (i + 1));
-				var end:Point = new Point(w - 1, h - (i + 1));
-				drawLine(start, end);
 			}
 		}
 		
@@ -488,18 +513,22 @@ package {
 			for (var i:int = 0; i < stops.length - 1; i++){
 				var newStartY:int;
 				var newEndY:int;
+				
 				if (relativeToGround) newStartY = h - groundDepth - 1 - stops[i].y;
 				else newStartY = stops[i].y;
+				
 				if (relativeToGround) newEndY = h - groundDepth - 1 - stops[i + 1].y;
 				else newEndY = stops[i + 1].y;
+				
 				start = new Point(stops[i].x, newStartY);
-				end = new Point(stops[i + 1].x, newEndY)
+				end = new Point(stops[i + 1].x, newEndY);
 				fillSlope(start, end);
 			}
 		}
 		
 		/**
-		 * TODO: base values off of cumulative hill width rather than
+		 * TODO:
+		 * 1. base values off of width of level rather than
 		 * individual segment width.
 		 */
 		private function generateHillStops():void {
@@ -509,16 +538,17 @@ package {
 			var maxSegmentWidth:int = 5;
 			var minSegmentWidth:int = 2;
 			var peak:int = 18;
-			var leftoverHeight:int = peak;
+			
 			var startX:int = 6;
 			var startY:int = 0;
 			
 			var x:int = startX;
 			var y:int = startY;
+			
 			hillStops.push(new Point(x, y));
 			for (var i:int = 0; i < hillStopsNum; i++) {
 				x += segmentWidth;				
-				if (i != hillStopsNum - 1) y  = Math.ceil(FP.random * peak);
+				if (i != hillStopsNum - 1) y = Math.ceil(FP.random * peak);
 				else y = 0;
 				hillStops.push(new Point(x, y));
 			}
@@ -528,20 +558,20 @@ package {
 		private function buildForest():void {
 			var index:int = 0;
 			while (index < treeNum) {
-				var b:Boolean = buildTree(); //b == tree built successfully
+				var b:Boolean = drawTree(); //b == tree built successfully
 				if (b) index++;
 			}
 		}
 		
 		/**
 		 * TODO
-		 * 1. Draw the canopy (leaves)
+		 * 1. Clean up the preliminary checking if statement
 		 * 2. Don't draw this tree if:
 		 * 		a) If there is another tree within 2(?) blocks if this one
 		 * 		b) There isn't enough room to draw most of the tree.
 		 * 3. Use the same sort of layring as with the rocks
 		 */
-		private function buildTree():Boolean {
+		private function drawTree():Boolean {
 			var _x:int = Math.random() * w;
 			var _y:int = h - 1;
 			var padding:int = 2; //min distance between trees
@@ -552,8 +582,7 @@ package {
 			//Find ground level
 			while (tiles.getTile(_x, _y) != 0) {
 				var t:int = tiles.getTile(_x, _y);
-				if (t == jungleTiles["plants"]["treeTrunk"] ||
-					t == jungleTiles["water"])
+				if (t == jungleTiles["plants"]["treeTrunk"] || t == jungleTiles["water"])
 					return false;
 				else _y--;
 			}
@@ -564,7 +593,11 @@ package {
 				if (tiles.getTile(_x + 1, _y) == jungleTiles["plants"]["treeTrunk"] ||
 					tiles.getTile(_x + 2, _y) == jungleTiles["plants"]["treeTrunk"] ||
 					tiles.getTile(_x - 1, _y) == jungleTiles["plants"]["treeTrunk"] ||
-					tiles.getTile(_x - 2, _y) == jungleTiles["plants"]["treeTrunk"])
+					tiles.getTile(_x - 2, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					backTiles.getTile(_x + 1, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					backTiles.getTile(_x + 2, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					backTiles.getTile(_x - 1, _y) == jungleTiles["plants"]["treeTrunk"] ||
+					backTiles.getTile(_x - 2, _y) == jungleTiles["plants"]["treeTrunk"])
 					return false;
 				else _y--;
 			}
@@ -572,10 +605,13 @@ package {
 			//actual tree building
 			//trunk
 			_y = baseY;
+			var tilemap:Tilemap;
+			if (FP.random <= 0.5) tilemap = backTiles;
+			else tilemap = tiles;
 			while (_y >= baseY - trunkHeight) {
-				if (tiles.getTile(_x, _y) == 0)
-					tiles.setTile(_x, _y, jungleTiles["plants"]["treeTrunk"]);
-				else return true;
+				if (tiles.getTile(_x, _y) == 0 && backTiles.getTile(_x, _y) == 0) {
+					tilemap.setTile(_x, _y, jungleTiles["plants"]["treeTrunk"]);
+				} else return true;
 				_y--;
 			}
 		
@@ -609,8 +645,8 @@ package {
 					var rock:Character = new Character(new Point(0, 0));
 					var rockIndex:int;
 					
-					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 
-						&& tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
+					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 &&
+						tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
 						//large rocks
 						rockIndex = Math.floor(Math.random() * largeRocks.length);
 						rock.graphic = new Image(largeRocks[rockIndex]);
@@ -629,16 +665,6 @@ package {
 					gw.add(rock);
 				}
 			}
-		}
-		
-		private function renderBehind(e:Entity):void {
-			Image(e.graphic).color = 0xbbaabb;
-			e.layer = -100;
-		}
-		
-		private function renderInFront(e:Entity):void {
-			Image(e.graphic).color = 0xffffff;
-			e.layer = -550;
 		}
 		
 		/**
@@ -672,6 +698,10 @@ package {
 			}
 		}
 		
+		/**
+		 * TODO:
+		 * 1. Not spawning in water logic doesn't work
+		 */
 		private function findSpawn(region:String = "groundLevel"):Point {
 			var x:int;
 			var y:int;
