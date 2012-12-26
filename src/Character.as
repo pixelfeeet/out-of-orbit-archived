@@ -101,9 +101,8 @@ package
 					velocity.x = 0;
 					
 					x = Math.floor(x / t) * t;
-					while (!collide("level", x + 1, y)){
-						x++;
-					}
+					while (!collide("level", x + 1, y)) x++;
+				
 				} else {
 					//moving the left
 					velocity.x = 0;
@@ -120,9 +119,8 @@ package
 					calcFallDamage(velocity.y);
 					velocity.y = 0;
 					y = Math.floor(y / t) * t;
-					while (!collide("level", x, y + 1)){
-						y++;
-					}
+					while (!collide("level", x, y + 1)) y++;
+					
 					if (!onGround) {
 						onGround = true;
 						land();
@@ -139,28 +137,15 @@ package
 		
 		protected function land():void{}
 		
-		protected function calcFallDamage(_v:int):void {
-			/*
-			var damageVelocity:int = 700;
-			var totalDamage:int;
-			if (_v - damageVelocity > 0 ) {
-				_v-= damageVelocity;
-				while(_v > 0) {
-					totalDamage += 5;
-					_v -= 50;
-				}
-			}
-			takeDamage(totalDamage);
-			velocity.y = 0;
-			*/
-		}
-		
+		protected function calcFallDamage(_v:int):void { }
+
+		/**
+		 * TODO: if hunger is at 100, stay there for a while
+		 * and regenerate the players health
+		 */
 		private function updateHunger():void {
-			//Todo: if hunger is at 100, stay there for a while
-			//and regenerate the players health
-			if (hungerTimer < 60 * 5) { //5 seconds
-				hungerTimer++;
-			} else {
+			if (hungerTimer < 60 * 5) hungerTimer++; //5 seconds
+			else {
 				hungerTimer = 0;
 				if (hunger > 0) increaseHunger(1);
 				else takeDamage(10);
@@ -275,9 +260,7 @@ package
 			}
 		}
 		
-		public function setHealth(h:int):void {
-			health = h;
-		}
+		public function setHealth(h:int):void { health = h; }
 		
 		protected function cLength(a:Point, b:Point):Number {
 			return Math.sqrt(((b.x - a.x) * (b.x - a.x)) + (b.y - a.y) * (b.y - a.y));
@@ -288,6 +271,5 @@ package
 			y = p.y;
 		}
 
-		
 	}
 }

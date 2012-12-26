@@ -23,11 +23,11 @@ package {
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
 	import net.flashpunk.graphics.Text;
+	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Draw;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-	import net.flashpunk.graphics.Tilemap;
 	
 	import ui.HUD;
 	
@@ -106,6 +106,9 @@ package {
 		public var walkSound:Sfx;
 		
 		private var gameworld:GameWorld;
+		private var xInput:int;
+		private var yInput:int;
+		private var debugFlying:Boolean;
 
 		public function Player(_position:Point = null) {
 			
@@ -115,7 +118,8 @@ package {
 			
 			type = "Player";
 			
-			movementState = "debugFlying";
+			movementState = "jumping";
+			debugFlying = true;
 			
 			SPEED = 400;
 			vSpeed = SPEED;
@@ -200,6 +204,7 @@ package {
 			Input.define("Left", Key.A);
 			Input.define("Right", Key.D);
 			Input.define("Jump", Key.W);
+			Input.define("Down", Key.S);
 			Input.define("Use", Key.E);
 			Input.define("Toggle Flying", Key.T);
 			
@@ -233,12 +238,10 @@ package {
 		
 		override public function update():void {
 			super.update();
-
-			if (movementState != "debugFlying") updateMovement();
-			else debugMovement();
 			
+			updateState();
+			updateMovement();
 			updateGraphic();
-			debug();
 			checkForEnemyCollision();
 			inventoryButtons();
 			updateSpeech();
@@ -250,7 +253,10 @@ package {
 
 			//Interaction
 			if (Input.pressed("Use")) onUse();
-			if (Input.pressed("Toggle Flying")) toggleFlying();
+			
+			//debug
+			debug();
+			if (Input.pressed("Toggle Flying")) toggleDebugFlying();
 		}
 		
 		private function updateSpeech():void {
@@ -266,7 +272,7 @@ package {
 		private function onFinishedSpeech():void { speech.text = ""; }
 		
 		override protected function updateCollision():void {
-			if (movementState != "debugFlying") super.updateCollision();
+			if (!debugFlying) super.updateCollision();
 			else {
 				x += velocity.x * FP.elapsed;
 				y += velocity.y * FP.elapsed;
@@ -275,7 +281,7 @@ package {
 		
 		public function inventoryButtons():void {
 			var boxes:Array = gameworld.hud.inventoryBoxes;
-			var keys:Array = [Key.DIGIT_1, Key.DIGIT_2, Key.DIGIT_3, Key.DIGIT_4, Key.DIGIT_5, Key.DIGIT_6, Key.DIGIT_7]
+			var keys:Array = [Key.DIGIT_1, Key.DIGIT_2, Key.DIGIT_3, Key.DIGIT_4, Key.DIGIT_5, Key.DIGIT_6, Key.DIGIT_7];
 			for (var i:int = 0; i < keys.length; i++)
 				if (Input.pressed(keys[i])) {
 					gameworld.hud.deselectAll();
@@ -302,24 +308,21 @@ package {
 			if (display) display.children[0] = weaponImg;
 		}
 		
+		/**
+		 * TODO
+		 * 1. Move the isSelected boolean to the actual inventory data, not
+		 * the hud.
+		 */
 		private function onUse():void {
-			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++){
-				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected()) {
-					if (inventory.items[i].length > 0)
+			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++)
+				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected())
+					if (inventory.items[i].length > 0) {
 						inventory.items[i][inventory.items[i].length - 1].onUse();
-					return;
-				}
-			}
+						return;
+					}
 		}
 		
-		private function toggleFlying():void {
-			if (movementState != "debugFlying") {
-				velocity.x = 0;
-				velocity.y = 0;
-				xSpeed = 0;
-				vSpeed = 840;
-			} else vSpeed = 400;
-		}
+		private function toggleDebugFlying():void { debugFlying = !debugFlying; }
 		
 		protected function checkForEnemyCollision():void {
 			var enemy:Enemy = collide("enemy", x, y) as Enemy;
@@ -330,9 +333,24 @@ package {
 			if (weapon.fireTimer > 0) weapon.fireTimer--;
 			if (Input.mouseDown) weapon.shoot();
 		}
+		
+		private function updateState():void {
+			if (!debugFlying) {
+				var l:Level = gameworld.currentLevel;
+				if (l.tiles.getTile(Math.floor(x / t), Math.floor(y / t) + 1) == l.jungleTiles["water"])
+					movementState = "swimming";
+				else if (FP.sign(velocity.x) != 0)
+					if (!facingLeft)
+						if (FP.sign(velocity.x) == 1) movementState = "running";
+						else movementState = "backwards running";
+					else
+						if (FP.sign(velocity.x) == -1) movementState = "running";
+						else movementState = "backwards running";
+				else movementState = "standing";
+			}
+		}
 
 		override protected function updateGraphic():void {
-			
 			//Get the player to face the cursor horizontally
 			if (Input.mouseX < x + halfWidth - FP.camera.x) facingLeft = true;
 			else facingLeft = false;
@@ -359,23 +377,10 @@ package {
 				weaponImg.x = weapon.x;
 			}
 			
-			//Play the animation
-			if (!onGround || isInWater) legsMap.play("jumping");
-			else if (FP.sign(velocity.x) != 0) {
-				if (!facingLeft) {
-					if (FP.sign(velocity.x) == 1) legsMap.play("running");
-					else legsMap.play("backwards_running");
-				} else {
-					if (FP.sign(velocity.x) == -1) legsMap.play("running");
-					else legsMap.play("backwards_running");
-				}
-			} else legsMap.play("standing");
-			
 			torso.originX = 22;
 			torso.x = 22;
 
 			var angle:Number = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
-			
 			var f:Boolean = Image(display.children[3]).flipped;
 			if(f) angle -= 180;
 			if(angle > 180) angle += 360;
@@ -391,63 +396,54 @@ package {
 			if (f && headAngle > 15) headAngle = 15;
 			else if (!f && headAngle > 15 && headAngle < 90) headAngle = 15;
 
-			Image(display.children[0]).angle = angle; //PB
-			Image(display.children[3]).angle = headAngle; //HEAD
+			Image(display.children[0]).angle = angle; //Weapon
+			Image(display.children[3]).angle = headAngle; //Head
+			
+			//Play the animation
+			if (!onGround || movementState == "swimming") legsMap.play("jumping");
+			else if (movementState == "running") legsMap.play("running");
+			else if (movementState == "backwards running") legsMap.play("backwards_running");
+			else legsMap.play("standing");
 		}
 			
 		override protected function updateMovement():void {
-			if (movementState != "debugFlying") super.updateMovement();
-			var xInput:int = 0;
-			var yInput:int = 0;
-			//WSAD: MOVEMENT
-			if (Input.check("Left")) {
-				xInput -= 1;
-				if(!Input.check("Right")) movementState = "running";
-			} else movementState = "standing"
+			if (!debugFlying) super.updateMovement();
+			xInput = 0;
+			yInput = 0;
 			
-			if (Input.check("Right")) {
-				xInput += 1;
-				if(!Input.check("Left")) movementState = "running";
-			} else movementState = "standing"
+			if (Input.check("Left")) xInput -= 1;
+			if (Input.check("Right")) xInput += 1;
 			
-			//Check if player is in water
-			if (isInWater) {
-				setSpeech("I can't swim.")
-				//DEBUG MOVEMENT
-				if (Input.check(Key.W)) yInput -= 1;
-				if (Input.check(Key.S)) yInput += 1;
-				
-				velocity.y = (vSpeed * yInput) + vGravity;
-			} else {
-				jump();
-				if (movementState != "debugFlying") vSpeed = SPEED;
-				else vSpeed = SPEED * 2
-				acceleration.y = GRAVITY;
-			}
+			if (debugFlying) debugMovement();
+			else if (movementState == "swimming") swimmingMovement();
+			else defaultMovement();
+			
 			velocity.x = vSpeed * xInput;
+		}
+	
+		private function swimmingMovement():void {
+			setSpeech("I can't swim.");
+			if (Input.check("Jump")) yInput -= 1;
+			if (Input.check("Down")) yInput += 1;
+			velocity.y = (vSpeed * yInput) + vGravity;
+		}
+		
+		private function defaultMovement():void {
+			jump();
+			vSpeed = SPEED;
+			acceleration.y = GRAVITY;
+			Image(display.children[3]).color = 0xffffff; //debug
 		}
 		
 		private function debugMovement():void {
+			vSpeed = SPEED * 2;
 			
-			var xInput:int = 0;
-			var yInput:int = 0;
+			if (Input.check("Jump")) yInput -= 1;
+			if (Input.check("Down")) yInput += 1;
 			
-			//WSAD: MOVEMENT
-			if (Input.check("Left")) {
-				xInput -= 1;
-				if(!Input.check("Right")) movementState = "running";
-			} else movementState = "standing";
-			if (Input.check("Right")) {
-				xInput += 1;
-				if(!Input.check("Left")) movementState = "running";
-			} else movementState = "standing";
+			velocity.y = vSpeed * yInput;
 			
-			//DEBUG MOVEMENT
-			if (Input.check(Key.W)) yInput -= 1;
-			if (Input.check(Key.S)) yInput += 1;
-			
-			velocity.y = vSpeed * yInput; //This isn't normally here
-			velocity.x = vSpeed * xInput;
+			Image(display.children[3]).color = 0x00ff00; //debug
 		}
 		
 		override protected function land():void {
@@ -458,35 +454,33 @@ package {
 		}
 		
 		private function debug():void {
-			if (Input.pressed(Key.U)) changeHunger(-10);
 			if (Input.pressed(Key.Y)) changeHunger(10);
-			if (Input.pressed(Key.J)) changeHealth(-10);
+			if (Input.pressed(Key.U)) changeHunger(-10);
 			if (Input.pressed(Key.H)) changeHealth(10);
+			if (Input.pressed(Key.J)) changeHealth(-10);
 			if (Input.pressed(Key.M)) scraps += 100;
 		}
 		
 		override protected function jump():void {
-			if (Input.check("Jump")) {
-				if (Input.check(Key.SHIFT)) {
+			if (Input.check("Jump"))
+				if (Input.check(Key.SHIFT))
 					if (!jetBurnedOut) {
 						movementState = "jetpacking";
 						jetFuel--;
 						velocity.y = -JUMP;
 					}
-				} else {
-					if (onGround){
+				else
+					if (onGround) {
 						velocity.y = -JUMP;
 						onGround = false;
 						jumpSound.play();
 					}
-				}
-			}
-			if (movementState == "jetpacking") {
+	
+			if (movementState == "jetpacking")
 				if (jetRechargeTimer <= 0) { 
 					if (jetFuel < fuelCapacity) jetFuel++;
 					jetRechargeTimer = jetRecharge;
 				} else jetRechargeTimer--;
-			}
 			
 			if (jetFuel <= 0) jetBurnedOut = true;
 			else if (jetFuel == 100) jetBurnedOut = false;
@@ -501,7 +495,6 @@ package {
 				injurySound.play();
 				damageTimer = 60;
 			}
-			//TODO: animation
 		}
 		
 		override public function changeHealth(h:int):void {

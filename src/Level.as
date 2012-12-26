@@ -54,7 +54,7 @@ package {
 		
 		private var groundDepth:int;
 		
-		private var jungleTiles:Object;
+		public var jungleTiles:Object;
 		private var notSolids:Array;
 		private var waterLevel:int;
 		
