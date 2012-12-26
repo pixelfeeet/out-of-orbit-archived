@@ -32,11 +32,6 @@ package ui {
 		private var strength:int;
 		
 		private var statsList:Object;
-
-		//player variables
-//		private var playerIntelligence:Text;
-//		private var playerDexterity:Text;
-//		private var playerAgility:Text;
 		
 		private var playerEXP:Text;
 		private var playerLevel:Text;
@@ -69,16 +64,7 @@ package ui {
 			p = w.getPlayer();
 			
 			titleText = new Text("Stats", 10, 10, {size: 30});
-			
-			strength = p.strength;
-			agility = p.agility;
-			intelligence = p.intelligence;
-			dexterity = p.dexterity;
-			
-//			statsList = {"strength": strength, "agility": agility,
-//				"intelligence": intelligence, "dexterity": dexterity};
-			
-			
+
 			leftArrow = Assets.ARROW_LEFT;
 			rightArrow = Assets.ARROW_RIGHT;
 			
@@ -96,7 +82,7 @@ package ui {
 			//playerDexterity = new Text("Dexterity: " + p.dexterity, 10, 80);
 			//playerAgility = new Text("Agility: " + p.agility, 10, 100);
 			
-			playerArmor = new Text("Armor: " + p.armor, 10, 60);
+			//playerArmor = new Text("Armor: " + p.armor, 10, 60);
 			
 			points = new Text(allocationPoints + " allocation points.", 10, 360);
 			points.size = 26;
@@ -123,11 +109,6 @@ package ui {
 				
 		public function show():void {
 			p = w.getPlayer();
-			
-			strength = p.strength;
-			agility = p.agility;
-			intelligence = p.intelligence;
-			dexterity = p.dexterity;
 			
 			allocationPoints = p.allocationPoints;
 			

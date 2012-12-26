@@ -62,33 +62,18 @@ package {
 		private var jetRechargeTimer:int;
 		public var jetBurnedOut:Boolean; //When fuel hits 0
 		
-		//Stats
-		public var strength:int;
-		public var intelligence:int;
-		public var dexterity:int;
-		public var agility:int;
-		
-		public var armor:int; // resistance to damage -- 3pts
-		//fuelCapacity -- 2pts
-		//jumpHeight -- 2pts
-		public var marksmanship:int; //damage shooting does - 3pts
-		public var constructing:int; //Skill at contstructing - 5pts
-		public var inventoryCapacity:int; //length of inventory array - 10pts
-		
+		//Stats		
 		public var statsList:Array;
 		
 		private var experience:int;
 		private var level:int;
 
-		private var bulletFrequency:int;
-		private var bulletTimer:int;
-		private var bulletSource:Point;
-		
+		//Level		
 		public var allocationPoints:int;
 		public var levelUpTime:Boolean;
 		
 		//debug movement
-		private var flying:Boolean;
+		private var debugFlying:Boolean;
 		//other movement
 		private var jetpacking:Boolean;
 
@@ -97,6 +82,7 @@ package {
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		public var weaponInventoryLength:int;
+		
 		//tentitive currency name
 		public var scraps:int;
 		
@@ -105,10 +91,13 @@ package {
 		public var recycleRate:Number;
 		
 		//Combat/Weapons
+		private var bulletFrequency:int;
+		private var bulletTimer:int;
+		private var bulletSource:Point;
+
 		public var equipped:Boolean;
 		public var weapon:Weapon;
 		public var ammunition:int;
-		
 		public var weapons:Weapons;
 		public var meleeAttacking:Boolean;
 		
@@ -119,23 +108,11 @@ package {
 		public var shootSound:Sfx;
 		public var walkSound:Sfx;
 		
-		//World
-		private var w:GameWorld;
-		
-		private var jetSound:Sfx;
-		private var jetSoundInterval:int;
-		private var jetSoundTimer:int;
-		
-		public function Player(_world:GameWorld, _position:Point = null) {
-			
-			//Essentials
-			maxHealth = 100;
-			maxHunger = 100;
-			health = 100;
-			hunger = 100;
+		private var gameworld:GameWorld;
+
+		public function Player(_position:Point = null) {
 			
 			if (!_position) _position = new Point(0, 0);
-			w = _world;
 			
 			super(_position, health, hunger);
 			
@@ -151,32 +128,27 @@ package {
 			jetRechargeTimer = jetRecharge; 
 			jetBurnedOut = false;
 				
-			//Stats
-			strength = 10;
-			intelligence = 10;
-			dexterity = 10;
-			agility = 10;
+			/**
+			 * Stats
+			 */
+			maxHealth = 100;
+			maxHunger = 100;
+			health = 100;
+			hunger = 100;
 			
-			armor = 10;
-			
-//			public var armor:int; // resistance to damage -- 3pts
-//			//fuelCapacity -- 2pts
-//			//jumpHeight -- 2pts
-//			public var marksmanship:int; //damage shooting does - 3pts
-//			public var constructing:int; //Skill at contstructing - 5pts
-//			public var inventoryCapacity:int; //length of inventory array - 10pts
-			
-//			statsList = {"strength": strength, "agility": agility,
-//				"intelligence": intelligence, "dexterity": dexterity};
 			statsList = [
 				{"name": "Fuel Capacity", "value": fuelCapacity, "points": 3},
-				{"name": "Armor", "value": armor, "points": 3},
-				{"name": "Max Ammo", "value": null, "points": 2}
+				{"name": "Armor", "value": 10, "points": 3},
+				{"name": "Max Ammo", "value": null, "points": 2},
+				{"name": "Jump Height", "value": null, "points": 3},
+				{"name": "Construction Skill", "value": null, "points": 2},
+				{"name": "Inventory Capacity", "value": null, "points": 8},
+				{"name": "Fuel Capacity", "value": null, "points": 3}
 			];
 			
-			/*
-			Graphiclist components
-			*/
+			/**
+			 * Graphiclist components
+			 */
 			//Weapons/Combat
 			weapons = new Weapons(this);
 			weapon = weapons.unarmed;
@@ -226,7 +198,7 @@ package {
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
 			running = false;
 			
-			flying = true;
+			debugFlying = true;
 			jetpacking = false;
 			
 			//Input Definitions
@@ -260,18 +232,17 @@ package {
 			walkSound = new Sfx(Assets.BLIP);
 			
 			layer = -500
-				
-			//jetSound = new Sfx(Assets.SHOOT);
-			//jetSoundInterval = 5;
-			//jetSoundTimer = jetSoundInterval;
 		}
+		
+		override public function added():void { gameworld = GameWorld(FP.world); }
 		
 		override public function update():void {
 			super.update();
 
-			updateGraphic();
-			if (!flying) updateMovement();
+			if (!debugFlying) updateMovement();
 			else debugMovement();
+			
+			updateGraphic();
 			debug();
 			checkForEnemyCollision();
 			inventoryButtons();
@@ -297,82 +268,24 @@ package {
 			speechTimer = speechLength;
 		}
 		
-		private function onFinishedSpeech():void {
-			speech.text = "";
-		}
+		private function onFinishedSpeech():void { speech.text = ""; }
 		
 		override protected function updateCollision():void {
-			//DEBUG: No collisiton detection
-			if (!flying) {
-				super.updateCollision();
-			} else {
+			if (!debugFlying) super.updateCollision();
+			else {
 				x += velocity.x * FP.elapsed;
 				y += velocity.y * FP.elapsed;
 			}
 		}
 		
 		public function inventoryButtons():void {
-			var boxes:Array = w.hud.inventoryBoxes;
-			
-			if (Input.pressed(Key.DIGIT_1)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[0])
-					w.hud.inventoryBoxes[0]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_2)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[1])
-					w.hud.inventoryBoxes[1]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_3)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[2])
-					w.hud.inventoryBoxes[2]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_4)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[3])
-					w.hud.inventoryBoxes[3]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_5)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[4])
-					w.hud.inventoryBoxes[4]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_6)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[5])
-					w.hud.inventoryBoxes[5]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_7)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[6])
-					w.hud.inventoryBoxes[6]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_8)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[7])
-					w.hud.inventoryBoxes[7]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_9)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[8])
-					w.hud.inventoryBoxes[8]["box"].select();	
-			}
-			
-			if (Input.pressed(Key.DIGIT_0)) {
-				w.hud.deselectAll();
-				if (w.hud.inventoryBoxes[9])
-					w.hud.inventoryBoxes[9]["box"].select();	
-			}
+			var boxes:Array = gameworld.hud.inventoryBoxes;
+			var keys:Array = [Key.DIGIT_1, Key.DIGIT_2, Key.DIGIT_3, Key.DIGIT_4, Key.DIGIT_5, Key.DIGIT_6, Key.DIGIT_7]
+			for (var i:int = 0; i < keys.length; i++)
+				if (Input.pressed(keys[i])) {
+					gameworld.hud.deselectAll();
+					gameworld.hud.inventoryBoxes[i]["box"].select();
+				}
 		}
 		
 		public function equipWeapon(_weapon:Weapon):void {
@@ -383,7 +296,7 @@ package {
 		public function setWeaponGfx(_weapon:Weapon):void{
 			weaponImg = Image(_weapon.graphic)
 			
-			if(!facingLeft) weaponImg.originX = _weapon.originX;
+			if (!facingLeft) weaponImg.originX = _weapon.originX;
 			else weaponImg.originX = _weapon.leftOriginX;
 			weaponImg.originY = _weapon.originY;
 			
@@ -395,8 +308,8 @@ package {
 		}
 		
 		private function onUse():void {
-			for (var i:int = 0; i < w.hud.inventoryBoxes.length; i++){
-				if (w.hud.inventoryBoxes[i]["box"].isSelected()) {
+			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++){
+				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected()) {
 					if (inventory.items[i].length > 0)
 						inventory.items[i][inventory.items[i].length - 1].onUse();
 					return;
@@ -405,14 +318,14 @@ package {
 		}
 		
 		private function toggleFlying():void {
-			if (!flying) {
-				flying = true;
+			if (!debugFlying) {
+				debugFlying = true;
 				velocity.x = 0;
 				velocity.y = 0;
 				xSpeed = 0;
 				vSpeed = 840;
 			} else {
-				flying = false;
+				debugFlying = false;
 				vSpeed = 400;
 			}
 		}
@@ -435,10 +348,9 @@ package {
 			
 			//Calculating angles of head and weapon
 			if (facingLeft) { 
-				for (var i:int = 0; i < display.count; i++) {
-					if (i != display.count - 1) //speech
+				for (var i:int = 0; i < display.count; i++)
+					if (i != display.count - 1) // don't flip speech bubble
 						Image(display.children[i]).flipped = true;
-				}
 				head.originX = 12;
 				head.originY = 12;
 				head.x = 18;
@@ -446,9 +358,8 @@ package {
 				weaponImg.originX = weaponImg.width - weapon.leftOriginX;
 				weaponImg.x = weapon.leftX;
 			} else {
-				for (var j:int = 0; j < display.count; j++) {
+				for (var j:int = 0; j < display.count; j++)
 					Image(display.children[j]).flipped = false;
-				}
 				head.originX = 12;
 				head.originY = 12;
 				head.x = 24;
@@ -458,9 +369,8 @@ package {
 			}
 			
 			//Play the animation
-			if (!onGround || isInWater){
-				legsMap.play("jumping");
-			} else if (FP.sign(velocity.x) != 0) {
+			if (!onGround || isInWater) legsMap.play("jumping");
+			else if (FP.sign(velocity.x) != 0) {
 				if (!facingLeft) {
 					if (FP.sign(velocity.x) == 1) legsMap.play("running");
 					else legsMap.play("backwards_running");
@@ -468,10 +378,7 @@ package {
 					if (FP.sign(velocity.x) == -1) legsMap.play("running");
 					else legsMap.play("backwards_running");
 				}
-				//if(legsMap.frame == 1) walkSound.play();
-			} else {
-				legsMap.play("standing");
-			}
+			} else legsMap.play("standing");
 			
 			torso.originX = 22;
 			torso.x = 22;
@@ -498,52 +405,35 @@ package {
 		}
 			
 		override protected function updateMovement():void {
-			
-			if (!flying) super.updateMovement();
-			
+			if (!debugFlying) super.updateMovement();
 			var xInput:int = 0;
-			var yInput:int = 0;
-			
+			var yInput:int = 0;2
 			//WSAD: MOVEMENT
 			if (Input.check("Left")) {
 				xInput -= 1;
 				if(!Input.check("Right")) running = true;
-			} else {
-				running = false;
-			}
+			} else running = false;
+			
 			if (Input.check("Right")) {
 				xInput += 1;
 				if(!Input.check("Left")) running = true;
-			} else {
-				running = false;
-			}
+			} else running = false;
 			
 			//Check if player is in water
 			if (isInWater) {
-				//player_speed = PLAYER_SPEED * 0.4;
-				//acceleration.y = 
 				setSpeech("I can't swim.")
-				
 				//DEBUG MOVEMENT
-				if (Input.check(Key.W)) {
-					yInput -= 1;
-				}
-				if (Input.check(Key.S)) {
-					yInput += 1;
-				}
+				if (Input.check(Key.W)) yInput -= 1;
+				if (Input.check(Key.S)) yInput += 1;
 				
 				velocity.y = (vSpeed * yInput) + vGravity;
 			} else {
 				jump();
-				if (!flying) vSpeed = SPEED;
+				if (!debugFlying) vSpeed = SPEED;
 				else vSpeed = SPEED * 2
 				acceleration.y = GRAVITY;
 			}
-			
-			//acceleration.x = (vSpeed * xInput) / 5;
-			//velocity.x += acceleration.x
 			velocity.x = vSpeed * xInput;
-
 		}
 		
 		private function debugMovement():void {
@@ -555,64 +445,38 @@ package {
 			if (Input.check("Left")) {
 				xInput -= 1;
 				if(!Input.check("Right")) running = true;
-			} else {
-				running = false;
-			}
+			} else running = false;
 			if (Input.check("Right")) {
 				xInput += 1;
 				if(!Input.check("Left")) running = true;
-			} else {
-				running = false;
-			}
+			} else running = false;
 			
 			//DEBUG MOVEMENT
-			if (Input.check(Key.W)) {
-				yInput -= 1;
-			}
-			if (Input.check(Key.S)) {
-				yInput += 1;
-			}
+			if (Input.check(Key.W)) yInput -= 1;
+			if (Input.check(Key.S)) yInput += 1;
 			
 			velocity.y = vSpeed * yInput; //This isn't normally here
 			velocity.x = vSpeed * xInput;
 		}
 		
 		override protected function land():void {
-			if(!onGround) {
+			if (!onGround) {
 				calcFallDamage(velocity.y);
 				onGround = true;
 			}
 		}
 		
 		private function debug():void {
-			//DEBUG: increase hunger
-			if (Input.pressed(Key.U)) {
-				changeHunger(-10);
-			}			
-			//DEBUG: decrease hunger
-			if (Input.pressed(Key.Y)) {
-				changeHunger(10);
-			}
-			//DEBUG: take damage
-			if (Input.pressed(Key.J)) {
-				changeHealth(-10);
-			}
-			
-			//DEBUG: heal
-			if (Input.pressed(Key.H)) {
-				changeHealth(10);
-			}
-			
-			if (Input.pressed(Key.M)) {
-				scraps += 100;
-			}
-			
+			if (Input.pressed(Key.U)) changeHunger(-10);
+			if (Input.pressed(Key.Y)) changeHunger(10);
+			if (Input.pressed(Key.J)) changeHealth(-10);
+			if (Input.pressed(Key.H)) changeHealth(10);
+			if (Input.pressed(Key.M)) scraps += 100;
 		}
 		
 		override protected function jump():void {
 			if (Input.check("Jump")) {
 				if (Input.check(Key.SHIFT)) {
-					
 					if (!jetBurnedOut) {
 						jetpacking = true;
 						jetFuel--;
@@ -628,21 +492,13 @@ package {
 			}
 			if (jetpacking) {
 				if (jetRechargeTimer <= 0) { 
-					if (jetFuel < fuelCapacity) {
-						jetFuel++;
-					}
+					if (jetFuel < fuelCapacity) jetFuel++;
 					jetRechargeTimer = jetRecharge;
-				} else {
-					jetRechargeTimer--;
-				}
+				} else jetRechargeTimer--;
 			}
 			
-			if (jetFuel <= 0) {
-				jetBurnedOut = true;
-			} else if (jetFuel == 100) {
-				jetBurnedOut = false;
-			}
-			
+			if (jetFuel <= 0) jetBurnedOut = true;
+			else if (jetFuel == 100) jetBurnedOut = false;
 		}
 		
 		//tentative idea: getHurt includes enemy-inflicted damage-
@@ -654,7 +510,6 @@ package {
 				injurySound.play();
 				damageTimer = 60;
 			}
-	
 			//TODO: animation
 		}
 		
@@ -711,12 +566,12 @@ package {
 		//EXPERIENCE
 		public function gainExperience(_exp:int):void {
 			experience += _exp;
-			w.hud.expText(_exp);
+			gameworld.hud.expText(_exp);
 			checkForLevelUp();
 		}
 		
 		private function checkForLevelUp():void {
-			//checking logic goes here
+			//checking logic goes here!
 			levelUp();
 		}
 		

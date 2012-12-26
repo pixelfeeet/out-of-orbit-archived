@@ -64,7 +64,7 @@ package {
 		public function GameWorld() {
 			super();
 			
-			player = new Player(this);
+			player = new Player();
 			add(player);
 			
 			inventoryItems = new InventoryItems();

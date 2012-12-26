@@ -156,7 +156,6 @@ package {
 		
 		public function loadLevel():void {
 			generateTiles();
-			//These should be two different functions?
 			generateNPCs({"kind": "enemy"});
 			generateNPCs({"kind": "NPC"});
 		}
@@ -180,28 +179,26 @@ package {
 			buildForest();
 		}
 		
-		override public function update():void {
-			if (Input.mousePressed) click();
-		}
+		override public function update():void { if (Input.mousePressed) click(); }
 		
 		private function setGrid():void {
 			var gid:int = 0;
-			for(var row:int = 0; row < h; row++){
-				for(var column:int = 0; column < w; column++){
+			for (var row:int = 0; row < h; row++)
+				for (var column:int = 0; column < w; column++){
 					if (checkSolid(column, row)) grid.setTile(column, row, true);
 					else grid.setTile(column, row, false);
 					gid++;
 				}
-			}
 		}
 		
 		private function click():void {
 			var x:int = Math.floor((FP.camera.x + Input.mouseX) / Settings.TILESIZE);
 			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE);
 			var blastRadius:int = 2;
-			//if (Input.check(Key.SHIFT)) removeTiles(x, y, blastRadius);
-			//else if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
-		
+			/*
+			if (Input.check(Key.SHIFT)) removeTiles(x, y, blastRadius);
+			else if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
+			*/
 			fixGround();
 		}
 
@@ -210,12 +207,12 @@ package {
 		 */
 		private function checkSolid(x:int, y:int):Boolean {
 			var flag:Boolean = true;
-			for (var i:int = 0; i < notSolids.length; i++) {
+			for (var i:int = 0; i < notSolids.length; i++)
 				if (tiles.getTile(x, y) == notSolids[i]) {
 					flag = false;
 					break;
  				} else flag = true;
-			}
+			
 			return flag;
 		}
 		
@@ -233,18 +230,18 @@ package {
 		 * 2. Return values like drawTree
 		 */
 		private function drawBerg():void {
-			var width:int = Math.floor(Math.random() * 10) + 15;
+			var width:int = Math.floor(FP.random * 10) + 15;
 			var susHeight:int = 25 //suspention height
-			var start:Point = new Point (Math.floor(Math.random() * w) - width, h - susHeight);
+			var start:Point = new Point (Math.floor(FP.random * w) - width, h - susHeight);
 			var end:Point = new Point(start.x + width, h - susHeight);
 			var border:int = 4;
 			var currentPoint:Point;
 			drawLine(start, end);
 			
 			drawHill([start,
-				new Point(start.x + (width * 0.25), start.y - (Math.random() * 8)),
-				new Point(start.x + (width * 0.5), start.y - (Math.random() * 8)),
-				new Point(start.x + (width * 0.75), start.y - (Math.random() * 8)),
+				new Point(start.x + (width * 0.25), start.y - (FP.random * 8)),
+				new Point(start.x + (width * 0.5), start.y - (FP.random * 8)),
+				new Point(start.x + (width * 0.75), start.y - (FP.random * 8)),
 				end], false);
 			
 			var y:int;		
@@ -290,8 +287,8 @@ package {
 			var temple:Array = ls.loadTiles();
 			var tOrigin:Point = new Point(0,0); //temple origin;
 			
-			tOrigin.x = Math.floor(Math.random() * w);
-			tOrigin.y = h - Math.floor(Math.random() * 10) - 10;
+			tOrigin.x = Math.floor(FP.random * w);
+			tOrigin.y = h - Math.floor(FP.random * 10) - 10;
 			
 			for (var i:int = 0; i < temple.length; i++)
 				tiles.setTile(temple[i]["x"] + tOrigin.x, temple[i]["y"] + tOrigin.y, temple[i]["index"]);
@@ -302,14 +299,12 @@ package {
 		 */
 		//Iterate through each tile and call fixTile on ground tiles
 		private function fixGround():void {
-			for (var x:int = 0; x < w; x++){
-				for (var y:int = 0; y < h; y++){
-					if (tiles.getTile(x, y) == 12){
+			for (var x:int = 0; x < w; x++)
+				for (var y:int = 0; y < h; y++)
+					if (tiles.getTile(x, y) == 12) {
 						var index:int = fixTile(x, y);
 						tiles.setTile(x, y, index);
 					}
-				}
-			}
 		}
 		
 		/**
@@ -317,49 +312,27 @@ package {
 		 */
 		private function fixTile(x:int, y:int):int {
 			var ts:Object = jungleTiles["ground"];
-			if (tiles.getTile(x, y - 1) == 0) {
-				//tile above is empty
-				if (tiles.getTile(x - 1, y) == 0) {
-					//tile to the left is also empty
-					return ts["topLeft"];
-				} else if (tiles.getTile(x + 1, y) == 0) {
-					//tile to the right is also empty
-					return ts["topRight"];
-				}
+			if (tiles.getTile(x, y - 1) == 0) { //tile above is empty
+				if (tiles.getTile(x - 1, y) == 0) return ts["topLeft"]; //tile to the left is also empty
+				else if (tiles.getTile(x + 1, y) == 0) return ts["topRight"]; //tile to the right is also empty
 				flatGround.push(new Point(x, y));
 				return ts["topMid"];
 			}
 			
 			//tile below is empty
-			if (tiles.getTile(x, y + 1) == 0) {
-				//tile to the left is also empty
-				if (tiles.getTile(x - 1, y) == 0) {
-					return ts["botLeft"];
-					//tile to the right is also empty
-				} else if (tiles.getTile(x + 1, y) == 0) {
-					return ts["botRight"];
-				}
-				if (y != h - 1) return ts["botMid"];
+			if (tiles.getTile(x, y + 1) == 0) { //tile to the left is also empty
+				if (tiles.getTile(x - 1, y) == 0) return ts["botLeft"]; //tile to the right is also empty
+				else if (tiles.getTile(x + 1, y) == 0) return ts["botRight"];
+				else if (y != h - 1) return ts["botMid"];
 				else return ts["middle"];
 			}
 			
-			//tile to the right is empty
-			if (tiles.getTile(x + 1, y) == 0) return ts["midRight"];
-			
-			//tile to the left is empty
-			if (tiles.getTile(x - 1, y) == 0) return ts["midLeft"];
-			
-			//tile to the top-left is empty
-			if (tiles.getTile(x - 1, y - 1) == 0) return ts["topLeftTuft"];
-			
-			//tile to the top-right is empty
-			if (tiles.getTile(x + 1, y - 1) == 0) return ts["topRightTuft"];
-			
-			//tile to the bottom-left is empty
-			if (tiles.getTile(x - 1, y + 1) == 0) return ts["bottomLeftTuft"];
-			
-			//tile to the bottom-right is empty
-			if (tiles.getTile(x + 1, y + 1) == 0) return ts["bottomRightTuft"];
+			if (tiles.getTile(x + 1, y) == 0) return ts["midRight"]; //tile to the right is empty
+			if (tiles.getTile(x - 1, y) == 0) return ts["midLeft"]; //tile to the left is empty			
+			if (tiles.getTile(x - 1, y - 1) == 0) return ts["topLeftTuft"]; //tile to the top-left is empty			
+			if (tiles.getTile(x + 1, y - 1) == 0) return ts["topRightTuft"]; //tile to the top-right is empty			
+			if (tiles.getTile(x - 1, y + 1) == 0) return ts["bottomLeftTuft"]; //tile to the bottom-left is empty
+			if (tiles.getTile(x + 1, y + 1) == 0) return ts["bottomRightTuft"]; //tile to the bottom-right is empty
 			
 			return ts["middle"];
 		}
@@ -383,7 +356,6 @@ package {
 			e.layer = -550;
 		}
 		
-		
 		/**
 		 * TODO:
 		 * 1. Add more shapes
@@ -405,11 +377,9 @@ package {
 			
 			//Ensure no overlap
 			var isolated:Boolean = false;
-			
 			var tries:int = 0;
 			var maxTries:int = 100;
 			while (!isolated) {
-				
 				var islandWidth:int = Math.round(minWidth + (FP.random * 5));
 				var islandHeight:int = Math.round(minHeight + (FP.random * 5));
 				var x:int = Math.floor((FP.random * w) - islandWidth);
@@ -439,7 +409,7 @@ package {
 				drawLine(start, end)
 				
 				//Randomize the direction it is drawn in
-				var roll:Number = Math.random();
+				var roll:Number = FP.random;
 				if (roll <= 0.5) {
 					fillSlope(start, peak, false);
 					fillSlope(peak, end, false);
@@ -458,11 +428,9 @@ package {
 		private function generateIslands():void {
 			var islands:int = 60;
 			var minSize:int = 2;
-			for (var i:int = 0; i < islands; i++) {
-				var roll:Number = Math.random();
-				if (roll < 0.5) drawIsland({"kind": "rect"});
+			for (var i:int = 0; i < islands; i++)
+				if (FP.random < 0.5) drawIsland({"kind": "rect"});
 				else drawIsland({"kind": "vShaped"});
-			}
 		}
 		
 		private function drawLine(start:Point, end:Point, options:Object = null):void {
@@ -478,21 +446,18 @@ package {
 			}
 			
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
-			for each(var po:Point in points){
-				for (var w:int = 0; w < width; w++){
-					for (var h:int = 0; h < height; h++){
+			for each(var po:Point in points)
+				for (var w:int = 0; w < width; w++)
+					for (var h:int = 0; h < height; h++)
 						if (positive) tiles.setTile(po.x + w, po.y + h, 12)
-						else tiles.clearTile(po.x + w, po.y + h);
-					}
-				}
-			}
+						else tiles.clearTile(po.x + w, po.y + h);			
 		}
 		
 		private function fillSlope(start:Point, end:Point, fillDown:Boolean = true, baseline:int = -1):void {
 			var current:Point = new Point(start.x, start.y);
 			var points:Array = getLine(start.x, end.x, start.y, end.y);
 			if (baseline == -1) baseline = h;
-			for each(var po:Point in points){
+			for each(var po:Point in points) {
 				var c:Point = po;
 				while(tiles.getTile(c.x, c.y) == 0 && c.y < baseline) {
 					tiles.setTile(c.x, c.y, 12);
@@ -505,7 +470,7 @@ package {
 		private function drawHill(stops:Array, relativeToGround:Boolean = true):void {
 			var start:Point;
 			var end:Point;
-			for (var i:int = 0; i < stops.length - 1; i++){
+			for (var i:int = 0; i < stops.length - 1; i++) {
 				var newStartY:int;
 				var newEndY:int;
 				
@@ -517,6 +482,7 @@ package {
 				
 				start = new Point(stops[i].x, newStartY);
 				end = new Point(stops[i + 1].x, newEndY);
+				
 				fillSlope(start, end);
 			}
 		}
@@ -568,18 +534,17 @@ package {
 		 * 4. Non-rectangular canopy
 		 */
 		private function drawTree():Boolean {
-			var _x:int = Math.random() * w;
+			var _x:int = FP.random * w;
 			var _y:int = h - 1;
 			var padding:int = 2; //min distance between trees
-			var leavesWidth:int = 2 + (Math.random() * 2); //radius
-			var leavesHeight:int = 2 + (Math.random() * 4); //full height
+			var leavesWidth:int = 2 + (FP.random * 2); //radius
+			var leavesHeight:int = 2 + (FP.random * 4); //full height
 			var trunkWidth:int = 1;
-			var trunkHeight:int = 6 + (Math.random() * 4);
+			var trunkHeight:int = 6 + (FP.random * 4);
 			//Find ground level
 			while (tiles.getTile(_x, _y) != 0) {
 				var t:int = tiles.getTile(_x, _y);
-				if (t == jungleTiles["plants"]["treeTrunk"])
-					return false;
+				if (t == jungleTiles["plants"]["treeTrunk"]) return false;
 				else _y--;
 			}
 			//ground level found; remember where the base of the tree is
@@ -605,9 +570,9 @@ package {
 			if (FP.random <= 0.5) tilemap = backTiles;
 			else tilemap = tiles;
 			while (_y >= baseY - trunkHeight) {
-				if (tiles.getTile(_x, _y) == 0 && backTiles.getTile(_x, _y) == 0) {
+				if (tiles.getTile(_x, _y) == 0 && backTiles.getTile(_x, _y) == 0)
 					tilemap.setTile(_x, _y, jungleTiles["plants"]["treeTrunk"]);
-				} else return true;
+				else return true;
 				_y--;
 			}
 		
@@ -636,23 +601,21 @@ package {
 		 */
 		private function generateRocks():void {
 			for (var i:int = 0; i < flatGround.length; i++){
-				var roll:int = Math.floor(Math.random() * 6)
+				var roll:int = Math.floor(FP.random * 6)
 				if (roll <= 1) {
 					var rock:Character = new Character(new Point(0, 0));
 					var rockIndex:int;
 					
 					if (tiles.getTile(flatGround[i].x + 1, flatGround[i].y) != 0 &&
-						tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) {
-						//large rocks
-						rockIndex = Math.floor(Math.random() * largeRocks.length);
+						tiles.getTile(flatGround[i].x + 2, flatGround[i].y) != 0) { //large rocks
+						rockIndex = FP.random * largeRocks.length;
 						rock.graphic = new Image(largeRocks[rockIndex]);
-					} else {
-						//small rocks
-						rockIndex = Math.floor(Math.random() * smallRocks.length);
+					} else { //small rocks
+						rockIndex = FP.random * smallRocks.length;
 						rock.graphic = new Image(smallRocks[rockIndex]);
 					}
 					
-					var layerRoll:Number = Math.random();
+					var layerRoll:Number = FP.random;
 					if (layerRoll <= 0.5) renderBehind(rock);
 					else renderInFront(rock);
 					
@@ -785,7 +748,5 @@ package {
 			for each (var item:InteractionItem in interactionItemList) FP.world.remove(item);
 			for each (var enemy:Enemy in enemiesList) FP.world.remove(enemy);			
 		}
-		
 	}
-	
 }
