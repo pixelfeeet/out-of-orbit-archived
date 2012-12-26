@@ -8,4 +8,4 @@
 	<li>Pixel art made by me!</li>
 	<li>Sound design also by me!</li>
 </ul>
-<p>The game is still in early stages of development, and should be ready for it's first Alpha release in early 2013. In the meantime, you can look at its <a href="https://github.com/chrisdfe/out-of-orbit">git repository</a>.</p>
+<p>The game is still in early stages of development, and should be ready for it's first Alpha release in early 2013.
