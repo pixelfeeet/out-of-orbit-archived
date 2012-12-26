@@ -70,7 +70,7 @@ package {
 		private var shadowColor:uint;
 		private var lightColor:uint;
 		
-		public function Level(_w:GameWorld, _p:SpacemanPlayer) {
+		public function Level() {
 			t = Settings.TILESIZE;
 			
 			w = 150;
@@ -148,24 +148,17 @@ package {
 			
 			shadowColor = 0xbbaabb;
 			lightColor = 0xffffff;
-			
-			gw = _w;
-			player = _p;
+		}
+		
+		override public function added():void {
 			loadLevel();
 		}
 		
 		public function loadLevel():void {
-			loadPlayer();
 			generateTiles();
 			//These should be two different functions?
 			generateNPCs({"kind": "enemy"});
 			generateNPCs({"kind": "NPC"});
-		}
-		
-		public function loadPlayer():void{
-			player.x = 30;
-			player.y = 30;
-			gw.add(player);
 		}
 		
 		private function generateTiles():void {
@@ -376,7 +369,7 @@ package {
 			backLayer.graphic = backTiles;
 			Canvas(backTiles).color = shadowColor;
 			backLayer.layer = -100;
-			gw.add(backLayer);
+			FP.world.add(backLayer);
 		}
 
 		
@@ -572,6 +565,7 @@ package {
 		 * 		a) If there is another tree within 2(?) blocks if this one
 		 * 		b) There isn't enough room to draw most of the tree.
 		 * 3. Use the same sort of layring as with the rocks
+		 * 4. Non-rectangular canopy
 		 */
 		private function drawTree():Boolean {
 			var _x:int = Math.random() * w;
@@ -664,7 +658,7 @@ package {
 					
 					rock.setHitboxTo(rock.graphic);
 					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
-					gw.add(rock);
+					FP.world.add(rock);
 				}
 			}
 		}
@@ -696,7 +690,7 @@ package {
 					e = new DustBall(pos);
 					NPClist.push(e);
 				}
-				gw.add(e);
+				FP.world.add(e);
 			}
 		}
 		

@@ -65,10 +65,12 @@ package {
 			super();
 			
 			player = new SpacemanPlayer(this);
+			add(player);
+			
 			inventoryItems = new InventoryItems();
 			interactionItems = new InteractionItems();
 			enemies = new Enemies();
-			levels = new Levels(this, player);
+			//levels = new Levels(this, player);
 			npcs = new NPCs();
 			scenery = new Scenery();
 
@@ -81,7 +83,7 @@ package {
 			add(lightMask);
 			
 			//add(player);
-			currentLevel = new Level(this, player);
+			currentLevel = new Level();
 			background = new Background(currentLevel);
 			add(background);
 			add(currentLevel);
