@@ -19,6 +19,7 @@ package {
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import net.flashpunk.graphics.Canvas;
 	
 	import utilities.Settings;
 	
@@ -373,6 +374,7 @@ package {
 		private function initBackLayer():void {
 			backLayer = new Entity(0, 0);
 			backLayer.graphic = backTiles;
+			Canvas(backTiles).color = shadowColor;
 			backLayer.layer = -100;
 			gw.add(backLayer);
 		}
@@ -582,7 +584,7 @@ package {
 			//Find ground level
 			while (tiles.getTile(_x, _y) != 0) {
 				var t:int = tiles.getTile(_x, _y);
-				if (t == jungleTiles["plants"]["treeTrunk"] || t == jungleTiles["water"])
+				if (t == jungleTiles["plants"]["treeTrunk"])
 					return false;
 				else _y--;
 			}
