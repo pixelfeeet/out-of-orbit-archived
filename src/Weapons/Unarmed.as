@@ -5,8 +5,8 @@ package Weapons {
 
 	public class Unarmed extends Weapon {
 		
-		private var player:SpacemanPlayer;
-		public function Unarmed(_player:SpacemanPlayer) {
+		private var player:Player;
+		public function Unarmed(_player:Player) {
 			player = _player;
 			super(player);
 			ranged = false;

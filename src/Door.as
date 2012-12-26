@@ -18,14 +18,14 @@ package {
 		//to the door's destination.  Else, it happens on collision.
 		public var useToTravel:Boolean;
 		private var w:GameWorld;
-		private var player:SpacemanPlayer;
+		private var player:Player;
 		private var c:Level;
 		public var label:String;
 		//if false, player spawns to the right of 
 		//the door.
 		public var playerSpawnsToLeft:Boolean;
 		
-		public function Door(_position:Point, _w:GameWorld, _c:Level, _player:SpacemanPlayer, _height:int, _width:int) {
+		public function Door(_position:Point, _w:GameWorld, _c:Level, _player:Player, _height:int, _width:int) {
 			super(_position.x, _position.y);
 			w = _w;
 			c = _c;

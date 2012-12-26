@@ -36,14 +36,14 @@ package ui {
 		private var inventoryBoxesInitiated:Boolean;
 		
 		private var display:Graphiclist;
-		private var player:SpacemanPlayer;
+		private var player:Player;
 		
 		public var carriedItem:InventoryItem;
 		public var carriedItemSlot:int;
 		
 		public var scrapConverter:ScrapConverter;
 		
-		public function InventoryMenu(_w:GameWorld, _p:SpacemanPlayer) {
+		public function InventoryMenu(_w:GameWorld, _p:Player) {
 			super();
 			
 			w = _w;

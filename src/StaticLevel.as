@@ -40,7 +40,7 @@ package {
 			loadTiles()
 		}
 		
-		public function loadPlayer(_w:World, _player:SpacemanPlayer):void{
+		public function loadPlayer(_w:World, _player:Player):void{
 //			var dataList:XMLList = xmlData.objectgroup.(@name=="player").object;
 //			_player.x = dataList.@x;
 //			_player.y = dataList.@y;

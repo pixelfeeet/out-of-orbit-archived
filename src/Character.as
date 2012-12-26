@@ -41,7 +41,7 @@ package
 		
 		protected var t:int; //Settings.TILESIZE
 		
-		private var player:SpacemanPlayer;
+		private var player:Player;
 		
 		public var lightRadius:int;
 

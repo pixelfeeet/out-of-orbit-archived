@@ -29,7 +29,7 @@ package ui {
 		private var fuelHUD:Graphic;
 		private var fuelText:Text;
 		
-		private var player:SpacemanPlayer;
+		private var player:Player;
 		 
 		public var display:Graphiclist;
 		
@@ -50,7 +50,7 @@ package ui {
 		
 		private var w:GameWorld;
 		
-		public function HUD(_player:SpacemanPlayer, _w:GameWorld) {
+		public function HUD(_player:Player, _w:GameWorld) {
 			layer = 1;
 			//At some point player I should make gameworld's player
 			//a static variable, or something.

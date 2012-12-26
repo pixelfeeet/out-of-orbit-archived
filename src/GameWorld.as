@@ -31,7 +31,7 @@ package {
 	
 	public class GameWorld extends World {
 		
-		public static var player:SpacemanPlayer;
+		public static var player:Player;
 		public var hud:HUD;
 		private var cam:Camera;
 		
@@ -64,7 +64,7 @@ package {
 		public function GameWorld() {
 			super();
 			
-			player = new SpacemanPlayer(this);
+			player = new Player(this);
 			add(player);
 			
 			inventoryItems = new InventoryItems();
@@ -134,7 +134,7 @@ package {
 			if (Input.pressed("Construct")) onConstruct();
 		}
 		
-		public function getPlayer():SpacemanPlayer {
+		public function getPlayer():Player {
 			return player;	
 		}
 		

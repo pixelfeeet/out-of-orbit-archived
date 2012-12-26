@@ -47,7 +47,7 @@ package
 		private var offLeft:int;
 		private var offTop:int;
 		private var lightRadius:int;
-		private var p:SpacemanPlayer;
+		private var p:Player;
 		
 		private var _w:GameWorld;
 		private var time:String; //"Day" or "Night"

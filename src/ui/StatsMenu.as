@@ -19,7 +19,7 @@ package ui {
 		private var quitButton:Button;
 		
 		private var w:GameWorld;
-		private var p:SpacemanPlayer;
+		private var p:Player;
 		
 		private var playerStrength:Text;
 		private var subStrength:Button;

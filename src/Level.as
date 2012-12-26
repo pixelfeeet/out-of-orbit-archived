@@ -35,7 +35,7 @@ package {
 		
 		private var solidList:Array;
 		private var gw:GameWorld;
-		private var player:SpacemanPlayer;
+		private var player:Player;
 		
 		public var label:String;
 		

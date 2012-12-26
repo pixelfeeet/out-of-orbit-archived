@@ -27,7 +27,7 @@ package Weapons {
 		public var leftX:int;
 		public var leftOriginX:int;
 		
-		public function Weapon(p:SpacemanPlayer) {
+		public function Weapon(p:Player) {
 			super();
 			ammunition = 10;
 			fireTimer = 0;

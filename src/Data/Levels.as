@@ -10,7 +10,7 @@ package data {
 		public var levelsList:Array;
 		public var ambience:Sfx;
 		
-		public function Levels(_w:GameWorld, _p:SpacemanPlayer){
+		public function Levels(_w:GameWorld, _p:Player){
 			levelsList = [];
 			
 			//jungleLevel = new Level(Assets.JUNGLE);

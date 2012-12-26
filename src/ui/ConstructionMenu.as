@@ -14,7 +14,7 @@ package ui {
 	
 	public class ConstructionMenu extends Entity {
 		private var panel:Entity;
-		private var p:SpacemanPlayer;
+		private var p:Player;
 		private var w:GameWorld;
 		private var availableItems:Array;
 		private var constructButton:Button;
@@ -23,7 +23,7 @@ package ui {
 		public var captionText:Text;
 		private var display:Graphiclist;
 		
-		public function ConstructionMenu(_w:GameWorld, _p:SpacemanPlayer, _position:Point = null) {
+		public function ConstructionMenu(_w:GameWorld, _p:Player, _position:Point = null) {
 			if (!_position) _position = new Point(0, 0);
 			super();
 			w = _w;

@@ -9,7 +9,7 @@ package utilities {
 		private var cameraXOffset:int;
 		private var cameraYOffset:int;
 		
-		private var player:SpacemanPlayer;
+		private var player:Player;
 		private var level:Level;
 		
 		private var lWidth:int;

@@ -8,8 +8,8 @@ package Weapons {
 	import net.flashpunk.utils.Key;
 	
 	public class PowerBlaster extends Weapon {
-		private var player:SpacemanPlayer
-		public function PowerBlaster(_player:SpacemanPlayer) {
+		private var player:Player
+		public function PowerBlaster(_player:Player) {
 			player = _player;
 			super(player);
 			ranged = true;

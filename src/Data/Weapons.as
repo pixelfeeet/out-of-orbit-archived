@@ -8,7 +8,7 @@ package data
 		public var powerBlaster:PowerBlaster;
 		public var unarmed:Unarmed;
 		
-		public function Weapons(p:SpacemanPlayer) {
+		public function Weapons(p:Player) {
 			powerBlaster = new PowerBlaster(p);
 			unarmed = new Unarmed(p);
 		}
