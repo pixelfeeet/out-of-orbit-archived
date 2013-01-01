@@ -22,7 +22,7 @@ Assets:
 </ul>
 <ol>
 	<li>
-		###Axe
+		<h3>Axe</h3>
 		Assets:
 		<ul>
 			<li>Graphic</li>
@@ -30,7 +30,7 @@ Assets:
 		</ul>
 	</li>
 	<li>
-		###Wrench
+		<h3>Wrench</h3>
 		Assets:
 		<ul>
 			<li>Graphic</li>
