@@ -39,12 +39,11 @@ package ui {
 		}
 		
 		public function click():void {
-			for each (var box:ConstructionBox in w.constructionMenu.boxes) {
+			for each (var box:ConstructionBox in w.constructionMenu.boxes)
 				box.deselect();
-			}
-			if (selected) {
-				selected = false;
-			} else {
+
+			if (selected) selected = false;
+			else {
 				selected = true;
 				w.constructionMenu.displayPrice();
 			}

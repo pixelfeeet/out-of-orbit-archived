@@ -41,7 +41,7 @@ package
 		
 		protected var t:int; //Settings.TILESIZE
 		
-		private var player:Player;
+		protected var player:Player;
 		
 		public var lightRadius:int;
 
@@ -85,8 +85,8 @@ package
 			updateMovement();
 			updateCollision();
 			updateGraphic();
-			if (health != -1) checkForDamage();
-			if (hunger != -1) updateHunger();
+			if (health != -1 && player) checkForDamage();
+			if (hunger != -1 && player) updateHunger();
 			
 			super.update();
 		}
@@ -182,7 +182,7 @@ package
 				bullet.destroy();
 				takeDamage(bullet.getDamagePoints());
 			}
-			/*
+			
 			if (player.meleeAttacking &&
 				cLength(new Point(x, y), new Point(player.x, player.y)) < 100 &&
 				this.type != "Player") {
@@ -195,7 +195,7 @@ package
 					if (0 <= dist && dist < player.weapon.getRange()) takeDamage(player.weapon.getDamage());
 				}
 			}
-			*/
+			
 		}
 		
 		//ACTIONS

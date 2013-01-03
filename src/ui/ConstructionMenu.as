@@ -56,9 +56,8 @@ package ui {
 				item.update();
 			}
 			
-			for (var i:int = 0; i < boxes.length; i ++){ 
+			for (var i:int = 0; i < boxes.length; i ++)
 				boxes[i].update();
-			}
 			
 			constructButton.update();
 		}
@@ -90,6 +89,10 @@ package ui {
 		}
 		
 		public function show():void {
+			w = GameWorld(FP.world);
+			player = w.player;
+			itemList = GameWorld(FP.world).inventoryItems.list;
+			
 			panel.x = FP.camera.x + (FP.screen.width /2) - (panel.width / 2);
 			panel.y = FP.camera.y + 10 + (FP.screen.height / 2) - (panel.height / 2);
 			constructButton.x = panel.x + 100;

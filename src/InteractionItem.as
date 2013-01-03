@@ -20,7 +20,6 @@ package {
 	import utilities.Settings;
 	
 	public class InteractionItem extends Character {
-		private var player:Player;
 		private var rocketImage:Image;
 		
 		private var inventoryImage:Graphic;
@@ -55,10 +54,6 @@ package {
 			eliminated = false;
 			pickUpable = true;
 			
-		}
-		
-		override public function added():void {
-			player = GameWorld(FP.world).player;
 		}
 
 		override public function update():void {

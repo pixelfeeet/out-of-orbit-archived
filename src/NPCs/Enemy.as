@@ -9,7 +9,6 @@ package NPCs {
 	import utilities.Settings;
 	
 	public class Enemy extends NPC {
-		public var player:Entity;
 		public var viewDistance:int;
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
@@ -33,11 +32,7 @@ package NPCs {
 			
 			setHitboxTo(graphic);
 		}
-	
-		override public function added():void {
-			player = GameWorld(FP.world).player;
-		}
-		
+
 		override protected function generateDropItems():Array{
 			var f:InteractionItem = GameWorld(FP.world).interactionItems.food;
 			var a:Ammunition = new Ammunition();

@@ -33,7 +33,7 @@ package {
 		
 		public var player:Player;
 		public var hud:HUD;
-		private var cam:Camera;
+		public var cam:Camera;
 		
 		public var inventoryItems:InventoryItems;
 		public var interactionItems:InteractionItems;
@@ -82,7 +82,7 @@ package {
 			inventoryItems = new InventoryItems();
 			interactionItems = new InteractionItems();
 			enemies = new Enemies();
-			//levels = new Levels(this, player);
+			
 			npcs = new NPCs();
 			scenery = new Scenery();
 			

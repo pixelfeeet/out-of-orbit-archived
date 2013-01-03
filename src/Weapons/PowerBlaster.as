@@ -37,6 +37,8 @@ package Weapons {
 			if (Input.mouseDown && fireTimer == 0
 				&& ammunition > 0
 				&& !Input.check(Key.SHIFT)) {
+				player = GameWorld(FP.world).player;
+				
 				var initX:int;
 				var initY:int;
 				

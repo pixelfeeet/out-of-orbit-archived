@@ -152,6 +152,7 @@ package {
 			Input.define("Down", Key.S);
 			Input.define("Use", Key.E);
 			Input.define("Toggle Flying", Key.T);
+			Input.define("Center Camera", Key.Z);
 			
 			//Stats
 			experience = 0;
@@ -181,7 +182,7 @@ package {
 			bulletTimer = 0;
 			
 			equipWeapon(weapon);
-			FP.world.add(weapon);
+			gameworld.add(weapon);
 			
 			//Legs
 			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
@@ -257,6 +258,8 @@ package {
 			//debug
 			debug();
 			if (Input.pressed("Toggle Flying")) toggleDebugFlying();
+			
+			if (Input.pressed("Center Camera")) gameworld.cam.adjustToPlayer();
 		}
 		
 		private function updateSpeech():void {

@@ -11,6 +11,7 @@ package Weapons {
 			super();
 			ranged = false;
 			range = 100;
+
 			shootSound = new Sfx(Assets.SHOOT);
 			graphic = new Image(Assets.ARM);
 			label = "Unarmed";
