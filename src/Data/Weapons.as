@@ -9,8 +9,8 @@ package data
 		public var unarmed:Unarmed;
 		
 		public function Weapons(p:Player) {
-			powerBlaster = new PowerBlaster(p);
-			unarmed = new Unarmed(p);
+			powerBlaster = new PowerBlaster();
+			unarmed = new Unarmed();
 		}
 	}
 }

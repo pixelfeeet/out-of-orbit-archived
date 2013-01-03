@@ -1,7 +1,8 @@
 package utilities {
+	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	
-	public class Camera {
+	public class Camera extends Entity {
 		
 		private var cameraXSpeed:int;
 		private var cameraYSpeed:int;
@@ -9,28 +10,35 @@ package utilities {
 		private var cameraXOffset:int;
 		private var cameraYOffset:int;
 		
+		private var w:GameWorld;
 		private var player:Player;
 		private var level:Level;
 		
 		private var lWidth:int;
 		private var lHeight:int;
 		
-		public function Camera(l:Level) {
-			
-			player = GameWorld.player;
-			cameraXSpeed = 2;
-			cameraYSpeed = 5;
-			
-			cameraXOffset = 200;
-			cameraYOffset = 150;
+		public function Camera(_level:Level) {
+			level = _level;
 
-			level = l;
 			var t:int = Settings.TILESIZE;
 			lWidth = level.width / t;
 			lHeight = level.height / t;
-			trace("w: " + lWidth + ", h: " + lHeight);
 			
+			cameraXOffset = FP.screen.width * 0.4;
+			cameraYOffset = FP.screen.height * 0.4;
 			//adjustToPlayer();
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
+			player = w.player;
+			adjustToPlayer();
+		}
+		
+		override public function update():void {
+			cameraXSpeed = (player.velocity.x * FP.elapsed) * FP.sign(player.velocity.x);
+			cameraYSpeed = (player.velocity.y * FP.elapsed) * FP.sign(player.velocity.y);
+			if (!w.pause) followPlayer();
 		}
 		
 		public function followPlayer():void {

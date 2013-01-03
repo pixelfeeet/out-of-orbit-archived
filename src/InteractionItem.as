@@ -20,6 +20,7 @@ package {
 	import utilities.Settings;
 	
 	public class InteractionItem extends Character {
+		private var player:Player;
 		private var rocketImage:Image;
 		
 		private var inventoryImage:Graphic;
@@ -55,6 +56,10 @@ package {
 			pickUpable = true;
 			
 		}
+		
+		override public function added():void {
+			player = GameWorld(FP.world).player;
+		}
 
 		override public function update():void {
 			
@@ -62,9 +67,9 @@ package {
 			
 			//here's that declaring stuff in the constructor problem
 			//again.  I don't know of there's a better way of doing this.
-			if (!inventoryItem) inventoryItem = GameWorld.inventoryItems.mediPack;
+			if (!inventoryItem) inventoryItem = GameWorld(FP.world).inventoryItems.mediPack;
 			
-			if (collideWith(GameWorld.player, x, y)) {
+			if (collideWith(player, x, y)) {
 				//if (Input.mouseReleased) click();
 				pickupSound.play();
 				getPickedUp();
@@ -74,10 +79,10 @@ package {
 		
 		protected function getPickedUp():void {
 			if (pickUpable) {
-				if(GameWorld.player.getInventory().findSlot(this.inventoryItem) != -1
+				if(player.getInventory().findSlot(this.inventoryItem) != -1
 				&& inventoryItem != null
-				&& distanceFrom(GameWorld.player) <= GameWorld.player.reachDistance){
-					GameWorld.player.getInventory().addItemToInventory(inventoryItem);
+				&& distanceFrom(player) <= player.reachDistance){
+					player.getInventory().addItemToInventory(inventoryItem);
 					destroy();
 				}
 			}

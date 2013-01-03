@@ -1,6 +1,7 @@
 package  {
 	import flash.geom.Point;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.FP;
 	
 	public class Ammunition extends InteractionItem {
 		public var amount:int;
@@ -13,7 +14,7 @@ package  {
 		}
 		
 		override protected function getPickedUp():void {
-			GameWorld.player.weapon.addAmmo(amount);
+			GameWorld(FP.world).player.weapon.addAmmo(amount);
 			trace("Ammunition has been picked up")
 			this.destroy();
 		}

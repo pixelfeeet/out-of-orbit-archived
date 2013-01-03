@@ -111,12 +111,8 @@ package {
 		private var debugFlying:Boolean;
 
 		public function Player(_position:Point = null) {
-			
-			if (!_position) _position = new Point(0, 0);
-			
+			if (!_position) _position = new Point(0, 0);			
 			super(_position, health, hunger);
-			
-			type = "Player";
 			
 			movementState = "jumping";
 			debugFlying = true;
@@ -130,7 +126,7 @@ package {
 			jetRecharge = 5;
 			jetRechargeTimer = jetRecharge; 
 			jetBurnedOut = false;
-				
+			
 			/**
 			 * Stats
 			 */
@@ -149,17 +145,41 @@ package {
 				{"name": "Fuel Capacity", "value": null, "points": 3}
 			];
 			
+			//Input Definitions
+			Input.define("Left", Key.A);
+			Input.define("Right", Key.D);
+			Input.define("Jump", Key.W);
+			Input.define("Down", Key.S);
+			Input.define("Use", Key.E);
+			Input.define("Toggle Flying", Key.T);
+			
+			//Stats
+			experience = 0;
+			level = 5;
+			levelUpTime = true;
+			allocationPoints = 10;
+			
+			//Exchange rate
+			constructionRate = 1.1;
+			recycleRate = 0.9;
+			
+			//Combat
+			meleeAttacking = false;
+		}
+		
+		override public function added():void {
+			gameworld = GameWorld(FP.world);
+			type = "Player";
+			
 			/**
 			 * Graphiclist components
 			 */
-			//Weapons/Combat
 			weapons = new Weapons(this);
 			weapon = weapons.unarmed;
-			meleeAttacking = false;
 			
 			bulletFrequency = 10;
 			bulletTimer = 0;
-
+			
 			equipWeapon(weapon);
 			FP.world.add(weapon);
 			
@@ -200,29 +220,11 @@ package {
 			
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
 			
-			//Input Definitions
-			Input.define("Left", Key.A);
-			Input.define("Right", Key.D);
-			Input.define("Jump", Key.W);
-			Input.define("Down", Key.S);
-			Input.define("Use", Key.E);
-			Input.define("Toggle Flying", Key.T);
-			
 			//Inventory
 			inventoryLength = 7;
 			inventory = new Inventory(inventoryLength);
 			reachDistance = 100;
 			scraps = 0;
-			
-			//Stats
-			experience = 0;
-			level = 5;
-			levelUpTime = true;
-			allocationPoints = 10;
-			
-			//Exchange rate
-			constructionRate = 1.1;
-			recycleRate = 0.9;
 			
 			//Sound
 			landSound = new Sfx(Assets.LAND);
@@ -231,10 +233,8 @@ package {
 			shootSound = new Sfx(Assets.SHOOT);
 			walkSound = new Sfx(Assets.BLIP);
 			
-			layer = -500
+			layer = -500	
 		}
-		
-		override public function added():void { gameworld = GameWorld(FP.world); }
 		
 		override public function update():void {
 			super.update();
@@ -339,14 +339,14 @@ package {
 				var l:Level = gameworld.currentLevel;
 				if (l.tiles.getTile(Math.floor(x / t), Math.floor(y / t) + 1) == l.jungleTiles["water"])
 					movementState = "swimming";
-				else if (FP.sign(velocity.x) != 0)
+				else if (FP.sign(velocity.x) != 0) {
 					if (!facingLeft)
 						if (FP.sign(velocity.x) == 1) movementState = "running";
 						else movementState = "backwards running";
 					else
 						if (FP.sign(velocity.x) == -1) movementState = "running";
 						else movementState = "backwards running";
-				else movementState = "standing";
+				} else movementState = "standing";
 			}
 		}
 
@@ -462,25 +462,26 @@ package {
 		}
 		
 		override protected function jump():void {
-			if (Input.check("Jump"))
-				if (Input.check(Key.SHIFT))
-					if (!jetBurnedOut) {
-						movementState = "jetpacking";
-						jetFuel--;
-						velocity.y = -JUMP;
-					}
-				else
+			if (Input.check("Jump")) {
+				if (Input.check(Key.SHIFT) && !jetBurnedOut) {
+					movementState = "jetpacking";
+					jetFuel--;
+					velocity.y = -JUMP;
+				} else {
 					if (onGround) {
 						velocity.y = -JUMP;
 						onGround = false;
 						jumpSound.play();
 					}
-	
-			if (movementState == "jetpacking")
+				}
+			}
+			
+			if (movementState == "jetpacking") {
 				if (jetRechargeTimer <= 0) { 
 					if (jetFuel < fuelCapacity) jetFuel++;
 					jetRechargeTimer = jetRecharge;
 				} else jetRechargeTimer--;
+			}
 			
 			if (jetFuel <= 0) jetBurnedOut = true;
 			else if (jetFuel == 100) jetBurnedOut = false;

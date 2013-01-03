@@ -1,0 +1,35 @@
+Weapons
+
+Melee weapons
+Assets:
+	Improved/cleaner melee attacking logic
+	Swinging animation
+	Stabbing animation
+	Swinging sound
+	Stabbing sound
+
+Axe (Swing)
+Assets:
+	Graphic
+	Impact sound
+
+Wrench (Swing)
+Assets:
+	Graphic
+	Impact sound
+
+(Tree) Branch (Swing)
+Assets:
+	Graphic
+	Impact sound
+
+Knife (Stab)
+Assets:
+	Graphic
+	Impact sound
+
+Ranged weapons
+
+Rock(s)
+Pistol
+Grenade/Bomb

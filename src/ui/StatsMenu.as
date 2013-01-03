@@ -57,18 +57,28 @@ package ui {
 		
 		private var titleText:Text;
 		
-		public function StatsMenu(_w:GameWorld) {
+		public function StatsMenu() {
 			super();
-			
-			w = _w;
-			p = w.getPlayer();
-			
-			titleText = new Text("Stats", 10, 10, {size: 30});
 
 			leftArrow = Assets.ARROW_LEFT;
-			rightArrow = Assets.ARROW_RIGHT;
+			rightArrow = Assets.ARROW_RIGHT;			
+		
+			layer = -1110;
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
+			p = w.player;
 			
 			var bg:Graphic = Image.createRect(800, 400, 0x333333, 0.8);
+			
+			points = new Text(allocationPoints + " allocation points.", 10, 360);
+			points.size = 26;
+			points.color = 0xffffff;
+			
+			titleText = new Text("Stats", 10, 10, {size: 30});
+			
+			levelUpButton = new Button(0, 0, "Confirm Points", onConfirm);
 			
 			playerHealth = new Text("Health: " + p.getHealth() + "/"
 				+ p.getMaxHealth(), 250, 40,
@@ -78,37 +88,24 @@ package ui {
 				+ p.getMaxHunger(), 250, 10,
 				{ size: 22, color: 0xffffff, align: "left" });
 			
-			//playerIntelligence = new Text("Intelligence: " + p.intelligence, 10, 60);
-			//playerDexterity = new Text("Dexterity: " + p.dexterity, 10, 80);
-			//playerAgility = new Text("Agility: " + p.agility, 10, 100);
-			
-			//playerArmor = new Text("Armor: " + p.armor, 10, 60);
-			
-			points = new Text(allocationPoints + " allocation points.", 10, 360);
-			points.size = 26;
-			points.color = 0xffffff;
-			
-			levelUpButton = new Button(0, 0, "Confirm Points", onConfirm);
-			
 			playerLevel = new Text("Level: " + p.getLevel(), 800 - 120, 10,
-			{ size: 26, color: 0xffffff, align: "right" });
+				{ size: 26, color: 0xffffff, align: "right" });
 			
 			playerEXP = new Text("EXP: " + p.getExperience(), 800 - 120, 40,
-			{ size: 20, color: 0xffffff, align: "right" });
+				{ size: 20, color: 0xffffff, align: "right" });
 			
 			graphicList = new Graphiclist(bg, titleText, playerHealth, playerHunger,
 				playerLevel, playerEXP, points);
-			layer = -1110;
 			
 			panel = new Entity(0, 0, graphicList);
 			panel.setHitboxTo(graphicList.children[0]);
 			panel.layer = -1100;
-
+			
 			allocationPoints = p.allocationPoints;
 		}
 				
 		public function show():void {
-			p = w.getPlayer();
+			p = w.player;
 			
 			allocationPoints = p.allocationPoints;
 			
@@ -233,7 +230,6 @@ package ui {
 		}
 		
 		public function renderLevelUp(render:Boolean):void {
-
 			levelUpButton.visible = render;
 		}
 		

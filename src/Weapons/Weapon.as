@@ -5,16 +5,12 @@ package Weapons {
 	import net.flashpunk.utils.Input;
 	
 	public class Weapon extends Entity {
-		//false = melee
-		protected var ranged:Boolean;
-		//time in millisecondes after firing before next
-		//bullet fires.
-		protected var fireRate:int;
-		//# of projectiles before reloading
-		protected var clipSize:int;
-		//Total bullets
-		public var fireTimer:int;
-		protected var ammunition:int;
+		protected var ranged:Boolean; //false = melee
+		protected var fireRate:int; //minimum time in milliseconds between shots
+		public var fireTimer:int; //used to determine whether a shot can be fired yet
+
+		protected var clipSize:int; //# of projectiles before reloading
+		protected var ammunition:int; //total ammunition
 		protected var projectileSpeed:int;
 		protected var equipped:Boolean;
 		protected var scrapValue:int;
@@ -27,14 +23,18 @@ package Weapons {
 		public var leftX:int;
 		public var leftOriginX:int;
 		
-		public function Weapon(p:Player) {
+		public function Weapon() {
 			super();
-			ammunition = 10;
+			
+			//Default values
+			ranged = false;
+			
+			fireRate = 10
 			fireTimer = 0;
+			damage = 10;
 			equipped = false;
 			scrapValue = 100;
 			label = "default";
-			damage = 10;
 			
 			leftX = x;
 			leftOriginX = originX;

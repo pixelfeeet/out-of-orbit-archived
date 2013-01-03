@@ -44,10 +44,9 @@ package Inventory {
 		}
 		
 		private function destroy():void {
-			for (var i:int = 0; i < GameWorld.player.inventoryLength; i++){
-				if (GameWorld.player.getInventory().items[i][0].label == this.label){
-					GameWorld.player.getInventory().removeItemFromInventory(i);
-					//GameWorld.hud.deselectAll();
+			for (var i:int = 0; i < GameWorld(FP.world).player.inventoryLength; i++){
+				if (GameWorld(FP.world).player.getInventory().items[i][0].label == this.label){
+					GameWorld(FP.world).player.getInventory().removeItemFromInventory(i);
 					FP.world.remove(this);
 					return;
 				}

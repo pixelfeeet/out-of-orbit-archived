@@ -33,7 +33,6 @@ package ui {
 		public var inventoryBoxes:Array;
 		public var inventoryDisplay:Array;
 		private var inventory:Array;
-		private var inventoryBoxesInitiated:Boolean;
 		
 		private var display:Graphiclist;
 		private var player:Player;
@@ -43,27 +42,29 @@ package ui {
 		
 		public var scrapConverter:ScrapConverter;
 		
-		public function InventoryMenu(_w:GameWorld, _p:Player) {
+		public function InventoryMenu() {
 			super();
 			
-			w = _w;
-			player = _p;
-			hud = w.hud;
-			
-			inventoryDisplay = new Array(21);
-			inventoryBoxesInitiated = false;
 			inventory = [];
 			
 			panel = new Entity(0, 0, Image.createRect(500, 200, 0x333333, 0.8));
 			panel.setHitboxTo(panel.graphic);
 			panel.layer = -1100;
-
-			inventoryDisplay = new Array(player.inventoryLength);
-			scrapConverter = new ScrapConverter(w);
+			
+			scrapConverter = new ScrapConverter();
 
 			display = new Graphiclist();
 			graphic = display;
 			layer = -1110;
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
+			player = w.player;
+			hud = w.hud;
+			
+			initInventoryBoxes();
+			inventoryDisplay = new Array(player.inventoryLength);
 		}
 		
 		override public function update():void {
@@ -71,13 +72,13 @@ package ui {
 			y = FP.camera.y;
 			
 			getInventory();
-			if (!inventoryBoxesInitiated) initInventoryBoxes();
-			if (inventoryBoxesInitiated) updateInventoryBoxes();
+			
+			updateInventoryBoxes();
 			updateInventoryDisplay();
 			updateInventoryPosition();
-			for (var i:int = 0; i < inventoryBoxes.length; i ++) {
+			for (var i:int = 0; i < inventoryBoxes.length; i ++)
 				inventoryBoxes[i]["box"].update();
-			}
+			
 			scrapConverter.update();
 		}
 		
@@ -91,7 +92,7 @@ package ui {
 			panel.y = FP.camera.y + 10 + (FP.screen.height / 2) - (panel.height / 2);
 			
 			FP.world.add(panel); 
-			if (!inventoryBoxesInitiated) initInventoryBoxes();
+			
 			for (var i:int = 0; i < inventoryBoxes.length; i++) {
 				FP.world.add(inventoryBoxes[i]["box"]);
 				display.add(inventoryBoxes[i]["text"]);
@@ -123,8 +124,6 @@ package ui {
 					i++;
 				}
 			}
-			
-			inventoryBoxesInitiated = true;
 			
 		}
 		

@@ -28,8 +28,6 @@ package ui {
 		private var fuelHUDbg:Graphic;
 		private var fuelHUD:Graphic;
 		private var fuelText:Text;
-		
-		private var player:Player;
 		 
 		public var display:Graphiclist;
 		
@@ -39,24 +37,28 @@ package ui {
 		private var expHeight:int;
 		private var expTextSize:int;
 		
-		//this doesn't seem good.
 		public static var inventoryDisplay:Array;
 		public var inventoryBoxes:Array;
-		public static var inventoryBoxesInitiated:Boolean;
 		
 		public static var weaponInventoryDisplay:Array;
 		public static var weaponInventoryBoxes:Array;
 		public static var weaponInventoryBoxesInitiated:Boolean;
 		
 		private var w:GameWorld;
+		private var player:Player;
 		
-		public function HUD(_player:Player, _w:GameWorld) {
-			layer = 1;
-			//At some point player I should make gameworld's player
-			//a static variable, or something.
-			player = _player;
-			w = _w;
-
+		public function HUD() {			
+			expList = [];
+			expHeight = 70;
+			expTextSize = 20;
+			
+			layer = -1000;
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
+			player = w.player;
+			
 			healthHUDbg = Image.createRect(204, 14, 0xeeeeee, 1.0);
 			healthHUDbg.x = 8;
 			healthHUDbg.y = 8;
@@ -64,11 +66,11 @@ package ui {
 			healthHUD = Image.createRect(player.getHealth(), 10, 0xbb3333, 0.8);
 			healthHUD.x = 10;
 			healthHUD.y = 10;
-				
+			
 			hungerHUDbg = Image.createRect(204, 14, 0xeeeeee, 1.0);
 			hungerHUDbg.x = 8;
 			hungerHUDbg.y = 28;
-
+			
 			hungerHUD = Image.createRect(player.getHunger(), 10, 0x444433, 0.8); 
 			hungerHUD.x = 10;
 			hungerHUD.y = 30;
@@ -97,15 +99,11 @@ package ui {
 				bulletsHUD, scrapsHUD, fuelHUDbg, fuelHUD, fuelText);
 			
 			inventoryDisplay = new Array(player.inventoryLength);
-			inventoryBoxesInitiated = false;
-			
-			expList = [];
-			expHeight = 70;
-			expTextSize = 20;
 			
 			graphic = display;
 			
-			layer = -1000;
+			getInventory();
+			initInventoryBoxes();
 		}
 		
 		override public function update():void {
@@ -120,11 +118,7 @@ package ui {
 			updateInventoryDisplay();
 			updateExp();
 			
-			//for some reason if initInventoryBoxes is called in the
-			//constructor it breaks things
-			if(!inventoryBoxesInitiated) initInventoryBoxes();
 			updateInventoryBoxes();
-			
 		}
 		
 		//ITEM INVENTORY
@@ -133,13 +127,10 @@ package ui {
 		}
 		
 		private function updateHealth():void{
-			//hungerHUD.text = "Hunger: " + player.getHunger();
-			//healthHUD.text = "Health: " + player.getHealth();
 			Image(healthHUD).scaleX = player.getHealth() / 50;
 			Image(hungerHUD).scaleX = player.getHunger() / 50;
 			bulletsHUD.text = "Ammo: " + player.weapon.getAmmo();
 			scrapsHUD.text = "Scraps: " + player.scraps;
-			//fuelHUD.text = "Fuel: " + player.jumpHeight;
 			Image(fuelHUD).scaleY = player.jetFuel * 0.007;
 			if (player.jetBurnedOut) Image(fuelHUD).color = 0xee4433;
 			else Image(fuelHUD).color = 0x222222;
@@ -152,14 +143,14 @@ package ui {
 				var boxGraphics:Object = {};
 				var box:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60), w, false);
 				box.layer = -1000;
+				
 				var text:Text = new Text(inventory[i].length, 10 + (i * 55), FP.screen.height - 60);
 				boxGraphics = {"box": box, "text": text};
+				
 				inventoryBoxes.push(boxGraphics);
 				FP.world.add(boxGraphics["box"]);
 				display.add(boxGraphics["text"]);
 			}
-			
-			inventoryBoxesInitiated = true;
 			
 		}
 		

@@ -48,7 +48,6 @@ package
 		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
 			super();
-			player = GameWorld.player;
 			
 			x = _position.x;
 			y = _position.y;
@@ -76,6 +75,10 @@ package
 			lightRadius = 100;
 			
 			t = Settings.TILESIZE;	
+		}
+		
+		override public function added():void {
+			player = GameWorld(FP.world).player;
 		}
 		
 		override public function update():void {
@@ -179,19 +182,20 @@ package
 				bullet.destroy();
 				takeDamage(bullet.getDamagePoints());
 			}
-			
-			if (GameWorld.player.meleeAttacking &&
-				cLength(new Point(x, y), new Point(GameWorld.player.x, GameWorld.player.y)) < 100 &&
+			/*
+			if (player.meleeAttacking &&
+				cLength(new Point(x, y), new Point(player.x, player.y)) < 100 &&
 				this.type != "Player") {
 				var dist:int = 0;
-				if (GameWorld.player.isFacingLeft()) {
-					dist = GameWorld.player.x - x;
-					if (0 <= dist && dist < 100) takeDamage(GameWorld.player.weapon.getDamage());
+				if (player.isFacingLeft()) {
+					dist = player.x - x;
+					if (0 <= dist && dist < 100) takeDamage(player.weapon.getDamage());
 				} else {
-					dist = x - GameWorld.player.x;
-					if (0 <= dist && dist < GameWorld.player.weapon.getRange()) takeDamage(GameWorld.player.weapon.getDamage());
+					dist = x - player.x;
+					if (0 <= dist && dist < player.weapon.getRange()) takeDamage(player.weapon.getDamage());
 				}
 			}
+			*/
 		}
 		
 		//ACTIONS
@@ -220,7 +224,7 @@ package
 		
 		protected function increaseHunger(addedHunger:int):void{
 			changeHunger(-addedHunger);
-			//hunger animation goes here?
+			//hunger animation goes here
 		}
 		
 		protected function takeDamage(damage:int):void{
@@ -260,7 +264,7 @@ package
 			}
 		}
 		
-		public function setHealth(h:int):void { health = h; }
+		public function setHealth(_health:int):void { health = _health; }
 		
 		protected function cLength(a:Point, b:Point):Number {
 			return Math.sqrt(((b.x - a.x) * (b.x - a.x)) + (b.y - a.y) * (b.y - a.y));

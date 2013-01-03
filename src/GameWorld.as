@@ -31,15 +31,15 @@ package {
 	
 	public class GameWorld extends World {
 		
-		public static var player:Player;
+		public var player:Player;
 		public var hud:HUD;
 		private var cam:Camera;
 		
-		public static var inventoryItems:InventoryItems;
-		public static var interactionItems:InteractionItems;
-		public static var enemies:Enemies;
-		public static var npcs:NPCs;
-		public static var scenery:Scenery;
+		public var inventoryItems:InventoryItems;
+		public var interactionItems:InteractionItems;
+		public var enemies:Enemies;
+		public var npcs:NPCs;
+		public var scenery:Scenery;
 		public var levels:Levels;
 		
 		public var pause:Boolean;
@@ -64,60 +64,59 @@ package {
 		public function GameWorld() {
 			super();
 			
-			player = new Player();
-			add(player);
+			pause = false;
+			pauseMenuShowing = false;
+			statsMenuShowing = false;
+			constructionMenuShowing = false;
 			
+			Input.define("Pause", Key.ESCAPE, Key.P);
+			Input.define("Stats", Key.L);
+			Input.define("Inventory", Key.I);
+			Input.define("Construct", Key.C);
+			
+			//Sound
+			FP.volume = 0.05;
+		}
+		
+		override public function begin():void {
 			inventoryItems = new InventoryItems();
 			interactionItems = new InteractionItems();
 			enemies = new Enemies();
 			//levels = new Levels(this, player);
 			npcs = new NPCs();
 			scenery = new Scenery();
-
-			pause = false;
-			pauseMenuShowing = false;
-			statsMenuShowing = false;
-			constructionMenuShowing = false;
 			
-			lightMask = new LightMask(this);
+			lightMask = new LightMask();
 			add(lightMask);
 			
-			//add(player);
+			player = new Player();
+			add(player);
+			
 			currentLevel = new Level();
 			background = new Background(currentLevel);
 			add(background);
 			add(currentLevel);
 			
-			pauseMenu = new PauseMenu(this);
-			statsMenu = new StatsMenu(this);
-			inventoryMenu = new InventoryMenu(this, player);
-			constructionMenu = new ConstructionMenu(this, player);
-
+			pauseMenu = new PauseMenu();
+			statsMenu = new StatsMenu();
+			inventoryMenu = new InventoryMenu();
+			constructionMenu = new ConstructionMenu();
+			
 			cursor = new Cursor();
 			add(cursor);
-			
-			Input.define("Pause", Key.ESCAPE, Key.P);
-			Input.define("Stats", Key.L);
-			Input.define("Inventory", Key.I);
-			Input.define("Construct", Key.C);
 
 			//UI
-			hud = new HUD(player, this);
+			hud = new HUD();
 			add(hud);
 			
 			//Camera
 			cam = new Camera(currentLevel);
-			adjusted = false;
-			
-			//Sound
-			FP.volume = 0.05;
+			add(cam);
 		}
 		
 		override public function update():void {
 			
-			if (!adjusted) cam.adjustToPlayer();
 			if (!pause) {
-				cam.followPlayer();
 				super.update();
 			} else {
 				if (pauseMenuShowing) pauseMenu.update();
@@ -132,10 +131,6 @@ package {
 			if (Input.pressed("Stats")) onStats();
 			if (Input.pressed("Inventory")) onInventory();
 			if (Input.pressed("Construct")) onConstruct();
-		}
-		
-		public function getPlayer():Player {
-			return player;	
 		}
 		
 		public function onConstruct():void {

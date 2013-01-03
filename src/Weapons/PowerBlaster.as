@@ -9,9 +9,8 @@ package Weapons {
 	
 	public class PowerBlaster extends Weapon {
 		private var player:Player
-		public function PowerBlaster(_player:Player) {
-			player = _player;
-			super(player);
+		public function PowerBlaster() {
+			super();
 			ranged = true;
 			fireRate = 10;
 			clipSize = 20;
@@ -30,9 +29,8 @@ package Weapons {
 			y = 34;
 		}
 		
-		override public function update():void {
-			//if (Input.mouseDown) shoot();
-			trace(fireTimer);
+		override public function added():void {
+			player = GameWorld(FP.world).player;
 		}
 		
 		override public function shoot():void {

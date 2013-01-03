@@ -77,9 +77,9 @@ package Inventory {
 				e.stackable = _e.stackable;
 			} else {
 				//Some default values
-				e.behavior = GameWorld.inventoryItems.food.behavior;
-				e.numOfUses = GameWorld.inventoryItems.food.numOfUses;
-				e.graphic = GameWorld.inventoryItems.food.graphic;
+				e.behavior = GameWorld(FP.world).inventoryItems.food.behavior;
+				e.numOfUses = GameWorld(FP.world).inventoryItems.food.numOfUses;
+				e.graphic = GameWorld(FP.world).inventoryItems.food.graphic;
 			}
 			
 			var slot:int = findSlot(e);

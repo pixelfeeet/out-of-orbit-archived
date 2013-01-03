@@ -46,7 +46,7 @@ package Inventory {
 
 				var inv:Array = w.inventoryMenu.inventoryBoxes;
 				for (var i:int = 0; i < inv.length; i++){
-					var playerInv:Inventory = GameWorld.player.getInventory();
+					var playerInv:Inventory = GameWorld(FP.world).player.getInventory();
 					if (inv[i]["box"] == this) {
 						if (w.cursor.carryingItem) {
 							if (i != w.inventoryMenu.carriedItemSlot) {

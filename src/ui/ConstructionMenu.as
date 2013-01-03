@@ -14,8 +14,8 @@ package ui {
 	
 	public class ConstructionMenu extends Entity {
 		private var panel:Entity;
-		private var p:Player;
 		private var w:GameWorld;
+		private var player:Player;
 		private var availableItems:Array;
 		private var constructButton:Button;
 		public var boxes:Array;
@@ -23,11 +23,9 @@ package ui {
 		public var captionText:Text;
 		private var display:Graphiclist;
 		
-		public function ConstructionMenu(_w:GameWorld, _p:Player, _position:Point = null) {
+		public function ConstructionMenu(_position:Point = null) {
 			if (!_position) _position = new Point(0, 0);
 			super();
-			w = _w;
-			p = _p;
 			
 			panel = new Entity(0, 0, Image.createRect(700, 400, 0x333333, 0.8));
 			panel.setHitboxTo(panel.graphic);
@@ -35,7 +33,6 @@ package ui {
 			
 			availableItems = [];
 			boxes = [];
-			itemList = GameWorld.inventoryItems.list;
 			
 			constructButton = new Button(panel.x + 100,
 				panel.y + Image(panel.graphic).height, "Construct", onConstruct);
@@ -46,6 +43,12 @@ package ui {
 			graphic = display;
 			setHitboxTo(display);
 			layer = -1100;
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
+			player = w.player;
+			itemList = GameWorld(FP.world).inventoryItems.list;
 		}
 		
 		override public function update():void {
@@ -63,11 +66,11 @@ package ui {
 		public function onConstruct():void {
 			for (var i:int = 0; i < boxes.length; i ++) {
 				if (boxes[i].isSelected()) {
-					var value:Number = Math.floor(availableItems[i].scrapValue * p.constructionRate);
-					if (p.scraps >= value) {
-						var item:InventoryItem = GameWorld.inventoryItems.copyItem(availableItems[i]);
-						p.getInventory().addItemToInventory(item);
-						p.scraps -= value;
+					var value:Number = Math.floor(availableItems[i].scrapValue * player.constructionRate);
+					if (player.scraps >= value) {
+						var item:InventoryItem = GameWorld(FP.world).inventoryItems.copyItem(availableItems[i]);
+						player.getInventory().addItemToInventory(item);
+						player.scraps -= value;
 						w.hud.update();
 						captionText.text = availableItems[i].label + " constructed";
 					} else {
@@ -81,7 +84,7 @@ package ui {
 			for (var i:int = 0; i < boxes.length; i ++) {
 				if (boxes[i].isSelected()) {
 					captionText.text = availableItems[i].label + ": "
-						+ Math.floor(availableItems[i].scrapValue * p.constructionRate) + " scraps";	
+						+ Math.floor(availableItems[i].scrapValue * player.constructionRate) + " scraps";	
 				}
 			}
 		}
@@ -106,10 +109,10 @@ package ui {
 				boxes.push(box);
 				FP.world.add(box);
 			}
+			
 			//draw Items
-
 			for (i = 0; i < itemList.length; i++){
-				var e:InventoryItem = GameWorld.inventoryItems.copyItem(itemList[i]);
+				var e:InventoryItem = GameWorld(FP.world).inventoryItems.copyItem(itemList[i]);
 				e.x = panel.x + 5 + (i * 55);// + (Image(e.graphic).width / 2);
 				e.y = panel.y + 5;// + (Image(e.graphic).height / 2);
 				e.layer = -1120;

@@ -58,7 +58,7 @@ package NPCs {
 		}
 		
 		protected function generateDropItems():Array{
-			var f:InteractionItem = GameWorld.interactionItems.food;
+			var f:InteractionItem = GameWorld(FP.world).interactionItems.food;
 			return [f];
 		}
 		
@@ -93,7 +93,7 @@ package NPCs {
 				}
 				
 			}
-			GameWorld.player.gainExperience(expValue);
+			GameWorld(FP.world).player.gainExperience(expValue);
 			enemy_destroy.play();
 			FP.world.remove(this);
 			if (!respawning) eliminated = true;

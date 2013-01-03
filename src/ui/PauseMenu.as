@@ -18,10 +18,8 @@ package ui {
 		
 		private var w:GameWorld;
 		
-		public function PauseMenu(_w:GameWorld) {
+		public function PauseMenu() {
 			super();
-
-			w = _w;
 
 			panel = new Entity(0, 0, Image.createRect(500, 200, 0x333333, 0.8));
 			panel.setHitboxTo(panel.graphic);
@@ -31,6 +29,10 @@ package ui {
 			resumeButton = new Button(0, 0, "Resume", onResume);
 			
 			quitButton.layer = resumeButton.layer = -1110;
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
 		}
 		
 		override public function update():void {

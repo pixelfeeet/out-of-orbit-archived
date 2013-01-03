@@ -1,6 +1,6 @@
 package data {
 	import Inventory.InventoryItem;
-	
+	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
 
 	public class InventoryItems {
@@ -19,7 +19,7 @@ package data {
 			food.label = "food";
 			food.scrapValue = 10;
 			food.behavior = function():void {
-				GameWorld.player.changeHunger(2);
+				GameWorld(FP.world).player.changeHunger(2);
 			};
 				
 			mediPack = new InventoryItem();
@@ -29,7 +29,7 @@ package data {
 			mediPack.label = "mediPack";
 			mediPack.scrapValue = 25;
 			mediPack.behavior = function():void {
-				GameWorld.player.changeHealth(10);
+				GameWorld(FP.world).player.changeHealth(10);
 			};
 			
 			powerBlaster = new InventoryItem();
@@ -39,10 +39,10 @@ package data {
 			powerBlaster.scrapValue = 100;
 			powerBlaster.stackable = false;
 			powerBlaster.behavior = function():void {
-				if (GameWorld.player.weapon.label == "Unarmed") {
-					GameWorld.player.equipWeapon(GameWorld.player.weapons.powerBlaster);
+				if (GameWorld(FP.world).player.weapon.label == "Unarmed") {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.powerBlaster);
 				} else {
-					GameWorld.player.equipWeapon(GameWorld.player.weapons.unarmed);
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.unarmed);
 				}
 			};
 			

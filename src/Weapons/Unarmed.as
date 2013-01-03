@@ -2,13 +2,13 @@ package Weapons {
 	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
+	import net.flashpunk.FP;
 
 	public class Unarmed extends Weapon {
-		
 		private var player:Player;
-		public function Unarmed(_player:Player) {
-			player = _player;
-			super(player);
+		
+		public function Unarmed() {
+			super();
 			ranged = false;
 			range = 100;
 			shootSound = new Sfx(Assets.SHOOT);
@@ -25,7 +25,10 @@ package Weapons {
 			
 			fireRate = 10;
 			graphic.visible = false;
-			
+		}
+		
+		override public function added():void {
+			player = GameWorld(FP.world).player;
 		}
 		
 		override public function update():void {

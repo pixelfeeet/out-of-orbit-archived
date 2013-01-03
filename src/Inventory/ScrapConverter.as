@@ -10,14 +10,17 @@ package Inventory {
 	public class ScrapConverter extends Entity {
 		private var w:GameWorld;
 		
-		public function ScrapConverter(_w:GameWorld, _position:Point = null) {
+		public function ScrapConverter(_position:Point = null) {
 			if (!_position) _position = new Point(0,0);
 			super(_position.x, _position.y, graphic);
-			
-			w = _w;
+		
 			graphic = Image.createRect(50, 50, 0xffffff, 0.8);
 			setHitboxTo(graphic);
 			layer = -1110;
+		}
+		
+		override public function added():void {
+			w = GameWorld(FP.world);
 		}
 		
 		override public function update():void {
@@ -29,9 +32,9 @@ package Inventory {
 		
 		public function click():void{
 			if (w.cursor.carryingItem) {
-				var value:Number = Math.floor(w.inventoryMenu.carriedItem.scrapValue * GameWorld.player.recycleRate);
-				GameWorld.player.scraps += value;
-				GameWorld.player.getInventory().items[w.inventoryMenu.carriedItemSlot] = [];
+				var value:Number = Math.floor(w.inventoryMenu.carriedItem.scrapValue * GameWorld(FP.world).player.recycleRate);
+				GameWorld(FP.world).player.scraps += value;
+				GameWorld(FP.world).player.getInventory().items[w.inventoryMenu.carriedItemSlot] = [];
 				FP.world.remove(w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot]);
 				w.hud.update();
 				w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot] = null;

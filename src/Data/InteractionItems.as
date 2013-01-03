@@ -1,5 +1,6 @@
 package data {
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.FP;
 	import flash.geom.Point;
 	
 	public class InteractionItems {
@@ -18,12 +19,12 @@ package data {
 		public function InteractionItems() {
 			food = new InteractionItem();
 			food.graphic = new Image(Assets.FOOD_IMG);
-			food.setInventoryItem(GameWorld.inventoryItems.food);
+			food.setInventoryItem(GameWorld(FP.world).inventoryItems.food);
 			food.label = "food";
 			
 			mediPack = new InteractionItem();
 			mediPack.graphic = new Image(Assets.MEDIPACK_IMG);
-			mediPack.setInventoryItem(GameWorld.inventoryItems.mediPack);
+			mediPack.setInventoryItem(GameWorld(FP.world).inventoryItems.mediPack);
 			mediPack.label = "medipack";
 			
 			rocket = new InteractionItem();
@@ -32,7 +33,7 @@ package data {
 			
 			powerBlaster = new InteractionItem();
 			powerBlaster.graphic = new Image(Assets.PB);
-			powerBlaster.setInventoryItem(GameWorld.inventoryItems.powerBlaster);
+			powerBlaster.setInventoryItem(GameWorld(FP.world).inventoryItems.powerBlaster);
 			powerBlaster.respawning = false;
 			powerBlaster.label = "power_blaster";
 			

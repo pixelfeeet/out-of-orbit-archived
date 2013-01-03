@@ -9,9 +9,7 @@ package NPCs {
 	import utilities.Settings;
 	
 	public class Enemy extends NPC {
-		
-		//the character this enemy will attack -- at this point only the player.
-		public var targetCharacter:Entity;
+		public var player:Entity;
 		public var viewDistance:int;
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
@@ -26,7 +24,7 @@ package NPCs {
 			graphic = Image.createRect(t - 10, t*2 - 10, 0xee8877, 1);
 			type = "enemy";
 			expValue = 10;
-			targetCharacter = GameWorld.player;
+			
 			dropItems = generateDropItems();
 			
 			initBehavior();
@@ -35,9 +33,13 @@ package NPCs {
 			
 			setHitboxTo(graphic);
 		}
+	
+		override public function added():void {
+			player = GameWorld(FP.world).player;
+		}
 		
 		override protected function generateDropItems():Array{
-			var f:InteractionItem = GameWorld.interactionItems.food;
+			var f:InteractionItem = GameWorld(FP.world).interactionItems.food;
 			var a:Ammunition = new Ammunition();
 			var s:Scraps = new Scraps();
 			return [f, a, a, s];
@@ -46,16 +48,13 @@ package NPCs {
 		override protected function updateMovement():void {
 			super.updateMovement();
 			
-			if (distanceFrom(GameWorld.player) <= viewDistance){
-				if (Math.abs(targetCharacter.x - x) <= 20) velocity.x = 0;
-				else if (targetCharacter.x > x) velocity.x = vSpeed;
+			if (distanceFrom(player) <= viewDistance){
+				if (Math.abs(player.x - x) <= 20) velocity.x = 0;
+				else if (player.x > x) velocity.x = vSpeed;
 				else velocity.x = -vSpeed;
 				
 				if (vSpeed != 0 && velocity.x == 0) jump();
-			} else {
-				vSpeed = 0;
-			}
-		
+			} else vSpeed = 0;
 		}
 		
 		public function getEXP():int {

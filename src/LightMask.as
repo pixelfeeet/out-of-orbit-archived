@@ -49,12 +49,12 @@ package
 		private var lightRadius:int;
 		private var p:Player;
 		
-		private var _w:GameWorld;
+		private var w:GameWorld;
 		private var time:String; //"Day" or "Night"
 		
 		public var beaconList:Array;
 		
-		public function LightMask(w:GameWorld, x:Number=0, y:Number=0) {
+		public function LightMask(x:Number=0, y:Number=0) {
 			super(x, y);
 			//TODO: fix the the light sources not moving after dawn begins
 			dayLength = nightLength = 5; //seconds
@@ -72,14 +72,9 @@ package
 			updateTimer = updateFreq;
 			
 			image = Image.createRect(FP.screen.width, FP.screen.height, dayColor, dayOpacity);
-			
-			_w = w;
-			
+
 			graphic = image;
 			initTimeCycle();
-			
-			p = _w.getPlayer();
-			beaconList = [p];
 			
 			rect = new Rectangle();
 			screenRect = new Rectangle();
@@ -95,6 +90,12 @@ package
 			image.drawMask = bmp;
 			
 			layer = -700;
+		}
+			
+		override public function added():void {
+			w = GameWorld(FP.world);
+			p = w.player;
+			beaconList = [p];
 		}
 		
 		public function initTimeCycle():void {
