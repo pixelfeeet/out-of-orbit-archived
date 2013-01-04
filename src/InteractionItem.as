@@ -41,7 +41,7 @@ package {
 			super(_position, -1, -1);
 						
 			//default graphic
-			setGraphic(new Image(Assets.ROCKET_IMAGE));
+			setGraphic(Image.createRect(30, 30, 0x4488ff, 0.9));
 			
 			xSpeed = 0;
 			

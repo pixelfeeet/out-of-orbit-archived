@@ -29,7 +29,6 @@ package Weapons {
 			
 			damage = 10;
 			fireRate = 10;
-
 		}
 		
 	}

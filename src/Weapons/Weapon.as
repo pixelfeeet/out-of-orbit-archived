@@ -24,8 +24,8 @@ package Weapons {
 		
 		public var label:String;
 		
-		protected var offsetX:int;
-		protected var offsetY:int;
+		public var offsetX:int;
+		public var offsetY:int;
 		
 		public var leftOffsetX:int;
 		public var leftOriginX:int;
@@ -65,11 +65,11 @@ package Weapons {
 		
 		override public function added():void {
 			player = GameWorld(FP.world).player;
-			align();
 		}
 		
 		override public function update():void {
 			super.update();
+			
 			if (fireTimer > 0) fireTimer--;
 			Image(graphic).angle = player.angle + angleMod;
 			
@@ -78,23 +78,8 @@ package Weapons {
 				Image(graphic).angle -= 180;
 			} else Image(graphic).scaleY = 1;
 			
-			align();
-		}
-		
-		public function align():void {
-			var f:Boolean = player.facingLeft;
-			if (!f) {
-				x = offsetX;
-				Image(graphic).originX = originX;
-			} else {
-				x = leftOffsetX
-				Image(graphic).originX = leftOriginX;
-			}
-			y = offsetY;
-			Image(graphic).originY = originY;
-			
-			x += player.x;
-			y += player.y;
+			//Weapon positioning is in Player.as to
+			//prevent laggyness
 		}
 		
 		public function shoot():void { }

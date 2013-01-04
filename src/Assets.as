@@ -20,11 +20,12 @@ package {
 		[Embed(source = 'assets/spaceman_parts/head.png')] public static const HEAD:Class;
 		
 		//Weapons
-		[Embed(source = 'assets/no_weapon.png')] public static const NO_WEAPON:Class;
-		[Embed(source = 'assets/pb.png')] public static const PB:Class;
+		[Embed(source = 'assets/weapons/no_weapon.png')] public static const NO_WEAPON:Class;
+		[Embed(source = 'assets/weapons/pb.png')] public static const PB:Class;
 		[Embed(source = 'assets/spaceman_parts/arm.png')] public static const ARM:Class;
-		[Embed(source = 'assets/pipe.png')] public static const PIPE:Class;
-		[Embed(source = 'assets/rocket.png')] public static const ROCKET_IMAGE:Class;	
+		[Embed(source = 'assets/weapons/pipe.png')] public static const PIPE:Class;
+		[Embed(source = 'assets/weapons/axe.png')] public static const AXE:Class;
+		
 		
 		//InteractionItems
 		[Embed(source = 'assets/food.png')] public static const FOOD_IMG:Class;	

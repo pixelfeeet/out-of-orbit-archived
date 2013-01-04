@@ -6,7 +6,7 @@ package {
 	
 	import Weapons.Weapon;
 	
-	import data.Weapons;
+	import Weapons.Weapons;
 	
 	import flash.display.Graphics;
 	import flash.display.Shape;
@@ -178,7 +178,7 @@ package {
 			 * Graphiclist components
 			 */
 			weapons = new Weapons();
-			weapon = weapons.pipe;
+			weapon = weapons.unarmed;
 			equipWeapon(weapon);
 			gameworld.add(weapon);
 			
@@ -358,7 +358,6 @@ package {
 				head.originX = 12;
 				head.originY = 12;
 				head.x = 18;
-
 			} else {
 				for (var j:int = 0; j < display.count; j++)
 					Image(display.children[j]).flipped = false;
@@ -371,7 +370,7 @@ package {
 			torso.x = 22;
 
 			angle = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
-			var f:Boolean = Image(display.children[2]).flipped;
+			var f:Boolean = facingLeft;
 			if(f) angle -= 180;
 			if(angle > 180) angle += 360;
 			
@@ -387,6 +386,26 @@ package {
 			else if (!f && headAngle > 15 && headAngle < 90) headAngle = 15;
 
 			Image(display.children[2]).angle = headAngle; //Head
+			
+			//Weapon
+			weapon.x = x;
+			weapon.y = y;
+			
+			// this needs to be called explicitly to make sure the
+			// above code does not reset any tween x/y values defined
+			// in weapon.update
+			weapon.update();
+			
+			if (!f) {
+				weapon.x += weapon.offsetX;
+				Image(weapon.graphic).originX = weapon.originX;
+			} else {
+				weapon.x += weapon.leftOffsetX
+				Image(weapon.graphic).originX = weapon.leftOriginX;
+			}
+			
+			weapon.y += weapon.offsetY;
+			Image(weapon.graphic).originY = weapon.originY;
 			
 			//Play appropriate movement animation
 			if (!onGround || movementState == "swimming") legsMap.play("jumping");
@@ -421,7 +440,7 @@ package {
 			jump();
 			vSpeed = SPEED;
 			acceleration.y = GRAVITY;
-			Image(display.children[3]).color = 0xffffff; //debug
+			Image(display.children[2]).color = 0xffffff; //debug
 		}
 		
 		private function debugMovement():void {
@@ -432,7 +451,7 @@ package {
 			
 			velocity.y = vSpeed * yInput;
 			
-			Image(display.children[3]).color = 0x00ff00; //debug
+			Image(display.children[2]).color = 0x00ff00; //debug
 		}
 		
 		override protected function land():void {
