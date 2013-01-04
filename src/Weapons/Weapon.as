@@ -3,8 +3,10 @@ package Weapons {
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Sfx;
 	import net.flashpunk.utils.Input;
+	import net.flashpunk.FP;
 	
 	public class Weapon extends Entity {
+		protected var player:Player;
 		protected var ranged:Boolean; //false = melee
 		protected var fireRate:int; //minimum time in milliseconds between shots
 		public var fireTimer:int; //used to determine whether a shot can be fired yet
@@ -14,8 +16,8 @@ package Weapons {
 		protected var projectileSpeed:int;
 		protected var equipped:Boolean;
 		protected var scrapValue:int;
-		protected var range:int;
 		protected var damage:int;
+		public var range:int;
 		
 		protected var shootSound:Sfx;
 		
@@ -35,9 +37,18 @@ package Weapons {
 			equipped = false;
 			scrapValue = 100;
 			label = "default";
+			range = 100;
 			
 			leftX = x;
 			leftOriginX = originX;
+		}
+		
+		override public function added():void {
+			player = GameWorld(FP.world).player;
+		}
+		
+		override public function update():void {
+			if (fireTimer > 0) fireTimer--;
 		}
 		
 		public function shoot():void { }

@@ -8,7 +8,7 @@ package Weapons {
 	import net.flashpunk.utils.Key;
 	
 	public class PowerBlaster extends Weapon {
-		private var player:Player
+		
 		public function PowerBlaster() {
 			super();
 			ranged = true;
@@ -28,11 +28,7 @@ package Weapons {
 			leftX = 10;
 			y = 34;
 		}
-		
-		override public function added():void {
-			player = GameWorld(FP.world).player;
-		}
-		
+
 		override public function shoot():void {
 			if (Input.mouseDown && fireTimer == 0
 				&& ammunition > 0

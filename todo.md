@@ -29,6 +29,11 @@ Assets:
 	Graphic
 	Impact sound
 
+#### Lead Pipe (Swing)
+Assets:
+	Graphic (done)
+	Impact sound
+
 #### (Tree) Branch (Swing)
 Assets:
 	Graphic

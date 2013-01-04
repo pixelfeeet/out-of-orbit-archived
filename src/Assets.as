@@ -22,7 +22,8 @@ package {
 		//Weapons
 		[Embed(source = 'assets/no_weapon.png')] public static const NO_WEAPON:Class;
 		[Embed(source = 'assets/pb.png')] public static const PB:Class;
-		[Embed(source = 'assets/spaceman_parts/arm.png')] public static const ARM:Class;	
+		[Embed(source = 'assets/spaceman_parts/arm.png')] public static const ARM:Class;
+		[Embed(source = 'assets/pipe.png')] public static const PIPE:Class;
 		[Embed(source = 'assets/rocket.png')] public static const ROCKET_IMAGE:Class;	
 		
 		//InteractionItems

@@ -41,7 +41,7 @@ package {
 		private var head:Image;
 		private var weaponImg:Image;
 		
-		private var display:Graphiclist;
+		public var display:Graphiclist;
 		private var legsMap:Spritemap;
 		
 		private var speech:Text;
@@ -176,7 +176,7 @@ package {
 			 * Graphiclist components
 			 */
 			weapons = new Weapons(this);
-			weapon = weapons.unarmed;
+			weapon = weapons.pipe;
 			
 			bulletFrequency = 10;
 			bulletTimer = 0;
@@ -258,7 +258,6 @@ package {
 			//debug
 			debug();
 			if (Input.pressed("Toggle Flying")) toggleDebugFlying();
-			
 			if (Input.pressed("Center Camera")) gameworld.cam.adjustToPlayer();
 		}
 		
@@ -285,11 +284,12 @@ package {
 		public function inventoryButtons():void {
 			var boxes:Array = gameworld.hud.inventoryBoxes;
 			var keys:Array = [Key.DIGIT_1, Key.DIGIT_2, Key.DIGIT_3, Key.DIGIT_4, Key.DIGIT_5, Key.DIGIT_6, Key.DIGIT_7];
-			for (var i:int = 0; i < keys.length; i++)
+			for (var i:int = 0; i < keys.length; i++) {
 				if (Input.pressed(keys[i])) {
 					gameworld.hud.deselectAll();
 					gameworld.hud.inventoryBoxes[i]["box"].select();
 				}
+			}
 		}
 		
 		public function equipWeapon(_weapon:Weapon):void {
@@ -317,12 +317,14 @@ package {
 		 * the hud.
 		 */
 		private function onUse():void {
-			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++)
-				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected())
+			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++) {
+				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected()) {
 					if (inventory.items[i].length > 0) {
 						inventory.items[i][inventory.items[i].length - 1].onUse();
 						return;
 					}
+				}
+			}
 		}
 		
 		private function toggleDebugFlying():void { debugFlying = !debugFlying; }
@@ -332,8 +334,7 @@ package {
 			if (enemy) getHurt(10);
 		}
 		
-		override protected function shoot():void { 
-			if (weapon.fireTimer > 0) weapon.fireTimer--;
+		override protected function shoot():void {
 			if (Input.mouseDown) weapon.shoot();
 		}
 		
@@ -343,12 +344,13 @@ package {
 				if (l.tiles.getTile(Math.floor(x / t), Math.floor(y / t) + 1) == l.jungleTiles["water"])
 					movementState = "swimming";
 				else if (FP.sign(velocity.x) != 0) {
-					if (!facingLeft)
+					if (!facingLeft) {
 						if (FP.sign(velocity.x) == 1) movementState = "running";
 						else movementState = "backwards running";
-					else
+					} else {
 						if (FP.sign(velocity.x) == -1) movementState = "running";
 						else movementState = "backwards running";
+					}
 				} else movementState = "standing";
 			}
 		}
