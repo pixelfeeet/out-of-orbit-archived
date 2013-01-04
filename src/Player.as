@@ -371,7 +371,7 @@ package {
 			torso.x = 22;
 
 			angle = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
-			var f:Boolean = facingLeft;
+			var f:Boolean = Image(display.children[2]).flipped;
 			if(f) angle -= 180;
 			if(angle > 180) angle += 360;
 			

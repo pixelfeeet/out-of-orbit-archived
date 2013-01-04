@@ -73,8 +73,10 @@ package Weapons {
 			if (fireTimer > 0) fireTimer--;
 			Image(graphic).angle = player.angle + angleMod;
 			
-			if (player.facingLeft) Image(graphic).scaleY = -1;
-			else Image(graphic).scaleY = 1;
+			if (player.facingLeft) {
+				Image(graphic).scaleY = -1;
+				Image(graphic).angle -= 180;
+			} else Image(graphic).scaleY = 1;
 			
 			align();
 		}
