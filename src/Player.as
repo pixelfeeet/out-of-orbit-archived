@@ -98,6 +98,8 @@ package {
 		public var weapons:Weapons;
 		public var meleeAttacking:Boolean;
 		
+		public var angle:Number;
+		
 		//Sounds
 		public var landSound:Sfx;
 		public var injurySound:Sfx;
@@ -175,14 +177,13 @@ package {
 			/**
 			 * Graphiclist components
 			 */
-			weapons = new Weapons(this);
+			weapons = new Weapons();
 			weapon = weapons.pipe;
+			equipWeapon(weapon);
+			gameworld.add(weapon);
 			
 			bulletFrequency = 10;
 			bulletTimer = 0;
-			
-			equipWeapon(weapon);
-			gameworld.add(weapon);
 			
 			//Legs
 			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
@@ -216,7 +217,7 @@ package {
 			informedHealth = false;
 			informedExtremeHealth = false;
 			
-			display = new Graphiclist(weaponImg, legsMap, torso, head, speech);
+			display = new Graphiclist(legsMap, torso, head, speech);
 			graphic = display;
 			
 			this.setHitbox(Settings.TILESIZE, Settings.TILESIZE * 2, 0, 0);
@@ -249,7 +250,6 @@ package {
 			
 			//combat
 			shoot();
-			weapon.update();
 			if (damageTimer > 0) damageTimer--;
 
 			//Interaction
@@ -293,22 +293,12 @@ package {
 		}
 		
 		public function equipWeapon(_weapon:Weapon):void {
+			var w:Array = [];
+			gameworld.getClass(Weapon, w);
+			if (w.length != 0) gameworld.remove(weapon);
+			
 			weapon = _weapon;
-			setWeaponGfx(weapon);
-		}
-		
-		public function setWeaponGfx(_weapon:Weapon):void{
-			weaponImg = Image(_weapon.graphic)
-			
-			if (!facingLeft) weaponImg.originX = _weapon.originX;
-			else weaponImg.originX = _weapon.leftOriginX;
-			weaponImg.originY = _weapon.originY;
-			
-			if (!facingLeft) weaponImg.x = _weapon.x;
-			else weaponImg.x = _weapon.leftX;
-			weaponImg.y = _weapon.y;
-			
-			if (display) display.children[0] = weaponImg;
+			gameworld.add(weapon);
 		}
 		
 		/**
@@ -335,7 +325,7 @@ package {
 		}
 		
 		override protected function shoot():void {
-			if (Input.mouseDown) weapon.shoot();
+			weapon.shoot();
 		}
 		
 		private function updateState():void {
@@ -369,24 +359,19 @@ package {
 				head.originY = 12;
 				head.x = 18;
 
-				weaponImg.originX = weaponImg.width - weapon.leftOriginX;
-				weaponImg.x = weapon.leftX;
 			} else {
 				for (var j:int = 0; j < display.count; j++)
 					Image(display.children[j]).flipped = false;
 				head.originX = 12;
 				head.originY = 12;
 				head.x = 24;
-				
-				weaponImg.originX = weapon.originX;
-				weaponImg.x = weapon.x;
 			}
 			
 			torso.originX = 22;
 			torso.x = 22;
 
-			var angle:Number = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
-			var f:Boolean = Image(display.children[3]).flipped;
+			angle = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
+			var f:Boolean = facingLeft;
 			if(f) angle -= 180;
 			if(angle > 180) angle += 360;
 			
@@ -401,10 +386,9 @@ package {
 			if (f && headAngle > 15) headAngle = 15;
 			else if (!f && headAngle > 15 && headAngle < 90) headAngle = 15;
 
-			Image(display.children[0]).angle = angle; //Weapon
-			Image(display.children[3]).angle = headAngle; //Head
+			Image(display.children[2]).angle = headAngle; //Head
 			
-			//Play the animation
+			//Play appropriate movement animation
 			if (!onGround || movementState == "swimming") legsMap.play("jumping");
 			else if (movementState == "running") legsMap.play("running");
 			else if (movementState == "backwards running") legsMap.play("backwards_running");

@@ -81,8 +81,8 @@ package {
 		override public function begin():void {
 			inventoryItems = new InventoryItems();
 			interactionItems = new InteractionItems();
+
 			enemies = new Enemies();
-			
 			npcs = new NPCs();
 			scenery = new Scenery();
 			

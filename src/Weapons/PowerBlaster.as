@@ -12,21 +12,22 @@ package Weapons {
 		public function PowerBlaster() {
 			super();
 			ranged = true;
+			
 			fireRate = 10;
 			clipSize = 20;
 			ammunition = clipSize;
 			projectileSpeed = 1000;
+			
 			graphic = new Image(Assets.PB);
 			shootSound = new Sfx(Assets.SHOOT);
 			label = "PowerBlaster";
-			graphic.visible = true;
 			
 			originX = 15;
 			leftOriginX = 15;
 			originY = Image(graphic).height / 2;
-			x = 36;
-			leftX = 10;
-			y = 34;
+			offsetX = 36;
+			leftOriginX = 10;
+			offsetY = 34;
 		}
 
 		override public function shoot():void {

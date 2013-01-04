@@ -10,10 +10,14 @@ package data
 		public var unarmed:Unarmed;
 		public var pipe:Pipe;
 		
-		public function Weapons(p:Player) {
+		public var list:Array;
+		public function Weapons() {
 			powerBlaster = new PowerBlaster();
 			unarmed = new Unarmed();
 			pipe = new Pipe();
+			
+			list = [powerBlaster, unarmed, pipe]			
 		}
+		
 	}
 }

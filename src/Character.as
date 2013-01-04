@@ -33,8 +33,6 @@ package
 		
 		protected var hungerTimer:int;
 		
-		protected var facingLeft:Boolean;
-		
 		protected var xSpeed:int;
 		
 		protected var isInWater:Boolean;
@@ -44,7 +42,7 @@ package
 		protected var player:Player;
 		
 		public var lightRadius:int;
-
+		public var facingLeft:Boolean;
 		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
 			super();
