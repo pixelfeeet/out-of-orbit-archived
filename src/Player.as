@@ -178,7 +178,7 @@ package {
 			 * Graphiclist components
 			 */
 			weapons = new Weapons();
-			weapon = weapons.unarmed;
+			weapon = weapons.knife;
 			equipWeapon(weapon);
 			gameworld.add(weapon);
 			
@@ -304,7 +304,7 @@ package {
 		/**
 		 * TODO
 		 * 1. Move the isSelected boolean to the actual inventory data, not
-		 * the hud.
+		 * the hud -- mvc.
 		 */
 		private function onUse():void {
 			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++) {

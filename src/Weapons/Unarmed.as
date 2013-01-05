@@ -1,11 +1,6 @@
 package Weapons {
-	import flash.geom.Point;
-	
-	import net.flashpunk.FP;
 	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
-	import net.flashpunk.tweens.motion.LinearMotion;
-	import net.flashpunk.utils.Input;
 
 	public class Unarmed extends MeleeWeapon {
 		

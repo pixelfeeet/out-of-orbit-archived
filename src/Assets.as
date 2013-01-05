@@ -25,7 +25,7 @@ package {
 		[Embed(source = 'assets/spaceman_parts/arm.png')] public static const ARM:Class;
 		[Embed(source = 'assets/weapons/pipe.png')] public static const PIPE:Class;
 		[Embed(source = 'assets/weapons/axe.png')] public static const AXE:Class;
-		
+		[Embed(source = 'assets/weapons/knife.png')] public static const KNIFE:Class;
 		
 		//InteractionItems
 		[Embed(source = 'assets/food.png')] public static const FOOD_IMG:Class;	

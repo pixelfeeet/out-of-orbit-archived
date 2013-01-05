@@ -78,7 +78,7 @@ package Weapons {
 				Image(graphic).angle -= 180;
 			} else Image(graphic).scaleY = 1;
 			
-			//Weapon positioning is in Player.as to
+			//Note: weapon positioning is in Player.as to
 			//prevent laggyness
 		}
 		

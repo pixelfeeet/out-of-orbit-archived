@@ -1,5 +1,6 @@
 package data {
 	import Inventory.InventoryItem;
+	
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
 
@@ -8,6 +9,9 @@ package data {
 		public var food:InventoryItem;
 		public var mediPack:InventoryItem;
 		public var powerBlaster:InventoryItem;
+		public var axe:InventoryItem;
+		public var pipe:InventoryItem;
+		public var knife:InventoryItem;
 		
 		public var list:Array;
 		
@@ -39,14 +43,56 @@ package data {
 			powerBlaster.scrapValue = 100;
 			powerBlaster.stackable = false;
 			powerBlaster.behavior = function():void {
-				if (GameWorld(FP.world).player.weapon.label == "Unarmed") {
+				if (GameWorld(FP.world).player.weapon.label == "powerBlaster") {
 					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.powerBlaster);
 				} else {
 					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.unarmed);
 				}
 			};
 			
-			list = [food, mediPack, powerBlaster];
+			axe = new InventoryItem();
+			axe.sourceImage = Assets.AXE;
+			axe.graphic = new Image(axe.sourceImage);
+			axe.label = "Axe";
+			axe.scrapValue = 100;
+			axe.stackable = false;
+			axe.behavior = function():void {
+				if (GameWorld(FP.world).player.weapon.label == "Axe") {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.unarmed);
+				} else {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.axe);
+				}
+			};
+			
+			pipe = new InventoryItem();
+			pipe.sourceImage = Assets.PIPE;
+			pipe.graphic = new Image(pipe.sourceImage);
+			pipe.label = "Pipe";
+			pipe.scrapValue = 100;
+			pipe.stackable = false;
+			pipe.behavior = function():void {
+				if (GameWorld(FP.world).player.weapon.label == "Pipe") {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.unarmed);
+				} else {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.pipe);
+				}
+			};
+			
+			knife = new InventoryItem();
+			knife.sourceImage = Assets.KNIFE;
+			knife.graphic = new Image(knife.sourceImage);
+			knife.label = "Knife";
+			knife.scrapValue = 100;
+			knife.stackable = false;
+			knife.behavior = function():void {
+				if (GameWorld(FP.world).player.weapon.label == "Knife") {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.unarmed);
+				} else {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.knife);
+				}
+			};
+			
+			list = [food, mediPack, powerBlaster, axe, pipe, knife];
 		}
 		
 		public function copyItem(_e:InventoryItem):InventoryItem {

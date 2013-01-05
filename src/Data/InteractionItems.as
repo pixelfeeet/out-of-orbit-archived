@@ -27,10 +27,6 @@ package data {
 			mediPack.setInventoryItem(GameWorld(FP.world).inventoryItems.mediPack);
 			mediPack.label = "medipack";
 			
-			rocket = new InteractionItem();
-			rocket.graphic = new Image(Assets.ROCKET_IMAGE);
-			rocket.label = "rocket";
-			
 			powerBlaster = new InteractionItem();
 			powerBlaster.graphic = new Image(Assets.PB);
 			powerBlaster.setInventoryItem(GameWorld(FP.world).inventoryItems.powerBlaster);
