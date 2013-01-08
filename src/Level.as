@@ -72,11 +72,53 @@ package {
 		private var shadowColor:uint;
 		private var lightColor:uint;
 		
+		private var bergAmount:int;
+		private var bergPadding:int;
+		private var bergSusHeight:int; //suspension height
+			
+		private var hillStopsNum:int;
+		private var hillsPeak:int;
+		private var islandDensity:int;
+		private var lowestIslandPoint:int;
+		private var islandPadding:int;
+		/**
+		 * TODO:
+		 * 1. Make numbers like treeNum and islandsNum indicate density of the element
+		 * rather than total on map? 
+		 */
 		public function Level() {
 			t = Settings.TILESIZE;
 			
-			w = 150;
-			h = 60;
+			w = 400;
+			h = 100;
+			
+			backgroundColor = 0xa29a8d;			
+			groundDepth = 5; //the lowest ground point, relative to the bottom
+			waterLevel = 30; //relative to bottom
+			/**
+			 * tree frequency: one tree every treeNum squares
+			 * TODO: trees frequency is calculated based on total.
+			 * Ideally it would be on total exposed ground, i.e
+			 * not counting water surface tiles.
+			 */
+			treeNum = 5;
+			
+			shadowColor = 0xbbaabb;
+			lightColor = 0xffffff;
+			
+			//Bergs
+			bergAmount = 5;
+			bergPadding = 4;
+			bergSusHeight = 25 //suspension height
+			
+			//Landscape
+			hillStopsNum = 10;
+			hillsPeak = 60;
+			
+			//Islands
+			islandDensity = 150;
+			lowestIslandPoint = 50;
+			islandPadding = 2;
 			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			backTiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
@@ -142,14 +184,6 @@ package {
 				Assets.ROCK2,
 				Assets.ROCK4,
 			];
-			
-			backgroundColor = 0xa29a8d;			
-			groundDepth = 0;
-			waterLevel = 8;
-			treeNum = 20;
-			
-			shadowColor = 0xbbaabb;
-			lightColor = 0xffffff;
 		}
 		
 		override public function added():void {
@@ -158,10 +192,9 @@ package {
 		
 		public function loadLevel():void {
 			generateTiles();
-			generateNPCs({"kind": "enemy"});
-			generateNPCs({"kind": "Dustball"});
-			generateNPCs({"kind": "Amoeba"});
-			generateNPCs({"kind": "Worm"});
+			//These are temporary: ideally these should be classes, not strings
+			var kinds:Array = ["enemy", "Dustball", "Amoeba", "Worm"]
+			for each (var kind:String in kinds) generateNPCs({"kind": kind});
 		}
 		
 		private function generateTiles():void {
@@ -171,7 +204,7 @@ package {
 			//draw tiles
 			generateHillStops()
 			generateWater();
-			//generateIslands();
+			generateIslands();
 			
 			//pretty the ground up/set grid/hitbox
 			fixGround();
@@ -183,18 +216,22 @@ package {
 			buildForest();
 		}
 		
-		override public function update():void { if (Input.mousePressed) click(); }
-		
 		private function setGrid():void {
 			var gid:int = 0;
-			for (var row:int = 0; row < h; row++)
+			for (var row:int = 0; row < h; row++) {
 				for (var column:int = 0; column < w; column++){
 					if (checkSolid(column, row)) grid.setTile(column, row, true);
 					else grid.setTile(column, row, false);
 					gid++;
 				}
+			}
 		}
 		
+		override public function update():void { if (Input.mousePressed) click(); }
+		
+		/**
+		 * TODO: move add/remove tiles stuff to a weapon/inventory item
+		 */
 		private function click():void {
 			var x:int = Math.floor((FP.camera.x + Input.mouseX) / Settings.TILESIZE);
 			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE);
@@ -210,21 +247,20 @@ package {
 		 * Returns true if tile is solid, false if not
 		 */
 		private function checkSolid(x:int, y:int):Boolean {
-			var flag:Boolean = true;
+			var solid:Boolean = true;
 			for (var i:int = 0; i < notSolids.length; i++)
 				if (tiles.getTile(x, y) == notSolids[i]) {
-					flag = false;
+					solid = false;
 					break;
- 				} else flag = true;
+ 				} else solid = true;
 			
-			return flag;
+			return solid;
 		}
 		
 		/**
 		 * Draw tiles
 		 */
 		private function buildBergs():void {
-			var bergAmount:int = 5;
 			for (var i:int = 0; i < bergAmount; i++) drawBerg();
 		}
 
@@ -235,10 +271,8 @@ package {
 		 */
 		private function drawBerg():void {
 			var width:int = Math.floor(FP.random * 10) + 15;
-			var susHeight:int = 25 //suspention height
-			var start:Point = new Point (Math.floor(FP.random * w) - width, h - susHeight);
-			var end:Point = new Point(start.x + width, h - susHeight);
-			var border:int = 4;
+			var start:Point = new Point (Math.floor(FP.random * w) - width, h - bergSusHeight);
+			var end:Point = new Point(start.x + width, h - bergSusHeight);
 			var currentPoint:Point;
 			drawLine(start, end);
 			
@@ -251,7 +285,7 @@ package {
 			var y:int;		
 			for (var x:int = start.x; x <= start.x + width; x++) {
 				y = start.y + 1;
-				while(tiles.getTile(x, y + border) == 0) {
+				while(tiles.getTile(x, y + bergPadding) == 0) {
 					tiles.setTile(x, y, jungleTiles["ground"]["middle"]);
 					y++;
 				}
@@ -263,22 +297,7 @@ package {
 				for (var y:int = h - waterLevel; y <  h; y++)
 					if (tiles.getTile(x, y) == 0) tiles.setTile(x, y, jungleTiles["water"]);
 		}
-		
-		/**
-		 * Player terrain manipulation
-		 */
-		private function addTiles(x:int, y:int, blastRadius:int):void {
-			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, jungleTiles["constructionBlock"]);
-			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, true)
-			fixGround();
-		}
-		
-		private function removeTiles(x:int, y:int, blastRadius:int):void {
-			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
-			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, false)
-			fixGround();
-		}
-		
+	
 		/**
 		 * TODO
 		 * 1. Calculate start position based off of height and width values
@@ -300,6 +319,9 @@ package {
 		
 		/**
 		 * Fix tile
+		 * TODO:
+		 * 1. only fix relevant tiles -- fixing every tile on the map
+		 * is wasteful
 		 */
 		//Iterate through each tile and call fixTile on ground tiles
 		private function fixGround():void {
@@ -331,6 +353,7 @@ package {
 				else return ts["middle"];
 			}
 			
+			//Refactor this:
 			if (tiles.getTile(x + 1, y) == 0) return ts["midRight"]; //tile to the right is empty
 			if (tiles.getTile(x - 1, y) == 0) return ts["midLeft"]; //tile to the left is empty			
 			if (tiles.getTile(x - 1, y - 1) == 0) return ts["topLeftTuft"]; //tile to the top-left is empty			
@@ -362,6 +385,19 @@ package {
 		
 		/**
 		 * TODO:
+		 * 1. Add variable to control the lowest height an island can
+		 * be drawn at
+		 */
+		private function generateIslands():void {
+			var amount:int = (w * lowestIslandPoint) / islandDensity;
+			for (var i:int = 0; i < amount; i++) {
+				if (FP.random < 0.5) drawIsland({"kind": "rect"});
+				else drawIsland({"kind": "vShaped"});
+			}
+		}
+		
+		/**
+		 * TODO:
 		 * 1. Add more shapes
 		 * 2. REFACTOR -- this function is probably too long
 		 */
@@ -370,7 +406,6 @@ package {
 			var minWidth:int = 2;
 			var minHeight:int = 2;
 			var overlap:Boolean = false;
-			var border:int = 2;
 			
 			if (options) {
 				if (options["kind"]) kind = options["kind"];
@@ -387,12 +422,12 @@ package {
 				var islandWidth:int = Math.round(minWidth + (FP.random * 5));
 				var islandHeight:int = Math.round(minHeight + (FP.random * 5));
 				var x:int = Math.floor((FP.random * w) - islandWidth);
-				var y:int = Math.floor((FP.random * h) - islandHeight);
+				var y:int = Math.floor((FP.random * lowestIslandPoint) - islandHeight);
 				
 				isolated = false;
 				if (!overlap) {
-					outsideLoop: for (var i:int = -border; i < islandWidth + border; i++) {
-						for (var j:int = -border; j <= islandHeight + border; j++){
+					outsideLoop: for (var i:int = -islandPadding; i < islandWidth + islandPadding; i++) {
+						for (var j:int = -islandPadding; j <= islandHeight + islandPadding; j++){
 							if (tiles.getTile(x + i, y + j) == 0) isolated = true;
 							else {
 								isolated = false;
@@ -406,35 +441,28 @@ package {
 			}
 			
 			if (kind == "rect") tiles.setRect(x, y, islandWidth, islandHeight, 12);
-			else if (kind == "vShaped") {
-				var start:Point = new Point(x, y);
-				var end:Point = new Point(x + islandWidth, y);
-				var peak:Point = new Point(x + (islandWidth / 2), y + islandHeight);
-				drawLine(start, end)
-				
-				//Randomize the direction it is drawn in
-				var roll:Number = FP.random;
-				if (roll <= 0.5) {
-					fillSlope(start, peak, false);
-					fillSlope(peak, end, false);
-				} else {
-					fillSlope(end, peak, false);
-					fillSlope(peak, start, false);
-				}
-			}
+			else if (kind == "vShaped") drawVShapedIsland({
+				"x": x, "y": y, "islandWidth": islandWidth, "islandHeight": islandHeight
+			});
 		}
 		
-		/**
-		 * TODO:
-		 * 1. Add variable to control the lowest height an island can
-		 * be drawn at
-		 */
-		private function generateIslands():void {
-			var islands:int = 60;
-			var minSize:int = 2;
-			for (var i:int = 0; i < islands; i++)
-				if (FP.random < 0.5) drawIsland({"kind": "rect"});
-				else drawIsland({"kind": "vShaped"});
+		private function drawVShapedIsland(params:Object):void {
+			var x:int = params["x"];
+			var y:int = params["y"];
+			var start:Point = new Point(x, y);
+			var end:Point = new Point(x + params["islandWidth"], y);
+			var peak:Point = new Point(x + (params["islandWidth"] / 2), y + params["islandHeight"]);
+			drawLine(start, end)
+			
+			//Randomize the direction it is drawn in
+			var roll:Number = FP.random;
+			if (roll <= 0.5) {
+				fillSlope(start, peak, false);
+				fillSlope(peak, end, false);
+			} else {
+				fillSlope(end, peak, false);
+				fillSlope(peak, start, false);
+			}
 		}
 		
 		private function drawLine(start:Point, end:Point, options:Object = null):void {
@@ -497,15 +525,11 @@ package {
 		 * individual segment width.
 		 */
 		private function generateHillStops():void {
-			var hillStopsNum:int = 10;
 			var hillStops:Array = [];
 			var segmentWidth:int = w / hillStopsNum;
-			var maxSegmentWidth:int = 5;
-			var minSegmentWidth:int = 2;
-			var peak:int = 18;
 			
-			var startX:int = 6;
-			var startY:int = 0;
+			var startX:int = 0;
+			var startY:int = 60;
 			
 			var x:int = startX;
 			var y:int = startY;
@@ -513,16 +537,21 @@ package {
 			hillStops.push(new Point(x, y));
 			for (var i:int = 0; i < hillStopsNum; i++) {
 				x += segmentWidth;				
-				if (i != hillStopsNum - 1) y = Math.ceil(FP.random * peak);
+				if (i != hillStopsNum - 1) y = Math.ceil(FP.random * hillsPeak);
 				else y = 0;
 				hillStops.push(new Point(x, y));
 			}
 			drawHill(hillStops);
 		}
 		
+		/**
+		 * TODO:
+		 * 1: Structure the other build functions like this one
+		 */
 		private function buildForest():void {
 			var index:int = 0;
-			while (index < treeNum) {
+			var amount:int = w / treeNum
+			while (index < amount) {
 				var b:Boolean = drawTree(); //b == tree built successfully
 				if (b) index++;
 			}
@@ -548,7 +577,9 @@ package {
 			//Find ground level
 			while (tiles.getTile(_x, _y) != 0) {
 				var t:int = tiles.getTile(_x, _y);
-				if (t == jungleTiles["plants"]["treeTrunk"]) return false;
+				if (t == jungleTiles["plants"]["treeTrunk"] ||
+				t == jungleTiles["water"])
+					return false;
 				else _y--;
 			}
 			//ground level found; remember where the base of the tree is
@@ -602,10 +633,12 @@ package {
 		 * TODO
 		 * 1. check how much space there surrounding this tile and
 		 * choose an appropriately-sized rock
+		 * 2. Rocks are still getting drawn hanging off the edge of things
+		 * 3. Use an amount/frequency number instead of roll, like with everything else
 		 */
 		private function generateRocks():void {
 			for (var i:int = 0; i < flatGround.length; i++){
-				var roll:int = Math.floor(FP.random * 6)
+				var roll:int = Math.floor(FP.random * 15)
 				if (roll <= 1) {
 					var rock:Character = new Character(new Point(0, 0));
 					var rockIndex:int;
@@ -699,6 +732,22 @@ package {
 			}
 			return new Point(x, y);
 		}
+		
+		/**
+		 * Player terrain manipulation
+		 */
+		private function addTiles(x:int, y:int, blastRadius:int):void {
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, jungleTiles["constructionBlock"]);
+			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, true)
+			fixGround();
+		}
+		
+		private function removeTiles(x:int, y:int, blastRadius:int):void {
+			tiles.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, 0);
+			grid.setRect(x - Math.floor(blastRadius / 2), y - Math.floor(blastRadius / 2), blastRadius, blastRadius, false)
+			fixGround();
+		}
+		
 		
 		/** Based on Bresenham's Line Algorithm:
 		 * http://roguebasin.roguelikedevelopment.org/index.php?title=Bresenham%27s_Line_Algorithm

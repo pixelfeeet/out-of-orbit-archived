@@ -484,12 +484,12 @@ package {
 				}
 			}
 			
-			if (movementState == "jetpacking") {
+			if (movementState != "jetpacking") {
 				if (jetRechargeTimer <= 0) { 
 					if (jetFuel < fuelCapacity) jetFuel++;
 					jetRechargeTimer = jetRecharge;
 				} else jetRechargeTimer--;
-			}
+			} 
 			
 			if (jetFuel <= 0) jetBurnedOut = true;
 			else if (jetFuel == 100) jetBurnedOut = false;
