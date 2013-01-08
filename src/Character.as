@@ -33,15 +33,19 @@ package
 		protected var hungerTimer:int;
 		
 		protected var xSpeed:int;
+		protected var ySpeed:int;
 		
 		protected var isInWater:Boolean;
 		
 		protected var t:int; //Settings.TILESIZE
 		
+		protected var gw:GameWorld;
 		protected var player:Player;
 		
 		public var lightRadius:int;
 		public var facingLeft:Boolean;
+		
+		public var habitat:String;
 		
 		public function Character(_position:Point , _health:int = 100, _hunger:int = -1) {
 			super();
@@ -51,12 +55,15 @@ package
 			
 			acceleration = new Point();
 			velocity = new Point();
+			
 			vGravity = GRAVITY;
 			vSpeed = SPEED;
 			vJump = JUMP;
 
 			onGround = false;
 			isInWater = false;
+			
+			habitat = "space";
 			
 			//ESSENTIALS
 			health = _health;
@@ -75,7 +82,8 @@ package
 		}
 		
 		override public function added():void {
-			player = GameWorld(FP.world).player;
+			gw = GameWorld(FP.world);
+			player = gw.player;
 		}
 		
 		override public function update():void {
@@ -168,8 +176,10 @@ package
 
 			//xSpeed = vSpeed;
 			velocity.x = xSpeed;
-			acceleration.y = GRAVITY;
-			velocity.y += acceleration.y;
+			if (habitat != "water") {
+				acceleration.y = GRAVITY;
+				velocity.y += acceleration.y;
+			}
 		}
 		
 		protected function checkForDamage():void {
@@ -204,9 +214,6 @@ package
 		}
 		
 		//ATTACK
-		protected function attack():void { }
-		protected function melee():void { }
-		
 		protected function shoot():void {
 			var bullet_speed:int = 100;
 			var initPos:Point = new Point(0,0);
@@ -226,15 +233,9 @@ package
 		
 		protected function takeDamage(damage:int):void{
 			changeHealth(-damage);
-			//Damage animation logic goes here
-			//animations.hurtAnimation(this);
 		}
 		
-		//GETTER FUNCTIONS
-		public function getVelocity():Point {
-			return velocity;
-		}
-		
+		//GETTER FUNCTIONS		
 		public function getHealth():int { return health; }
 		public function getMaxHealth():int { return maxHealth; }
 		public function getHunger():int { return hunger; }
@@ -267,7 +268,7 @@ package
 			return Math.sqrt(((b.x - a.x) * (b.x - a.x)) + (b.y - a.y) * (b.y - a.y));
 		}
 		
-		public function setPosition(p:Point):void {
+		public function set position(p:Point):void {
 			x = p.x;
 			y = p.y;
 		}

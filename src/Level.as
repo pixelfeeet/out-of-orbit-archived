@@ -624,7 +624,7 @@ package {
 					else renderInFront(rock);
 					
 					rock.setHitboxTo(rock.graphic);
-					rock.setPosition(new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height));
+					rock.position = new Point(flatGround[i].x * t, (flatGround[i].y * t) - rock.height);
 					FP.world.add(rock);
 				}
 			}
@@ -675,7 +675,7 @@ package {
 				open = false;
 				while(!open) {
 					if (tiles.getTile(int(x / t), int(y / t)) == 0) open = true;
-					else if (tiles.getTile(int(x / t), int(y / t)) == 20) {
+					else if (tiles.getTile(int(x / t), int(y / t)) == jungleTiles["water"]) {
 						//don't spawn in water
 						x += t;
 						open = false;

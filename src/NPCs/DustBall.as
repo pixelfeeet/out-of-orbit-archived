@@ -28,30 +28,5 @@ package NPCs {
 			if (velocity.x == 0) spriteMap.play("standing");
 			else spriteMap.play("moving");
 		}
-		
-		override protected function updateMovement():void {
-			if (movementFrequency != 0) {
-				if (xSpeed != 0 && velocity.x == 0) jump();
-				
-				if (movementTimer == 0) {
-					if (FP.sign(xSpeed) != 0) {
-						xSpeed = 0;
-						movementTimer = movementFrequency * Math.ceil(Math.random() * 5);
-					} else {
-						var r:Number = Math.random() * 2;
-						if (r < 1) { 
-							xSpeed = -vSpeed;
-							movementTimer = Math.ceil(Math.random() * 50) + 50;
-						} else {
-							xSpeed = vSpeed;
-							movementTimer = Math.ceil(Math.random() * 50) + 50;
-						}
-					}
-				} else {
-					movementTimer--;
-				}	
-			}
-			super.updateMovement();
-		}
 	}
 }

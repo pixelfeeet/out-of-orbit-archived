@@ -9,7 +9,6 @@ package NPCs {
 	import utilities.Settings;
 	
 	public class Enemy extends NPC {
-		public var viewDistance:int;
 		
 		public function Enemy(_position:Point = null, _health:int = 100) {
 			if (!_position) _position = new Point(0, 0);
@@ -18,16 +17,14 @@ package NPCs {
 			JUMP = 300;
 			
 			hungerTimer = -1;
-			viewDistance = 500;
+			viewDistance = 20;
 			
 			graphic = Image.createRect(t - 10, t*2 - 10, 0xee8877, 1);
 			type = "enemy";
+			habitat = "ground";
 			expValue = 10;
 			
 			dropItems = generateDropItems();
-			
-			//Sounds
-			enemyDestroy = new Sfx(Assets.ENEMY_DESTROY);
 
 			graphic = Image.createRect(t, t * 2,0xffaa99);
 			setHitboxTo(graphic);
@@ -42,13 +39,17 @@ package NPCs {
 		override protected function updateMovement():void {
 			super.updateMovement();
 			
-			if (distanceFrom(player) <= viewDistance){
-				if (Math.abs(player.x - x) <= 20) velocity.x = 0;
-				else if (player.x > x) velocity.x = vSpeed;
-				else velocity.x = -vSpeed;
-				
-				if (vSpeed != 0 && velocity.x == 0) jump();
-			} else vSpeed = 0;
+			if (distanceFrom(player) <= viewDistance) attackBehavior();
+			else idleMovement();
+		}
+		
+		protected function attackBehavior():void {
+			if (Math.abs(player.x - x) <= viewDistance) velocity.x = 0;
+			else if (player.x > x) velocity.x = vSpeed;
+			else velocity.x = -vSpeed;
+			
+			if (Math.abs(player.x - x) <= attackRange) attack();
+			if (xSpeed != 0 && velocity.x == 0) jump();
 		}
 		
 		public function getEXP():int { return expValue; }
