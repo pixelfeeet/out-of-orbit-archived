@@ -1,27 +1,28 @@
 package NPCs {
 	import flash.geom.Point;
+	import flash.utils.getDefinitionByName;
 	
+	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
-	import net.flashpunk.Entity;
-	import flash.utils.getDefinitionByName;
 	
 	public class NPC extends Character {
-		public var respawning:Boolean;
-		public var eliminated:Boolean;
+
 		public var behavior:Function;
 		public var dropItems:Array;
 		public var expValue:int;
 		public var label:String;
+		public var habitat:String; //e.g. Water, Hills, Sky, Ground
 		
 		protected var movementTimer:int;
 		public var movementFrequency:int;
 		
-		public var enemy_destroy:Sfx;
+		public var enemyDestroy:Sfx;
 		
-		public static var label:String = "generic_NPC";
+		protected var spriteMap:Spritemap;
+
 		
 		public function NPC(_position:Point = null, _health:int=100, _hunger:int=-1) {
 			if(!_position) _position = new Point(0,0);
@@ -33,9 +34,8 @@ package NPCs {
 			
 			health = 40;
 			hunger = _hunger;
-			
-			respawning = true;
-			eliminated = false;
+			label = "NPC";
+			habitat = "ground";
 			
 			movementFrequency = 100;
 			movementTimer = movementFrequency;
@@ -45,7 +45,7 @@ package NPCs {
 			initBehavior();
 			
 			//Sounds
-			enemy_destroy = new Sfx(Assets.ENEMY_DESTROY);
+			enemyDestroy = new Sfx(Assets.ENEMY_DESTROY);
 		}
 		
 		override public function update():void {
@@ -64,7 +64,6 @@ package NPCs {
 		
 		override protected function takeDamage(damage:int):void {
 			super.takeDamage(damage);
-			//TODO: destroy animation
 			if (health <= 0) destroy();
 		}
 		
@@ -74,7 +73,7 @@ package NPCs {
 		}
 		
 		public function destroy():void {
-			
+			//Generate drop items
 			for (var i:int = 0; i < dropItems.length; i++){
 				if (dropItems[i].type == "InteractionItem") {
 					var item:InteractionItem = new InteractionItem();
@@ -94,13 +93,13 @@ package NPCs {
 				
 			}
 			GameWorld(FP.world).player.gainExperience(expValue);
-			enemy_destroy.play();
+			enemyDestroy.play();
 			FP.world.remove(this);
-			if (!respawning) eliminated = true;
 		}
 		
-		public function getBehavior():Function {
-			return behavior;	
+		public function set position(p:Point):void {
+			x = p.x;
+			y = p.y;
 		}
 		
 		public function randomRange(max:Number, min:Number = 0):Number {

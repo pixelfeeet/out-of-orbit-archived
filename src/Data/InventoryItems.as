@@ -44,9 +44,9 @@ package data {
 			powerBlaster.stackable = false;
 			powerBlaster.behavior = function():void {
 				if (GameWorld(FP.world).player.weapon.label == "powerBlaster") {
-					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.powerBlaster);
-				} else {
 					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.unarmed);
+				} else {
+					GameWorld(FP.world).player.equipWeapon(GameWorld(FP.world).player.weapons.powerBlaster);
 				}
 			};
 			

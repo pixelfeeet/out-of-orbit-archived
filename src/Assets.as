@@ -63,6 +63,10 @@ package {
 		
 		//NPCs
 		[Embed(source = 'assets/dust_ball.png')] public static const DUST_BALL:Class;
+		[Embed(source = 'assets/amoeba.png')] public static const AMOEBA:Class;
+		[Embed(source = 'assets/lobster.png')] public static const LOBSTER:Class;
+		[Embed(source = 'assets/worm.png')] public static const WORM:Class;
+		
 		[Embed(source = 'assets/fruit_plant.png')] public static const FRUIT_PLANT:Class;
 		
 		//UI

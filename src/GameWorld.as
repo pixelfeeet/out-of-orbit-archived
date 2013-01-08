@@ -1,5 +1,6 @@
 package {
 	
+	import NPCs.NPCs;
 	import NPCs.NPC;
 	
 	import data.*;
@@ -116,9 +117,8 @@ package {
 		
 		override public function update():void {
 			
-			if (!pause) {
-				super.update();
-			} else {
+			if (!pause) super.update();
+			else {
 				if (pauseMenuShowing) pauseMenu.update();
 				if (statsMenuShowing) statsMenu.update();
 				if (inventoryMenuShowing) inventoryMenu.update();

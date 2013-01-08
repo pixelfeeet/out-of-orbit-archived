@@ -1,8 +1,10 @@
 package {
 	
+	import NPCs.Amoeba;
 	import NPCs.DustBall;
 	import NPCs.Enemy;
 	import NPCs.NPC;
+	import NPCs.Worm;
 	
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
@@ -12,6 +14,7 @@ package {
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.World;
+	import net.flashpunk.graphics.Canvas;
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Tilemap;
@@ -19,7 +22,6 @@ package {
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-	import net.flashpunk.graphics.Canvas;
 	
 	import utilities.Settings;
 	
@@ -157,7 +159,9 @@ package {
 		public function loadLevel():void {
 			generateTiles();
 			generateNPCs({"kind": "enemy"});
-			generateNPCs({"kind": "NPC"});
+			generateNPCs({"kind": "Dustball"});
+			generateNPCs({"kind": "Amoeba"});
+			generateNPCs({"kind": "Worm"});
 		}
 		
 		private function generateTiles():void {
@@ -634,7 +638,7 @@ package {
 			//the suspended islands etc.
 			var kind:String = "enemy";
 			var region:String = "groundLevel"
-			var amount:int = 15;
+			var amount:int = 5;
 			
 			if (options) {
 				if (options["kind"]) kind = options["kind"];
@@ -644,16 +648,15 @@ package {
 			
 			var t:int = Settings.TILESIZE;
 			for (var i:int = 0; i < amount; i++) {
-				var pos:Point = findSpawn();
-				var e:Entity;
-				if (kind == "enemy") {
-					e = new Enemy(pos, 60);
-					enemiesList.push(e);
-				} else if (kind == "NPC") {
-					e = new DustBall(pos);
-					NPClist.push(e);
-				}
-				FP.world.add(e);
+				var e:Object;
+				if (kind == "enemy") e = new Enemy();
+				else if (kind == "Dustball") e = new DustBall();
+				else if (kind == "Amoeba") e = new Amoeba();
+				else if (kind == "Worm") e = new Worm();
+				
+				e.position = findSpawn(e.habitat);
+				NPClist.push(e);
+				FP.world.add(e as Entity);
 			}
 		}
 		
@@ -661,12 +664,12 @@ package {
 		 * TODO:
 		 * 1. Not spawning in water logic doesn't work
 		 */
-		private function findSpawn(region:String = "groundLevel"):Point {
+		private function findSpawn(region:String = "ground"):Point {
 			var x:int;
 			var y:int;
 			var open:Boolean;
 			
-			if (region == "groundLevel") {
+			if (region == "ground") {
 				x = Math.floor(FP.random * (w * t));
 				y = (h * t) - t;
 				open = false;
@@ -686,7 +689,7 @@ package {
 				open = false;
 				var tries:int = 200;
 				while (!open){
-					if (tiles.getTile(int(x / t), int(y / t)) == 20) open = true;
+					if (tiles.getTile(int(x / t), int(y / t)) == jungleTiles["water"]) open = true;
 					else open = false;
 					
 					x += t;					
@@ -744,6 +747,7 @@ package {
 		}
 		
 		override public function removed():void {
+			super.removed();
 			for each (var door:Door in doorList) FP.world.remove(door);
 			for each (var item:InteractionItem in interactionItemList) FP.world.remove(item);
 			for each (var enemy:Enemy in enemiesList) FP.world.remove(enemy);			

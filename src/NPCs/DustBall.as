@@ -7,13 +7,13 @@ package NPCs {
 	import net.flashpunk.graphics.Spritemap;
 	
 	public class DustBall extends NPC {
-		protected var spriteMap:Spritemap;
-		
-		public static var label:String = "dust_ball"
+
 		public function DustBall(_position:Point=null, _health:int=100, _hunger:int=-1) {
 			super(_position, _health, _hunger);
 			health = 20;
 			
+			label = "DustBall"
+				
 			spriteMap = new Spritemap(Assets.DUST_BALL, 40, 40);
 			spriteMap.add("standing", [0]);
 			spriteMap.add("moving", [0, 1], 4);

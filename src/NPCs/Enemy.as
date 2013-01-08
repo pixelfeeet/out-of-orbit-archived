@@ -19,25 +19,24 @@ package NPCs {
 			
 			hungerTimer = -1;
 			viewDistance = 500;
-			var t:int = Settings.TILESIZE;
+			
 			graphic = Image.createRect(t - 10, t*2 - 10, 0xee8877, 1);
 			type = "enemy";
 			expValue = 10;
 			
 			dropItems = generateDropItems();
 			
-			initBehavior();
 			//Sounds
-			enemy_destroy = new Sfx(Assets.ENEMY_DESTROY);
-			
+			enemyDestroy = new Sfx(Assets.ENEMY_DESTROY);
+
+			graphic = Image.createRect(t, t * 2,0xffaa99);
 			setHitboxTo(graphic);
 		}
 
 		override protected function generateDropItems():Array{
-			var f:InteractionItem = GameWorld(FP.world).interactionItems.food;
-			var a:Ammunition = new Ammunition();
-			var s:Scraps = new Scraps();
-			return [f, a, a, s];
+			var a:Class = Ammunition;
+			var s:Class = Scraps;
+			return [new a(), new a(), new s()];
 		}
 		
 		override protected function updateMovement():void {
@@ -52,11 +51,7 @@ package NPCs {
 			} else vSpeed = 0;
 		}
 		
-		public function getEXP():int {
-			return expValue;
-		}
-		
-		
+		public function getEXP():int { return expValue; }
 	
 	}
 }

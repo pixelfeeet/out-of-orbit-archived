@@ -30,7 +30,6 @@ package
 		protected var onGround:Boolean;
 		
 		protected var damageTimer:int;
-		
 		protected var hungerTimer:int;
 		
 		protected var xSpeed:int;
