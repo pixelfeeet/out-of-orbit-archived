@@ -1,4 +1,4 @@
-package data {
+package Levels {
 	import flash.geom.Point;
 	
 	import net.flashpunk.graphics.Image;

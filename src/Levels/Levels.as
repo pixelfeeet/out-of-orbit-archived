@@ -1,11 +1,11 @@
-package data {
+package Levels {
 	import net.flashpunk.Sfx;
 	import net.flashpunk.World;
 	
 	public class Levels {
 		//public var caveLevel:Level;
 		//public var caveLevel2:Level;
-		public var jungleLevel:Level;
+		public var jungleLevel:ProceduralLevel;
 		
 		public var levelsList:Array;
 		public var ambience:Sfx;

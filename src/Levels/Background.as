@@ -1,4 +1,4 @@
-package {
+package Levels {
 	import flash.utils.ByteArray;
 	import flash.xml.XMLNode;
 	
@@ -22,10 +22,10 @@ package {
 
 		private var w:int;
 		private var h:int;
-		private var level:Level;
+		private var level:ProceduralLevel;
 		private var tiles:Tilemap;
 		
-		public function Background(_level:Level) {
+		public function Background(_level:ProceduralLevel) {
 			super();
 			level = _level;
 			

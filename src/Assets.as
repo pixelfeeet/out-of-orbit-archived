@@ -2,14 +2,12 @@ package {
 	import net.flashpunk.Entity;
 	
 	public class Assets extends Entity {
-		
 		//Tilesets
-		[Embed(source = 'assets/space_tileset.png')] public static const SPACE_TILESET:Class;
 		[Embed(source = 'assets/jungle_tileset.png')] public static const JUNGLE_TILESET:Class;
 		
 		//Levels
-		[Embed(source = 'assets/space.tmx', mimeType = "application/octet-stream")] public static const SPACE_MAP:Class;
 		[Embed(source = 'assets/jungle.tmx', mimeType = "application/octet-stream")] public static const JUNGLE:Class;
+		[Embed(source = 'assets/base.tmx', mimeType = "application/octet-stream")] public static const BASE:Class;
 		
 		//Level Snippets
 		[Embed(source = 'assets/temple.tmx', mimeType = "application/octet-stream")] public static const TEMPLE:Class;

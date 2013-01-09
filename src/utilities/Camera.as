@@ -1,4 +1,6 @@
 package utilities {
+	import Levels.Level;
+	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	
@@ -17,12 +19,11 @@ package utilities {
 		private var lWidth:int;
 		private var lHeight:int;
 		
+		private var t:int;
 		public function Camera(_level:Level) {
 			level = _level;
 
-			var t:int = Settings.TILESIZE;
-			lWidth = level.width / t;
-			lHeight = level.height / t;
+			t = Settings.TILESIZE;
 			
 			cameraXOffset = FP.screen.width * 0.4;
 			cameraYOffset = FP.screen.height * 0.4;
@@ -32,6 +33,11 @@ package utilities {
 		override public function added():void {
 			w = GameWorld(FP.world);
 			player = w.player;
+			
+			lWidth = level.width / t;
+			lHeight = level.height / t;
+			trace("w: " + lWidth + ", h: " + lHeight);
+			
 			adjustToPlayer();
 		}
 		

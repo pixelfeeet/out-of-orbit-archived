@@ -1,4 +1,4 @@
-package
+package Levels
 {
 	import flash.display.BitmapData;
 	import flash.display.ColorCorrection;

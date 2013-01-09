@@ -1,7 +1,8 @@
 package {
 	
-	import NPCs.NPCs;
-	import NPCs.NPC;
+	import Levels.*;
+	
+	import NPCs.*;
 	
 	import data.*;
 	
@@ -59,7 +60,7 @@ package {
 		private var background:Background;
 		public var lightMask:LightMask;
 		
-		public var currentLevel:Level;
+		public var currentLevel:StaticLevel;
 		public var cursor:Cursor;
 		
 		public function GameWorld() {
@@ -93,9 +94,11 @@ package {
 			player = new Player();
 			add(player);
 			
-			currentLevel = new Level();
-			background = new Background(currentLevel);
-			add(background);
+			var source:Class = Assets.BASE;
+			//currentLevel = new ProceduralLevel();
+			//background = new Background(currentLevel);
+			//add(background);
+			currentLevel = new StaticLevel({"xml": source});
 			add(currentLevel);
 			
 			pauseMenu = new PauseMenu();
@@ -203,7 +206,7 @@ package {
 			}
 		}
 		
-		public function switchLevel(currentLevel:Level, destinationLevel:Level, destinationDoor:String):void{
+		public function switchLevel(currentLevel:ProceduralLevel, destinationLevel:ProceduralLevel, destinationDoor:String):void{
 			for each (var npc:NPC in currentLevel.NPClist){
 				remove(npc);	
 			}

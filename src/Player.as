@@ -32,6 +32,7 @@ package {
 	import ui.HUD;
 	
 	import utilities.Settings;
+	import Levels.Level;
 	
 	public class Player extends Character {
 

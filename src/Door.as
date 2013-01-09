@@ -7,11 +7,12 @@ package {
 	import net.flashpunk.Mask;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Image;
+	import Levels.ProceduralLevel;
 	
 	public class Door extends Entity {
-		public var currentLevel:Level;
+		public var currentLevel:ProceduralLevel;
 		public var destinationLevelLabel:String;
-		public var destinationLevel:Level;
+		public var destinationLevel:ProceduralLevel;
 		public var destinationDoor:String;
 
 		//if true, the player must press the use key to travel
@@ -19,13 +20,13 @@ package {
 		public var useToTravel:Boolean;
 		private var w:GameWorld;
 		private var player:Player;
-		private var c:Level;
+		private var c:ProceduralLevel;
 		public var label:String;
 		//if false, player spawns to the right of 
 		//the door.
 		public var playerSpawnsToLeft:Boolean;
 		
-		public function Door(_position:Point, _w:GameWorld, _c:Level, _player:Player, _height:int, _width:int) {
+		public function Door(_position:Point, _w:GameWorld, _c:ProceduralLevel, _player:Player, _height:int, _width:int) {
 			super(_position.x, _position.y);
 			w = _w;
 			c = _c;
@@ -53,7 +54,7 @@ package {
 		public function setDestinationLevel(levelLabel:String):void{ 
 			destinationLevelLabel = levelLabel;
 			var levelsList:Array = w.levels.levelsList;
-			for each (var level:Level in levelsList){
+			for each (var level:ProceduralLevel in levelsList){
 				if (level.label == levelLabel) {
 					destinationLevel = level;
 					trace("destination level set to: " + level.label);

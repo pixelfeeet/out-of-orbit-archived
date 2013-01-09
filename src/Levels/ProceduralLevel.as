@@ -1,5 +1,4 @@
-package {
-	
+package Levels {
 	import NPCs.Amoeba;
 	import NPCs.DustBall;
 	import NPCs.Enemy;
@@ -15,7 +14,7 @@ package {
 	import net.flashpunk.Graphic;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Canvas;
-	import net.flashpunk.graphics.Graphiclist;
+	
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
@@ -23,59 +22,39 @@ package {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
-	import utilities.Settings;
-	
-	public class Level extends Entity {
-		public var tiles:Tilemap;
-		private var grid:Grid;
-		private var t:int; //Settings.TILESIZE
-		public var xml:Class;
+	public class ProceduralLevel extends Level {
 		
 		private var rawData:ByteArray;
 		private var dataString:String;
 		private var xmlData:XML;
 		
-		private var solidList:Array;
 		private var gw:GameWorld;
 		private var player:Player;
 		
 		public var label:String;
 		
-		public var w:int;
-		public var h:int;
-		
 		public var backgroundColor:uint;
 		
-		public var doorList:Array;
-		public var interactionItemList:Array;
-		public var enemiesList:Array;
-		public var NPClist:Array;
-		
 		public var timeMask:Entity;
-		private var graphicList:Graphiclist;
 		
 		private var groundDepth:int;
-		
-		public var jungleTiles:Object;
-		private var notSolids:Array;
 		private var waterLevel:int;
-		
-		private var smallRocks:Array;
-		private var largeRocks:Array;
 		
 		private var flatGround:Array;
 		private var backTiles:Tilemap;
 		private var backLayer:Entity;
 		
-		private var treeNum:int; //amount of trees in level 
-		
 		private var shadowColor:uint;
 		private var lightColor:uint;
+		
+		private var treeFreq:int; //amount of trees in level 
 		
 		private var bergAmount:int;
 		private var bergPadding:int;
 		private var bergSusHeight:int; //suspension height
 			
+		private var groundStartY:int;
+		private var groundEndY:int;
 		private var hillStopsNum:int;
 		private var hillsPeak:int;
 		private var islandDensity:int;
@@ -86,108 +65,55 @@ package {
 		 * 1. Make numbers like treeNum and islandsNum indicate density of the element
 		 * rather than total on map? 
 		 */
-		public function Level() {
-			t = Settings.TILESIZE;
+		public function ProceduralLevel(params:Object = null) {
+			/**
+			 * Level generation options
+			 */
+			w = 400; //width
+			h = 100; //height
 			
-			w = 400;
-			h = 100;
-			
+			/**
+			 * TODO: (parallaxing) background image
+			 */
 			backgroundColor = 0xa29a8d;			
 			groundDepth = 5; //the lowest ground point, relative to the bottom
 			waterLevel = 30; //relative to bottom
+			
 			/**
 			 * tree frequency: one tree every treeNum squares
 			 * TODO: trees frequency is calculated based on total.
 			 * Ideally it would be on total exposed ground, i.e
 			 * not counting water surface tiles.
 			 */
-			treeNum = 5;
+			treeFreq = 5;
 			
 			shadowColor = 0xbbaabb;
 			lightColor = 0xffffff;
 			
 			//Bergs
-			bergAmount = 5;
-			bergPadding = 4;
-			bergSusHeight = 25 //suspension height
+			bergAmount = -1;
+			bergPadding = 4;  //space between berg and ground/water
+			bergSusHeight = 5 //height above waterLevel
 			
 			//Landscape
-			hillStopsNum = 10;
-			hillsPeak = 60;
+			groundStartY = 60;
+			hillStopsNum = 15; //Higher = more dramatic hills
+			hillsPeak = 50; //The highest allowed point, relative to bottom
 			
 			//Islands
-			islandDensity = 150;
+			islandDensity = -1;
 			lowestIslandPoint = 50;
 			islandPadding = 2;
-			
-			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
+		
 			backTiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
-			graphic = new Graphiclist(tiles);
-			layer = -600;
-			
-			grid = new Grid(w * t, h * t, t, t, 0, 0);
-			mask = grid;
-			
-			type = "level";
-			label = "defaultLevel"
-			
-			solidList = [];
-			doorList = [];
-			interactionItemList = [];
-			enemiesList = [];
-			NPClist = [];
-			
-			jungleTiles = {
-				"ground": {
-					"topLeft": 1,
-					"topMid": 2,
-					"topRight": 3,
-					"midLeft": 11,
-					"middle": 12,
-					"midRight": 13,
-					"botLeft": 21,
-					"botMid": 22,
-					"botRight": 23,
-					"topLeftTuft": 4,
-					"topRightTuft": 5,
-					"bottomLeftTuft": 14,
-					"bottomRightTuft": 15
-				},
-				"structure": {
-					"block": 7,
-					"bg": 17
-				},
-				"plants": {
-					"treeTrunk": 8,
-					"treeLeaves": 9
-				},
-				"constructionBlock": 10,
-				"water": 30
-			};
-			
-			notSolids = [
-				0,
-				jungleTiles["water"],
-				jungleTiles["structure"]["bg"]
-			];
-			
-			smallRocks = [
-				Assets.ROCK1,
-				Assets.ROCK3,
-				Assets.ROCK5,
-				Assets.ROCK6,
-				Assets.ROCK7,
-				Assets.ROCK8,
-			];
-			
-			largeRocks = [
-				Assets.ROCK2,
-				Assets.ROCK4,
-			];
+		
+			label = "defaultLevel"	
 		}
 		
 		override public function added():void {
 			loadLevel();
+			player = GameWorld(FP.world).player;
+			player.position = new Point(0, Math.abs(h - (groundStartY * t)));
 		}
 		
 		public function loadLevel():void {
@@ -203,8 +129,9 @@ package {
 			initBackLayer();
 			//draw tiles
 			generateHillStops()
-			generateWater();
-			generateIslands();
+			if (waterLevel != -1) generateWater();
+			if (islandDensity != -1) generateIslands();
+			if (bergAmount != -1 ) buildBergs();
 			
 			//pretty the ground up/set grid/hitbox
 			fixGround();
@@ -216,45 +143,20 @@ package {
 			buildForest();
 		}
 		
-		private function setGrid():void {
-			var gid:int = 0;
-			for (var row:int = 0; row < h; row++) {
-				for (var column:int = 0; column < w; column++){
-					if (checkSolid(column, row)) grid.setTile(column, row, true);
-					else grid.setTile(column, row, false);
-					gid++;
-				}
-			}
-		}
-		
 		override public function update():void { if (Input.mousePressed) click(); }
 		
 		/**
 		 * TODO: move add/remove tiles stuff to a weapon/inventory item
 		 */
 		private function click():void {
-			var x:int = Math.floor((FP.camera.x + Input.mouseX) / Settings.TILESIZE);
-			var y:int = Math.floor((FP.camera.y + Input.mouseY) / Settings.TILESIZE);
+			var x:int = Math.floor((FP.camera.x + Input.mouseX) / t);
+			var y:int = Math.floor((FP.camera.y + Input.mouseY) / t);
 			var blastRadius:int = 2;
 			/*
 			if (Input.check(Key.SHIFT)) removeTiles(x, y, blastRadius);
 			else if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
 			*/
 			fixGround();
-		}
-
-		/**
-		 * Returns true if tile is solid, false if not
-		 */
-		private function checkSolid(x:int, y:int):Boolean {
-			var solid:Boolean = true;
-			for (var i:int = 0; i < notSolids.length; i++)
-				if (tiles.getTile(x, y) == notSolids[i]) {
-					solid = false;
-					break;
- 				} else solid = true;
-			
-			return solid;
 		}
 		
 		/**
@@ -271,6 +173,7 @@ package {
 		 */
 		private function drawBerg():void {
 			var width:int = Math.floor(FP.random * 10) + 15;
+			bergSusHeight -= waterLevel;
 			var start:Point = new Point (Math.floor(FP.random * w) - width, h - bergSusHeight);
 			var end:Point = new Point(start.x + width, h - bergSusHeight);
 			var currentPoint:Point;
@@ -523,16 +426,16 @@ package {
 		 * TODO:
 		 * 1. base values off of width of level rather than
 		 * individual segment width.
+		 * 2. Make sure if the end of the hills lines up with the
+		 *  right hand side of the level if (w / hillStopsNum) * hillStops
+		 *  doesn't end up equalling w
 		 */
 		private function generateHillStops():void {
 			var hillStops:Array = [];
 			var segmentWidth:int = w / hillStopsNum;
 			
-			var startX:int = 0;
-			var startY:int = 60;
-			
-			var x:int = startX;
-			var y:int = startY;
+			var x:int = 0;
+			var y:int = groundStartY;
 			
 			hillStops.push(new Point(x, y));
 			for (var i:int = 0; i < hillStopsNum; i++) {
@@ -550,7 +453,7 @@ package {
 		 */
 		private function buildForest():void {
 			var index:int = 0;
-			var amount:int = w / treeNum
+			var amount:int = w / treeFreq
 			while (index < amount) {
 				var b:Boolean = drawTree(); //b == tree built successfully
 				if (b) index++;
@@ -679,7 +582,6 @@ package {
 				if (options["region"]) region = options["region"];
 			}
 			
-			var t:int = Settings.TILESIZE;
 			for (var i:int = 0; i < amount; i++) {
 				var e:Object;
 				if (kind == "enemy") e = new Enemy();
