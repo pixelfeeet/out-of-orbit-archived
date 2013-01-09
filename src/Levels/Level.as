@@ -1,13 +1,14 @@
 package Levels {
 	
+	import Levels.Background;
+	
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
-	
+	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
-
-	import net.flashpunk.graphics.Graphiclist;
 	
 	import utilities.Settings;
 	
@@ -15,6 +16,7 @@ package Levels {
 		public var tiles:Tilemap;
 		public var grid:Grid;
 		public var xml:Class;
+		public var label:String;
 		
 		protected var t:int; //Settings.TILESIZE
 		protected var graphicList:Graphiclist;
@@ -31,12 +33,22 @@ package Levels {
 		protected var smallRocks:Array;
 		protected var largeRocks:Array;
 		
+		public var backgroundColor:uint;
+		
 		public var w:int;
 		public var h:int;
+		
+		protected var gameworld:GameWorld;
+		protected var player:Player;
 		
 		public function Level(params:Object = null) {
 			super();
 			t = Settings.TILESIZE;
+			
+			/**
+			 * TODO: (parallaxing) background image
+			 */
+			backgroundColor = 0xa29a8d;
 		
 			layer = -600;
 			
@@ -47,6 +59,7 @@ package Levels {
 			NPClist = [];
 			
 			type = "level";
+			label = "level"
 			
 			jungleTiles = {
 				"ground": {
@@ -97,13 +110,20 @@ package Levels {
 				Assets.ROCK2,
 				Assets.ROCK4,
 			];
+			
 		}
 		
 		override public function added():void {
+			gameworld = GameWorld(FP.world);
+			player = gameworld.player;
+			
 			tiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
 			grid = new Grid(w * t, h * t, t, t, 0, 0);
 			mask = grid;
 			graphic = new Graphiclist(tiles);
+			
+			var b:Background = new Background(this);
+			gameworld.add(b);
 		}
 		
 		protected function setGrid():void {
@@ -112,11 +132,12 @@ package Levels {
 				for (var column:int = 0; column < w; column++){
 					if (checkSolid(column, row)) grid.setTile(column, row, true);
 					else grid.setTile(column, row, false);
-					trace(checkSolid(column, row));
 					gid++;
 				}
 			}
 		}
+		
+		public function loadLevel():void { }
 		
 		/**
 		 * Returns true if tile is solid, false if not

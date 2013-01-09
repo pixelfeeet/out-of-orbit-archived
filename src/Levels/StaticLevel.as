@@ -20,29 +20,34 @@ package Levels {
 		private var dataString:String;
 		private var xmlData:XML;
 		
-		private var gameworld:GameWorld;
-		private var player:Player;
-		
 		public function StaticLevel(params:Object) {
 			super();
+			label = "static level"
 			xml = params["xml"];
+			if (params["label"]) label = params["label"];			
+			
 			rawData = new xml;
 			dataString = rawData.readUTFBytes(rawData.length);
 			xmlData = new XML(dataString);
+			
+			w = xmlData.@width;
+			h = xmlData.@height;
 			
 			//loadTileProperties();
 		}
 		
 		override public function added():void {
+			super.added();
 			gameworld = GameWorld(FP.world);
 			player = gameworld.player;
 			
-			w = xmlData.@width;
-			h = xmlData.@height;
-			super.added();
-			
+			loadLevel();
+		}
+		
+		override public function loadLevel():void {
 			loadTiles();
 			setGrid();
+			loadDoors();
 		}
 		
 		public function loadPlayer():void{
@@ -54,8 +59,7 @@ package Levels {
 		
 		
 		private function loadTiles():void {
-			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;			
-			trace("list: " + dataList);
+			var dataList:XMLList = xmlData.layer.(@name=="ground").data.tile.@gid;
 			var column:int;
 			var row:int;
 			var gid:int;
@@ -65,8 +69,7 @@ package Levels {
 			for(row = 0; row < h; row ++) {
 				for(column = 0; column < w; column ++) {
 					var index:int = dataList[gid] - 1;
-					if (index >= 0)
-						tiles.setTile(column, row, index);
+					if (index >= 0) tiles.setTile(column, row, index);
 					gid++;
 				}
 			}
@@ -88,9 +91,8 @@ package Levels {
 			for (var i:int = 0; i < dataList.length(); i++){
 				var e:InteractionItem;
 				for (var j:int = 0; j < gameworld.scenery.list.length; j++){
-					if (gameworld.scenery.list[j].label == dataList[i].@type){
+					if (gameworld.scenery.list[j].label == dataList[i].@type)
 						e = gameworld.scenery.list[j];
-					}
 				}
 				var ePos:Point = new Point(dataList[i].@x, dataList[i].@y);
 				var ii:InteractionItem = new InteractionItem();
@@ -167,9 +169,10 @@ package Levels {
 			var dataList:XMLList = xmlData.objectgroup.(@name=="doors").object;
 			for (var i:int = 0; i < dataList.length(); i ++){
 				var j:XML = dataList[i];
-				var d:Door = new Door(new Point(j.@x, j.@y), gameworld, this, player, j.@height, j.@width);
+				var d:Door = new Door(new Point(j.@x, j.@y), this, j.@height, j.@width);
 				d.label = j.@name;
 				d.destinationLevelLabel = j.properties.property.(@name=="destinationLevel").@value;
+				
 				d.destinationDoor = j.properties.property.(@name=="destinationDoor").@value;
 				if (j.properties.property.(@name=="playerSpawnsToLeft").@value == "true")
 					d.playerSpawnsToLeft = true;

@@ -7,31 +7,31 @@ package {
 	import net.flashpunk.Mask;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Image;
-	import Levels.ProceduralLevel;
+	import Levels.Level;
+	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 	
 	public class Door extends Entity {
-		public var currentLevel:ProceduralLevel;
+		public var currentLevel:Level;
 		public var destinationLevelLabel:String;
-		public var destinationLevel:ProceduralLevel;
+		public var destinationLevel:Level;
 		public var destinationDoor:String;
 
 		//if true, the player must press the use key to travel
 		//to the door's destination.  Else, it happens on collision.
 		public var useToTravel:Boolean;
-		private var w:GameWorld;
+		private var gameworld:GameWorld;
 		private var player:Player;
-		private var c:ProceduralLevel;
+		private var c:Level;
 		public var label:String;
 		//if false, player spawns to the right of 
 		//the door.
 		public var playerSpawnsToLeft:Boolean;
 		
-		public function Door(_position:Point, _w:GameWorld, _c:ProceduralLevel, _player:Player, _height:int, _width:int) {
+		public function Door(_position:Point, _c:Level, _height:int, _width:int) {
 			super(_position.x, _position.y);
-			w = _w;
 			c = _c;
 			useToTravel = false;
-			player = _player;
 			height = _height;
 			width = _width;
 
@@ -40,21 +40,22 @@ package {
 			playerSpawnsToLeft = true;
 		}
 		
+		override public function added():void {
+			gameworld = GameWorld(FP.world);
+			player = gameworld.player;
+		}
+		
 		override public function update():void {
 			//if (!destinationLevel) destinationLevel = w.levels.caveLevel;
 			if (collideWith(player, x + halfWidth, y + halfHeight)){
-				if(!useToTravel) {
-					changeLevel();
-				} else {
-					//check for use key pressed
-				}
+				if(!useToTravel) changeLevel();
+				else if (Input.check(Key.E)) changeLevel();
 			}
 		}
 		
 		public function setDestinationLevel(levelLabel:String):void{ 
 			destinationLevelLabel = levelLabel;
-			var levelsList:Array = w.levels.levelsList;
-			for each (var level:ProceduralLevel in levelsList){
+			for each (var level:Level in gameworld.levelsList){
 				if (level.label == levelLabel) {
 					destinationLevel = level;
 					trace("destination level set to: " + level.label);
@@ -62,12 +63,12 @@ package {
 					return;
 				}
 			}
-			trace("destinationLevel was not found.")
+			//destinationLevel = gameworld.level1;
 		}
 		
 		public function changeLevel():void {
 			setDestinationLevel(destinationLevelLabel);
-			w.switchLevel(c, destinationLevel, destinationDoor);
+			gameworld.switchLevel(c, destinationLevel, destinationDoor);
 		}
 	}
 }

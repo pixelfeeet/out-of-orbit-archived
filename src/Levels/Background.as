@@ -22,10 +22,10 @@ package Levels {
 
 		private var w:int;
 		private var h:int;
-		private var level:ProceduralLevel;
+		private var level:Level;
 		private var tiles:Tilemap;
 		
-		public function Background(_level:ProceduralLevel) {
+		public function Background(_level:Level) {
 			super();
 			level = _level;
 			

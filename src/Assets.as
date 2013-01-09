@@ -7,7 +7,8 @@ package {
 		
 		//Levels
 		[Embed(source = 'assets/jungle.tmx', mimeType = "application/octet-stream")] public static const JUNGLE:Class;
-		[Embed(source = 'assets/base.tmx', mimeType = "application/octet-stream")] public static const BASE:Class;
+		[Embed(source = 'assets/base.tmx', mimeType = "application/octet-stream")] public static const HOMEBASE:Class;
+		[Embed(source = 'assets/inside_ship.tmx', mimeType = "application/octet-stream")] public static const INSIDESHIP:Class;
 		
 		//Level Snippets
 		[Embed(source = 'assets/temple.tmx', mimeType = "application/octet-stream")] public static const TEMPLE:Class;

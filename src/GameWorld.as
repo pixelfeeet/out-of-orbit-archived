@@ -60,7 +60,13 @@ package {
 		private var background:Background;
 		public var lightMask:LightMask;
 		
-		public var currentLevel:StaticLevel;
+		public var currentLevel:Level;
+		public var insideShip:StaticLevel;
+		public var homeBase:StaticLevel;
+		public var level1:ProceduralLevel;
+		public var level2:ProceduralLevel;		
+		public var levelsList:Array;
+		
 		public var cursor:Cursor;
 		
 		public function GameWorld() {
@@ -94,11 +100,18 @@ package {
 			player = new Player();
 			add(player);
 			
-			var source:Class = Assets.BASE;
-			//currentLevel = new ProceduralLevel();
-			//background = new Background(currentLevel);
-			//add(background);
-			currentLevel = new StaticLevel({"xml": source});
+			level1 = new ProceduralLevel();
+			level1.label = "level1";
+				
+			var baseSource:Class = Assets.HOMEBASE;
+			var shipSource:Class = Assets.INSIDESHIP;
+			
+			homeBase = new StaticLevel({"xml": baseSource, label: "homeBase"})
+			insideShip = new StaticLevel({"xml": shipSource, label: "insideShip"});
+			
+			levelsList = [level1, homeBase, insideShip];
+
+			currentLevel = homeBase;
 			add(currentLevel);
 			
 			pauseMenu = new PauseMenu();
@@ -114,7 +127,7 @@ package {
 			add(hud);
 			
 			//Camera
-			cam = new Camera(currentLevel);
+			cam = new Camera();
 			add(cam);
 		}
 		
@@ -206,19 +219,13 @@ package {
 			}
 		}
 		
-		public function switchLevel(currentLevel:ProceduralLevel, destinationLevel:ProceduralLevel, destinationDoor:String):void{
-			for each (var npc:NPC in currentLevel.NPClist){
-				remove(npc);	
-			}
-			
-			for each (var ii:InteractionItem in currentLevel.interactionItemList) {
-				remove(ii);
-			}
+		public function switchLevel(currentLevel:Level, destinationLevel:Level, destinationDoor:String):void{
+			// for each (var npc:NPC in currentLevel.NPClist) remove(npc);
+			// for each (var ii:InteractionItem in currentLevel.interactionItemList) remove(ii);
 			
 			remove(currentLevel);
-			background.init();
-			destinationLevel.loadLevel();
-			add(destinationLevel);
+			currentLevel = destinationLevel;
+			add(currentLevel);
 			
 			for each (var door:Door in destinationLevel.doorList) {
 				if (door.label == destinationDoor){
@@ -227,6 +234,9 @@ package {
 					player.y = door.y + 10;
 				}
 			}
+				
+			cam.configure(currentLevel);
+			cam.adjustToPlayer();
 		}
 		
 	}

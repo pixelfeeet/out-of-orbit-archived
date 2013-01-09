@@ -12,7 +12,7 @@ package utilities {
 		private var cameraXOffset:int;
 		private var cameraYOffset:int;
 		
-		private var w:GameWorld;
+		private var gameworld:GameWorld;
 		private var player:Player;
 		private var level:Level;
 		
@@ -20,31 +20,32 @@ package utilities {
 		private var lHeight:int;
 		
 		private var t:int;
-		public function Camera(_level:Level) {
-			level = _level;
-
+		public function Camera() {
 			t = Settings.TILESIZE;
 			
 			cameraXOffset = FP.screen.width * 0.4;
 			cameraYOffset = FP.screen.height * 0.4;
-			//adjustToPlayer();
 		}
 		
 		override public function added():void {
-			w = GameWorld(FP.world);
-			player = w.player;
-			
-			lWidth = level.width / t;
-			lHeight = level.height / t;
-			trace("w: " + lWidth + ", h: " + lHeight);
-			
+			gameworld = GameWorld(FP.world);
+			player = gameworld.player;
+			configure(gameworld.currentLevel);
 			adjustToPlayer();
+		}
+		
+		public function configure(_level:Level):void {
+			level = _level;
+			trace("cam level: " + level.label);
+			lWidth = level.w;
+			lHeight = level.h;
+			trace("cam w: " + lWidth);
 		}
 		
 		override public function update():void {
 			cameraXSpeed = (player.velocity.x * FP.elapsed) * FP.sign(player.velocity.x);
 			cameraYSpeed = (player.velocity.y * FP.elapsed) * FP.sign(player.velocity.y);
-			if (!w.pause) followPlayer();
+			if (!gameworld.pause) followPlayer();
 		}
 		
 		public function followPlayer():void {

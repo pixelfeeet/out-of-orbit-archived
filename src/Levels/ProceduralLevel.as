@@ -14,7 +14,6 @@ package Levels {
 	import net.flashpunk.Graphic;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Canvas;
-	
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
@@ -27,13 +26,6 @@ package Levels {
 		private var rawData:ByteArray;
 		private var dataString:String;
 		private var xmlData:XML;
-		
-		private var gw:GameWorld;
-		private var player:Player;
-		
-		public var label:String;
-		
-		public var backgroundColor:uint;
 		
 		public var timeMask:Entity;
 		
@@ -69,15 +61,11 @@ package Levels {
 			/**
 			 * Level generation options
 			 */
-			w = 400; //width
+			w = 200; //width
 			h = 100; //height
 			
-			/**
-			 * TODO: (parallaxing) background image
-			 */
-			backgroundColor = 0xa29a8d;			
-			groundDepth = 5; //the lowest ground point, relative to the bottom
-			waterLevel = 30; //relative to bottom
+			groundDepth = 2; //the lowest ground point, relative to the bottom
+			waterLevel = 12; //relative to bottom
 			
 			/**
 			 * tree frequency: one tree every treeNum squares
@@ -96,9 +84,9 @@ package Levels {
 			bergSusHeight = 5 //height above waterLevel
 			
 			//Landscape
-			groundStartY = 60;
+			groundStartY = 15;
 			hillStopsNum = 15; //Higher = more dramatic hills
-			hillsPeak = 50; //The highest allowed point, relative to bottom
+			hillsPeak = 20; //The highest allowed point, relative to bottom
 			
 			//Islands
 			islandDensity = -1;
@@ -106,17 +94,16 @@ package Levels {
 			islandPadding = 2;
 		
 			backTiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
-		
-			label = "defaultLevel"	
 		}
 		
 		override public function added():void {
+			super.added();
 			loadLevel();
-			player = GameWorld(FP.world).player;
-			player.position = new Point(0, Math.abs(h - (groundStartY * t)));
+			generateDoors();
+			//player.position = new Point(0, Math.abs(h - (groundStartY * t)));
 		}
 		
-		public function loadLevel():void {
+		override public function loadLevel():void {
 			generateTiles();
 			//These are temporary: ideally these should be classes, not strings
 			var kinds:Array = ["enemy", "Dustball", "Amoeba", "Worm"]
@@ -157,6 +144,18 @@ package Levels {
 			else if (!collide("Player", x, y)) addTiles(x, y, blastRadius);
 			*/
 			fixGround();
+		}
+		
+		public function generateDoors():void {
+			var startY:int = (h * t) - (groundStartY * t) - (3 * t) - (groundDepth * t);
+			var left:Door = new Door(new Point(0, startY), this, t * 2, 2);
+			left.label = "leftDoor"
+			left.destinationLevelLabel = "homeBase"
+			left.destinationDoor = "door1";
+			left.playerSpawnsToLeft = false;
+			
+			doorList = [left];
+			gameworld.add(left);
 		}
 		
 		/**
@@ -438,6 +437,10 @@ package Levels {
 			var y:int = groundStartY;
 			
 			hillStops.push(new Point(x, y));
+			
+			x = 10, y = groundStartY;
+			hillStops.push(new Point(x, y));
+			
 			for (var i:int = 0; i < hillStopsNum; i++) {
 				x += segmentWidth;				
 				if (i != hillStopsNum - 1) y = Math.ceil(FP.random * hillsPeak);
