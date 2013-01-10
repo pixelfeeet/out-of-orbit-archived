@@ -39,7 +39,7 @@ package
 		
 		protected var t:int; //Settings.TILESIZE
 		
-		protected var gw:GameWorld;
+		protected var gameworld:GameWorld;
 		protected var player:Player;
 		
 		public var lightRadius:int;
@@ -82,8 +82,8 @@ package
 		}
 		
 		override public function added():void {
-			gw = GameWorld(FP.world);
-			player = gw.player;
+			gameworld = GameWorld(FP.world);
+			player = gameworld.player;
 		}
 		
 		override public function update():void {
@@ -161,8 +161,11 @@ package
 		}
 		
 		protected function updateMovement():void{
-			if (GameWorld(FP.world).currentLevel.tiles.getTile(x / t, (y / t) + 1) == 30) isInWater = true;
-			else isInWater = false;
+			if (gameworld.currentLevel.tiles){
+				if (gameworld.currentLevel.tiles.getTile(x / t, (y / t) + 1) == gameworld.currentLevel.jungleTiles["water"])
+					isInWater = true;
+				else isInWater = false;
+			}
 			
 			if (isInWater) {
 				vGravity = GRAVITY * 3;
@@ -261,8 +264,6 @@ package
 				else health = minHealth;
 			}
 		}
-		
-		public function setHealth(_health:int):void { health = _health; }
 		
 		protected function cLength(a:Point, b:Point):Number {
 			return Math.sqrt(((b.x - a.x) * (b.x - a.x)) + (b.y - a.y) * (b.y - a.y));

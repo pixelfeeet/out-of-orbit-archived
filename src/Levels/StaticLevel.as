@@ -19,6 +19,7 @@ package Levels {
 		private var rawData:ByteArray;
 		private var dataString:String;
 		private var xmlData:XML;
+		private var first:Boolean;
 		
 		public function StaticLevel(params:Object) {
 			super();
@@ -32,6 +33,8 @@ package Levels {
 			
 			w = xmlData.@width;
 			h = xmlData.@height;
+			
+			first = true;
 			
 			//loadTileProperties();
 		}
@@ -70,15 +73,9 @@ package Levels {
 				for(column = 0; column < w; column ++) {
 					var index:int = dataList[gid] - 1;
 					if (index >= 0) tiles.setTile(column, row, index);
-					gid++;
+						gid++;
 				}
 			}
-		}
-
-		public function loadTileProperties():void {
-			var dataList:XMLList = xmlData.tileset.(@name == "jungle_tileset").tile;
-			for (var i:int = 0; i < dataList.length(); i++)
-				solidList[dataList[i].@id] = dataList[i].properties.property.(@name=="solid").@value;
 		}
 		
 		public function loadScenery(_w:World):void {
@@ -166,6 +163,14 @@ package Levels {
 //		}
 		
 		public function loadDoors():void{
+			if (xmlData.objectgroup.(@name=="start").object.(@name=="start") && first) {
+				trace(typeof xmlData.objectgroup.(@name=="start"))
+				var start:XMLList = xmlData.objectgroup.(@name=="start").object;
+				player.x = start.@x;
+				player.y = start.@y;
+				first = false;
+			}
+			
 			var dataList:XMLList = xmlData.objectgroup.(@name=="doors").object;
 			for (var i:int = 0; i < dataList.length(); i ++){
 				var j:XML = dataList[i];

@@ -53,22 +53,16 @@ package {
 			}
 		}
 		
-		public function setDestinationLevel(levelLabel:String):void{ 
+		public function setDestinationLevel(levelLabel:String):Level { 
 			destinationLevelLabel = levelLabel;
-			for each (var level:Level in gameworld.levelsList){
-				if (level.label == levelLabel) {
-					destinationLevel = level;
-					trace("destination level set to: " + level.label);
-					trace("the destination door is: " + destinationDoor);
-					return;
-				}
-			}
-			//destinationLevel = gameworld.level1;
+			for each (var level:Level in gameworld.levelsList)
+				if (level.label == levelLabel) return level;
+			return null;
 		}
 		
 		public function changeLevel():void {
-			setDestinationLevel(destinationLevelLabel);
-			gameworld.switchLevel(c, destinationLevel, destinationDoor);
+			destinationLevel = setDestinationLevel(destinationLevelLabel);
+			gameworld.switchLevel(destinationLevel, destinationDoor);
 		}
 	}
 }

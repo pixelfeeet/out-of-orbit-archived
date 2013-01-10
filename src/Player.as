@@ -108,7 +108,6 @@ package {
 		public var shootSound:Sfx;
 		public var walkSound:Sfx;
 		
-		private var gameworld:GameWorld;
 		private var xInput:int;
 		private var yInput:int;
 		private var debugFlying:Boolean;
@@ -118,7 +117,7 @@ package {
 			super(_position, health, hunger);
 			
 			movementState = "jumping";
-			debugFlying = true;
+			debugFlying = false;
 			
 			SPEED = 400;
 			vSpeed = SPEED;
@@ -172,14 +171,16 @@ package {
 		}
 		
 		override public function added():void {
-			gameworld = GameWorld(FP.world);
+			super.added();
 			type = "Player";
 			
 			/**
 			 * Graphiclist components
+			 * TODO: weapon should refer to a Class which in then creates
+			 * an instance of, instead of an instance as it is now
 			 */
 			weapons = new Weapons();
-			weapon = weapons.knife;
+			weapon = weapons.unarmed;
 			equipWeapon(weapon);
 			gameworld.add(weapon);
 			
@@ -294,10 +295,12 @@ package {
 		}
 		
 		public function equipWeapon(_weapon:Weapon):void {
+			//check if weapon exists; if so, remove it
 			var w:Array = [];
 			gameworld.getClass(Weapon, w);
 			if (w.length != 0) gameworld.remove(weapon);
 			
+			//set/add weapon
 			weapon = _weapon;
 			gameworld.add(weapon);
 		}
@@ -330,8 +333,8 @@ package {
 		}
 		
 		private function updateState():void {
-			if (!debugFlying) {
-				var l:Level = gameworld.currentLevel;
+			var l:Level = gameworld.currentLevel;
+			if (!debugFlying && gameworld.currentLevel.tiles) {
 				if (l.tiles.getTile(Math.floor(x / t), Math.floor(y / t) + 1) == l.jungleTiles["water"])
 					movementState = "swimming";
 				else if (FP.sign(velocity.x) != 0) {

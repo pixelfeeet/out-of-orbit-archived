@@ -2,6 +2,8 @@ package Levels {
 	
 	import Levels.Background;
 	
+	import flash.geom.Point;
+	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
@@ -40,6 +42,10 @@ package Levels {
 		
 		protected var gameworld:GameWorld;
 		protected var player:Player;
+		
+		protected var playerStart:Point;
+		
+		protected var dayNight:Boolean; //determines whether the lightMask is visible
 		
 		public function Level(params:Object = null) {
 			super();

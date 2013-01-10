@@ -100,6 +100,11 @@ package {
 			player = new Player();
 			add(player);
 			
+			/**
+			 * TODO:
+			 * Everytime the player enters or re-enters level1 it regenerates.
+			 * The tile/NPC data needs to get saved so it stays the same.
+			 */
 			level1 = new ProceduralLevel();
 			level1.label = "level1";
 				
@@ -111,7 +116,7 @@ package {
 			
 			levelsList = [level1, homeBase, insideShip];
 
-			currentLevel = homeBase;
+			currentLevel = insideShip;
 			add(currentLevel);
 			
 			pauseMenu = new PauseMenu();
@@ -132,7 +137,6 @@ package {
 		}
 		
 		override public function update():void {
-			
 			if (!pause) super.update();
 			else {
 				if (pauseMenuShowing) pauseMenu.update();
@@ -219,16 +223,16 @@ package {
 			}
 		}
 		
-		public function switchLevel(currentLevel:Level, destinationLevel:Level, destinationDoor:String):void{
+		public function switchLevel(_destinationLevel:Level, _destinationDoor:String):void{
 			// for each (var npc:NPC in currentLevel.NPClist) remove(npc);
 			// for each (var ii:InteractionItem in currentLevel.interactionItemList) remove(ii);
 			
 			remove(currentLevel);
-			currentLevel = destinationLevel;
+			currentLevel = _destinationLevel;
 			add(currentLevel);
 			
-			for each (var door:Door in destinationLevel.doorList) {
-				if (door.label == destinationDoor){
+			for each (var door:Door in _destinationLevel.doorList) {
+				if (door.label == _destinationDoor){
 					if (door.playerSpawnsToLeft) player.x = door.x - 70;
 					else player.x = door.x + 100;
 					player.y = door.y + 10;
