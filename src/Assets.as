@@ -2,6 +2,12 @@ package {
 	import net.flashpunk.Entity;
 	
 	public class Assets extends Entity {
+		[Embed(source = 'assets/stars_bg.png')] public static const STARS_BG:Class;
+		[Embed(source = 'assets/stars_layer_1.png')] public static const STARS_LAYER_1:Class;
+		[Embed(source = 'assets/stars_layer_2.png')] public static const STARS_LAYER_2:Class;		
+		[Embed(source = 'assets/stars_title.png')] public static const STARS_TITLE:Class;
+		[Embed(source = 'assets/new_game_button.png')] public static const NEW_GAME_BUTTON:Class;
+		
 		//Tilesets
 		[Embed(source = 'assets/jungle_tileset.png')] public static const JUNGLE_TILESET:Class;
 		

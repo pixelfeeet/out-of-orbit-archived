@@ -1,4 +1,4 @@
-package  
+package Weapons  
 {
 	import net.flashpunk.*;
 	import net.flashpunk.graphics.*;

@@ -1,4 +1,6 @@
 package {
+	import Levels.Level;
+	
 	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;
@@ -7,7 +9,6 @@ package {
 	import net.flashpunk.Mask;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Image;
-	import Levels.Level;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
@@ -27,6 +28,7 @@ package {
 		//if false, player spawns to the right of 
 		//the door.
 		public var playerSpawnsToLeft:Boolean;
+		private var changingLevel:Boolean;
 		
 		public function Door(_position:Point, _c:Level, _height:int, _width:int) {
 			super(_position.x, _position.y);
@@ -38,6 +40,7 @@ package {
 			type = "door";
 			setHitbox(width, height);
 			playerSpawnsToLeft = true;
+			changingLevel = false;
 		}
 		
 		override public function added():void {
@@ -46,11 +49,8 @@ package {
 		}
 		
 		override public function update():void {
-			//if (!destinationLevel) destinationLevel = w.levels.caveLevel;
-			if (collideWith(player, x + halfWidth, y + halfHeight)){
-				if(!useToTravel) changeLevel();
-				else if (Input.check(Key.E)) changeLevel();
-			}
+			if (collideWith(player, x + halfWidth, y + halfHeight) && !changingLevel)
+				changeLevel();
 		}
 		
 		public function setDestinationLevel(levelLabel:String):Level { 
@@ -62,7 +62,8 @@ package {
 		
 		public function changeLevel():void {
 			destinationLevel = setDestinationLevel(destinationLevelLabel);
-			gameworld.switchLevel(destinationLevel, destinationDoor);
+			gameworld.currentLevel.switchLevel(destinationLevel, destinationDoor);
+			changingLevel = true;
 		}
 	}
 }

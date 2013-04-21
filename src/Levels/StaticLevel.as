@@ -19,7 +19,8 @@ package Levels {
 		private var rawData:ByteArray;
 		private var dataString:String;
 		private var xmlData:XML;
-		private var first:Boolean;
+		
+		public var first:Boolean;
 		
 		public function StaticLevel(params:Object) {
 			super();
@@ -34,8 +35,7 @@ package Levels {
 			w = xmlData.@width;
 			h = xmlData.@height;
 			
-			first = true;
-			
+			first = false;
 			//loadTileProperties();
 		}
 		

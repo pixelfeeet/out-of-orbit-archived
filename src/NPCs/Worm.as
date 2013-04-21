@@ -7,6 +7,7 @@ package NPCs {
 	import net.flashpunk.masks.Pixelmask;
 	
 	import utilities.Settings;
+	import Weapons.Ammunition;
 	
 	public class Worm extends NPC {
 		

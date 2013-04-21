@@ -2,10 +2,11 @@ package {
 	
 	import Inventory.Inventory;
 	
+	import Levels.Level;
+	
 	import NPCs.Enemy;
 	
 	import Weapons.Weapon;
-	
 	import Weapons.Weapons;
 	
 	import flash.display.Graphics;
@@ -29,10 +30,9 @@ package {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
-	import ui.HUD;
+	import ui.HUD.HUD;
 	
 	import utilities.Settings;
-	import Levels.Level;
 	
 	public class Player extends Character {
 
@@ -63,7 +63,7 @@ package {
 		public var jetBurnedOut:Boolean; //When fuel hits 0
 		
 		//Stats		
-		public var statsList:Array;
+		public var statsList:Object;
 		
 		private var experience:int;
 		private var level:int;
@@ -76,7 +76,7 @@ package {
 		private var movementState:String;
 
 		//Inventory
-		public static var inventory:Inventory;
+		private var _inventory:Inventory;
 		public var reachDistance:int;
 		public var inventoryLength:int;
 		public var weaponInventoryLength:int;
@@ -112,6 +112,8 @@ package {
 		private var yInput:int;
 		private var debugFlying:Boolean;
 
+		private var inventoryKeys:Array;
+		
 		public function Player(_position:Point = null) {
 			if (!_position) _position = new Point(0, 0);			
 			super(_position, health, hunger);
@@ -132,20 +134,20 @@ package {
 			/**
 			 * Stats
 			 */
-			maxHealth = 100;
-			maxHunger = 100;
+			statsList = {
+				"Fuel Capacity": { "value": fuelCapacity, "points": 3 },
+				"Armor": { "value": 10, "points": 3 },
+				"Max Ammo": { "value": null, "points": 2 },
+				"Jump Height": { "value": null, "points": 3 },
+				"Construction Skill": { "value": null, "points": 2 },
+				"Inventory Capacity": { "value": null, "points": 8 },
+				"Fuel Capacity": { "value": null, "points": 3 },
+				"Max Health": { "value": 100, "points": 5 },
+				"Max Hunger": { "value": 100, "points": 5 }
+			};
+			
 			health = 100;
 			hunger = 100;
-			
-			statsList = [
-				{"name": "Fuel Capacity", "value": fuelCapacity, "points": 3},
-				{"name": "Armor", "value": 10, "points": 3},
-				{"name": "Max Ammo", "value": null, "points": 2},
-				{"name": "Jump Height", "value": null, "points": 3},
-				{"name": "Construction Skill", "value": null, "points": 2},
-				{"name": "Inventory Capacity", "value": null, "points": 8},
-				{"name": "Fuel Capacity", "value": null, "points": 3}
-			];
 			
 			//Input Definitions
 			Input.define("Left", Key.A);
@@ -155,6 +157,16 @@ package {
 			Input.define("Use", Key.E);
 			Input.define("Toggle Flying", Key.T);
 			Input.define("Center Camera", Key.Z);
+			
+			inventoryKeys = [
+				Key.DIGIT_1,
+				Key.DIGIT_2,
+				Key.DIGIT_3,
+				Key.DIGIT_4,
+				Key.DIGIT_5,
+				Key.DIGIT_6,
+				Key.DIGIT_7
+			];
 			
 			//Stats
 			experience = 0;
@@ -187,7 +199,7 @@ package {
 			bulletFrequency = 10;
 			bulletTimer = 0;
 			
-			//Legs
+			// Legs
 			legsMap = new Spritemap(Assets.LEGS_MAP, 42, 34)
 			legsMap.add("running", [0, 1, 2, 3, 4], 18);
 			legsMap.add("backwards_running", [4, 3, 2, 1, 0], 18);
@@ -195,25 +207,27 @@ package {
 			legsMap.add("jumping", [5]);
 			legsMap.y = (Settings.TILESIZE * 2) - legsMap.height + 2;
 			
-			//Torso
+			// Torso
 			torso = new Image(Assets.TORSO);
 			torso.originX = 5;
 			torso.originY = torso.height - 10;
 			torso.x = 12;
 			torso.y = 57;
 			
-			//Head
+			// Head
 			head = new Image(Assets.HEAD);
 			head.originX = 12;
 			head.originY = 12;
 			head.x = 26;
 			head.y = 14;
 			
+			// Speech
 			speech = new Text("");
 			speech.x = x + torso.width;
 			speech.y = y - 10;
 			speechLength = 60;
 			speechTimer = 0;
+			
 			informedHunger = false;
 			informedExtremeHunger = false;
 			informedHealth = false;
@@ -226,7 +240,8 @@ package {
 			
 			//Inventory
 			inventoryLength = 7;
-			inventory = new Inventory(inventoryLength);
+			_inventory = new Inventory(inventoryLength);
+			
 			reachDistance = 100;
 			scraps = 0;
 			
@@ -273,21 +288,26 @@ package {
 			speechTimer = speechLength;
 		}
 		
-		private function onFinishedSpeech():void { speech.text = ""; }
+		private function onFinishedSpeech():void {
+			speech.text = "";
+		}
 		
 		override protected function updateCollision():void {
-			if (!debugFlying) super.updateCollision();
-			else {
+			if (!debugFlying) {
+				super.updateCollision();
+			} else {
 				x += velocity.x * FP.elapsed;
 				y += velocity.y * FP.elapsed;
 			}
 		}
 		
+		/**
+		 * This shouldn't be here.
+		 */
 		public function inventoryButtons():void {
 			var boxes:Array = gameworld.hud.inventoryBoxes;
-			var keys:Array = [Key.DIGIT_1, Key.DIGIT_2, Key.DIGIT_3, Key.DIGIT_4, Key.DIGIT_5, Key.DIGIT_6, Key.DIGIT_7];
-			for (var i:int = 0; i < keys.length; i++) {
-				if (Input.pressed(keys[i])) {
+			for (var i:int = 0; i < inventoryKeys.length; i++) {
+				if (Input.pressed(inventoryKeys[i])) {
 					gameworld.hud.deselectAll();
 					gameworld.hud.inventoryBoxes[i]["box"].select();
 				}
@@ -307,21 +327,25 @@ package {
 		
 		/**
 		 * TODO
-		 * 1. Move the isSelected boolean to the actual inventory data, not
-		 * the hud -- mvc.
+		 * 1. instead of checking which of the boxes in the display is highlighted
+		 * this information should be kept in the player's actual inventory,
+		 * 'active' item or whatever
+		 * 
 		 */
 		private function onUse():void {
 			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++) {
 				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected()) {
-					if (inventory.items[i].length > 0) {
-						inventory.items[i][inventory.items[i].length - 1].onUse();
+					if (_inventory.items[i].length > 0) {
+						_inventory.items[i][_inventory.items[i].length - 1].onUse();
 						return;
 					}
 				}
 			}
 		}
 		
-		private function toggleDebugFlying():void { debugFlying = !debugFlying; }
+		private function toggleDebugFlying():void {
+			debugFlying = !debugFlying;
+		}
 		
 		protected function checkForEnemyCollision():void {
 			var enemy:Enemy = collide("enemy", x, y) as Enemy;
@@ -338,7 +362,7 @@ package {
 				if (l.tiles.getTile(Math.floor(x / t), Math.floor(y / t) + 1) == l.jungleTiles["water"])
 					movementState = "swimming";
 				else if (FP.sign(velocity.x) != 0) {
-					if (!facingLeft) {
+					if (!facingLeft()) {
 						if (FP.sign(velocity.x) == 1) movementState = "running";
 						else movementState = "backwards running";
 					} else {
@@ -350,12 +374,8 @@ package {
 		}
 
 		override protected function updateGraphic():void {
-			//Get the player to face the cursor horizontally
-			if (Input.mouseX < x + halfWidth - FP.camera.x) facingLeft = true;
-			else facingLeft = false;
-			
-			//Calculating angles of head and weapon
-			if (facingLeft) { 
+			// Calculate angles of head and weapon
+			if (facingLeft()) { 
 				for (var i:int = 0; i < display.count; i++)
 					if (i != display.count - 1) // don't flip speech bubble
 						Image(display.children[i]).flipped = true;
@@ -374,9 +394,9 @@ package {
 			torso.x = 22;
 
 			angle = FP.angle(Math.abs(FP.camera.x - x), Math.abs(FP.camera.y - y), Input.mouseX, Input.mouseY - 30);
-			var f:Boolean = facingLeft;
-			if(f) angle -= 180;
-			if(angle > 180) angle += 360;
+			var f:Boolean = facingLeft();
+			if (f) angle -= 180;
+			if (angle > 180) angle += 360;
 			
 			var headAngle:Number = angle;
 			headAngle /= 2;
@@ -395,9 +415,11 @@ package {
 			weapon.x = x;
 			weapon.y = y;
 			
-			// this needs to be called explicitly to make sure the
-			// above code does not reset any tween x/y values defined
-			// in weapon.update
+			/**
+			 * this needs to be called explicitly to make sure the
+			 * above code does not reset any tween x/y values defined
+			 * in weapon.update
+			 */
 			weapon.update();
 			
 			if (!f) {
@@ -417,7 +439,11 @@ package {
 			else if (movementState == "backwards running") legsMap.play("backwards_running");
 			else legsMap.play("standing");
 		}
-			
+		
+		public function facingLeft():Boolean {
+			return Input.mouseX < x + halfWidth - FP.camera.x;
+		}
+		
 		override protected function updateMovement():void {
 			if (!debugFlying) super.updateMovement();
 			xInput = 0;
@@ -546,6 +572,7 @@ package {
 		override protected function calcFallDamage(_v:int):void {
 			var damageVelocity:int = 700;
 			var totalDamage:int = 0;
+			
 			if (_v - damageVelocity > 0 ) {
 				_v -= damageVelocity;
 				while(_v > 0) {
@@ -553,12 +580,15 @@ package {
 					_v -= 50;
 				}
 			}
+			
 			if (totalDamage != 0) getHurt(totalDamage);
 			velocity.y = 0;
 		}
 		
 		//INVENTORY
-		public function getInventory():Inventory { return inventory; }
+		public function get inventory():Inventory {
+			return _inventory;
+		}
 
 		//EXPERIENCE
 		public function gainExperience(_exp:int):void {
@@ -583,7 +613,6 @@ package {
 		public function getPlayerExperience():int { return experience; }
 		public function getLevel():int { return level; }
 		public function getExperience():int { return experience; }
-		public function isFacingLeft():Boolean { return facingLeft; }
 		
 	}
 }

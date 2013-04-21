@@ -1,4 +1,4 @@
-package  {
+package Weapons  {
 	import flash.geom.Point;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.FP;

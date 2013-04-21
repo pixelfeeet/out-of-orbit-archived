@@ -22,14 +22,15 @@ package {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
-	import ui.ConstructionMenu;
-	import ui.HUD;
-	import ui.InventoryMenu;
-	import ui.PauseMenu;
-	import ui.StatsMenu;
+	import ui.menus.ConstructionMenu;
+	import ui.HUD.HUD;
+	import ui.menus.InventoryMenu;
+	import ui.menus.PauseMenu;
+	import ui.menus.StatsMenu;
 	
 	import utilities.Camera;
 	import utilities.Settings;
+	import ui.Cursor;
 	
 	public class GameWorld extends World {
 		
@@ -108,11 +109,12 @@ package {
 			level1 = new ProceduralLevel();
 			level1.label = "level1";
 				
-			var baseSource:Class = Assets.HOMEBASE;
 			var shipSource:Class = Assets.INSIDESHIP;
+			var baseSource:Class = Assets.HOMEBASE;
 			
-			homeBase = new StaticLevel({"xml": baseSource, label: "homeBase"})
 			insideShip = new StaticLevel({"xml": shipSource, label: "insideShip"});
+			insideShip.first = true;
+			homeBase = new StaticLevel({"xml": baseSource, label: "homeBase"})
 			
 			levelsList = [level1, homeBase, insideShip];
 

@@ -141,8 +141,10 @@ package NPCs {
 		
 		protected function dontLeaveWater():void {
 			if (FP.sign(ySpeed) < 0) {
-				if (gameworld.currentLevel.tiles.getTile(x / t, (y / t) - t) == gameworld.currentLevel.jungleTiles["water"])
-					velocity.y = 0;
+				if (gameworld.currentLevel.tiles) {
+					if (gameworld.currentLevel.tiles.getTile(x / t, (y / t) - t) == gameworld.currentLevel.jungleTiles["water"])
+						velocity.y = 0;
+				}
 			} else velocity.y = ySpeed;	
 		}
 		

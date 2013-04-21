@@ -1,4 +1,4 @@
-package ui {
+package ui.menus {
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
@@ -9,8 +9,8 @@ package ui {
 	import net.flashpunk.graphics.Text;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import ui.components.Button;
 	
-	import ui.Button;
 	
 	public class StatsMenu extends Entity {
 		
@@ -105,7 +105,6 @@ package ui {
 		}
 				
 		public function show():void {
-			p = w.player;
 			
 			allocationPoints = p.allocationPoints;
 			

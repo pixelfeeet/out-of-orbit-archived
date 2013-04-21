@@ -16,7 +16,6 @@ package {
 		
 		override protected function getPickedUp():void {
 			GameWorld(FP.world).player.scraps += amount;
-			trace("Scraps has been picked up")
 			this.destroy();
 		}
 	}

@@ -11,7 +11,7 @@ package Weapons {
 		protected var ranged:Boolean; //false = melee
 		protected var fireRate:int; //minimum time in milliseconds between shots
 		public var fireTimer:int; //used to determine whether a shot can be fired yet
-
+		
 		protected var clipSize:int; //# of projectiles before reloading
 		protected var ammunition:int; //total ammunition
 		protected var projectileSpeed:int;
@@ -55,7 +55,7 @@ package Weapons {
 			//the rotation points
 			originX = 0;
 			originY = 0;
-		
+			
 			//values for if the player is facing left
 			leftOffsetX = x;
 			leftOriginX = 0;
@@ -73,7 +73,7 @@ package Weapons {
 			if (fireTimer > 0) fireTimer--;
 			Image(graphic).angle = player.angle + angleMod;
 			
-			if (player.facingLeft) {
+			if (player.facingLeft()) {
 				Image(graphic).scaleY = -1;
 				Image(graphic).angle -= 180;
 			} else Image(graphic).scaleY = 1;

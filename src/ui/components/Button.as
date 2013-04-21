@@ -1,4 +1,4 @@
-package ui {
+package ui.components {
 
 	import flash.geom.Point;
 	
@@ -34,15 +34,16 @@ package ui {
 			this.graphics = graphics;
 			
 			var normalStamp:Stamp;
-			if (graphics != null) {
+			
+			normalStamp  = new Stamp(Assets.BUTTON);
+			hover = new Stamp(Assets.BUTTON_HOVER);
+			down = new Stamp(Assets.BUTTON_DOWN);
+			
+			if (graphics) {
 				normalStamp = new Stamp(graphics["normal"]);
 				hover = new Stamp(graphics["hover"]);
 				down = new Stamp(graphics["down"]);
-			} else {
-				normalStamp  = new Stamp(Assets.BUTTON);
-				hover = new Stamp(Assets.BUTTON_HOVER);
-				down = new Stamp(Assets.BUTTON_DOWN);
-			}
+			}			
 			
 			normal = normalStamp;
 			  

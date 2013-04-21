@@ -1,4 +1,4 @@
-package ui {
+package ui.menus {
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.Graphic;
@@ -7,8 +7,8 @@ package ui {
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import ui.components.Button;
 	
-	import ui.Button;
 	
 	public class PauseMenu extends Entity {
 		

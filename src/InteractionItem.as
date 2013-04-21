@@ -56,31 +56,28 @@ package {
 			
 		}
 
+		override public function added():void {
+			inventoryItem = GameWorld(FP.world).inventoryItems.mediPack;
+		}
+		
 		override public function update():void {
-			
 			super.update();
 			
-			//here's that declaring stuff in the constructor problem
-			//again.  I don't know of there's a better way of doing this.
-			if (!inventoryItem) inventoryItem = GameWorld(FP.world).inventoryItems.mediPack;
-			
 			if (collideWith(player, x, y)) {
-				//if (Input.mouseReleased) click();
-				pickupSound.play();
 				getPickedUp();
 			}
-
 		}
 		
 		protected function getPickedUp():void {
-			if (pickUpable) {
-				if(player.getInventory().findSlot(this.inventoryItem) != -1
+			if (!pickUpable) return;
+			
+			pickupSound.play();
+				if(player.inventory.findSlot(this.inventoryItem) != -1
 				&& inventoryItem != null
 				&& distanceFrom(player) <= player.reachDistance){
-					player.getInventory().addItemToInventory(inventoryItem);
+					player.inventory.addItemToInventory(inventoryItem);
 					destroy();
 				}
-			}
 		}
 		
 		protected function destroy():void{

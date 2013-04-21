@@ -45,13 +45,13 @@ package Weapons {
 			else player.meleeAttacking = true;
 			
 			if (attackType == "swing") {
-				if (raiseTween.active) {
-					Image(graphic).angle = raiseTween.angle;
-					if (player.facingLeft) Image(graphic).angle -= 180;
-				} else if (swingTween.active) {
-					Image(graphic).angle = swingTween.angle;
-					if (player.facingLeft) Image(graphic).angle -= 180;
-				}
+//				if (raiseTween.active) {
+//					Image(graphic).angle = raiseTween.angle;
+//					if (player.facingLeft) Image(graphic).angle -= 180;
+//				} else if (swingTween.active) {
+//					Image(graphic).angle = swingTween.angle;
+//					if (player.facingLeft) Image(graphic).angle -= 180;
+//				}
 			} if (attackType == "stab") {
 				if (stabTween.active) {
 					x += stabTween.x;
@@ -97,7 +97,7 @@ package Weapons {
 		protected function raiseWeapon():void {
 			var startOffset:int = raiseStartOffset;
 			var endOffset:int = raiseEndOffset;
-			if (player.facingLeft) startOffset *= -1;
+			if (player.facingLeft()) startOffset *= -1;
 			raiseTween.tween(startOffset, endOffset, 0.3);
 			raiseTween.start();
 		}
@@ -108,7 +108,7 @@ package Weapons {
 			
 			var startOffset:int = -50;
 			var endOffset:int = 65 + angleMod;
-			if (!player.facingLeft) {
+			if (!player.facingLeft()) {
 				startOffset *= -1;
 				endOffset *= -1;
 			}
@@ -124,7 +124,7 @@ package Weapons {
 			graphic.visible = true;
 			player.meleeAttacking = true;
 			
-			var f:Boolean = player.facingLeft;
+			var f:Boolean = player.facingLeft();
 			var startX:Number = stabStart;
 			var endX:Number = stabStart;
 			if (f) {

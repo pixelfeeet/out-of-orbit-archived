@@ -1,4 +1,4 @@
-package ui {
+package ui.HUD {
 
 	import Inventory.InventoryBox;
 	import Inventory.InventoryItem;
@@ -55,6 +55,12 @@ package ui {
 			layer = -1000;
 		}
 		
+		/**
+		 * TODO
+		 * Break these components up into their own classes --
+		 * healthHUD, hungerHUD,
+		 * most importantly inventoryDisplay
+		 */
 		override public function added():void {
 			w = GameWorld(FP.world);
 			player = w.player;
@@ -123,7 +129,7 @@ package ui {
 		
 		//ITEM INVENTORY
 		private function getInventory():void {
-			inventory = player.getInventory().items;
+			inventory = player.inventory.items;
 		}
 		
 		private function updateHealth():void{
@@ -141,7 +147,7 @@ package ui {
 			
 			for (var i:int = 0; i < inventoryDisplay.length; i++) {
 				var boxGraphics:Object = {};
-				var box:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60), w, false);
+				var box:InventoryBox = new InventoryBox(new Point(10 + (i * 55), FP.screen.height - 60), false);
 				box.layer = -1000;
 				
 				var text:Text = new Text(inventory[i].length, 10 + (i * 55), FP.screen.height - 60);
@@ -155,7 +161,6 @@ package ui {
 		}
 		
 		private function updateInventoryPosition():void{
-			//Item Inventory
 			for (var i:int = 0; i < inventoryDisplay.length; i++){
 				var e:InventoryItem = inventoryDisplay[i];
 				if (e != null){

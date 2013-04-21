@@ -53,7 +53,7 @@ package Weapons {
 				
 				//Add projectile to world; determine init position
 				var p:Projectile = new Projectile(initPos.x, initPos.y, speed.x, speed.y);
-				if (player.isFacingLeft()) FP.angleXY(p, Image(graphic).angle, -Image(graphic).width, initPos.x, initPos.y);
+				if (player.facingLeft()) FP.angleXY(p, Image(graphic).angle, -Image(graphic).width, initPos.x, initPos.y);
 				else FP.angleXY(p, Image(graphic).angle, Image(graphic).width, initPos.x, initPos.y);
 				
 				FP.world.add(p);

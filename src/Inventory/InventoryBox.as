@@ -8,7 +8,7 @@ package Inventory {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	
-	import ui.HUD;
+	import ui.HUD.HUD;
 	
 	public class InventoryBox extends Entity {
 		
@@ -17,12 +17,11 @@ package Inventory {
 		private var clickable:Boolean;
 		private var w:GameWorld;
 		
-		public function InventoryBox(_position:Point, _w:GameWorld, _clickable:Boolean = true) {
+		public function InventoryBox(_position:Point, _clickable:Boolean = true) {
 			super();
 			x = _position.x;
 			y = _position.y;
 			clickable = _clickable;
-			w = _w;
 			
 			length = 50;
 			graphic = Image.createRect(length, length, 0x444444, 0.8);
@@ -32,49 +31,63 @@ package Inventory {
 			layer = -1110;
 		}
 		
+		override public function added():void {
+			w = FP.world as GameWorld;
+		}
+		
 		override public function update():void {
 			if (collidePoint(x, y, FP.world.mouseX, FP.world.mouseY))
 				if (Input.mouseReleased) click();
 			
-			if (selected) graphic = Image.createRect(length, length, 0xffffff, 0.8);
-			else graphic = Image.createRect(length, length, 0x444444, 0.8);
+			if (selected) graphic = selectedBox();
+			else graphic = deselectedBox();
 		}
 		
+		private function selectedBox():Graphic {
+			return Image.createRect(length, length, 0xffffff, 0.8);
+		}
+		
+		private function deselectedBox():Graphic {
+			return Image.createRect(length, length, 0x444444, 0.8);
+		}
+		
+		/**
+		 * TODO: refactor this function
+		 * 1 Theres's several things going on here that could probably
+		 * do with getting split up into smaller component pieces
+		 * 2. Too many nested contitionals!
+		 */
 		public function click():void {
-			trace(clickable)
-			if (clickable){
-
-				var inv:Array = w.inventoryMenu.inventoryBoxes;
-				for (var i:int = 0; i < inv.length; i++){
-					var playerInv:Inventory = GameWorld(FP.world).player.getInventory();
-					if (inv[i]["box"] == this) {
-						if (w.cursor.carryingItem) {
-							if (i != w.inventoryMenu.carriedItemSlot) {
-								if (playerInv.items[i] != [])
-									w.inventoryMenu.inventoryDisplay[i] = playerInv.items[i][0];
-								
-								if (playerInv.items[i] != []) {	
-									//w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot].graphic.visible = true;
-									FP.world.remove(w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot]);
-									//FP.world.remove(w.inventoryMenu.carriedItem);
-									playerInv.transferItems(w.inventoryMenu.carriedItemSlot, i);
-									//playerInv.removeItemFromInventory(w.inventoryMenu.carriedItemSlot);
-									w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot] = null;	
-								}
-							}
+			if (!clickable) return
+				
+			var inv:Array = w.inventoryMenu.inventoryBoxes;
+			for (var i:int = 0; i < inv.length; i++) {
+				var playerInv:Inventory = GameWorld(FP.world).player.inventory;
+				
+				if (inv[i]["box"] == this) {
+					if (w.cursor.carryingItem) {
+						if (i != w.inventoryMenu.carriedItemSlot) {
+							if (playerInv.items[i] != [])
+								w.inventoryMenu.inventoryDisplay[i] = playerInv.items[i][0];
 							
-							w.cursor.carryingItem = false;
-							w.cursor.setDefault();
-							w.inventoryMenu.carriedItemSlot = -1;
-						}
-						if (playerInv.items[i] != []) {
-							if (w.inventoryMenu.inventoryDisplay[i] != null) {
-								//w.inventoryMenu.inventoryDisplay[i].graphic.visible = false;
-								w.inventoryMenu.carriedItemSlot = i;
-								w.cursor.carryingItem = true;
-								w.cursor.graphic = playerInv.items[i][0].graphic;
-								w.inventoryMenu.carriedItem = playerInv.items[i][0];
+							if (playerInv.items[i] != []) {	
+								FP.world.remove(w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot]);
+								playerInv.transferItems(w.inventoryMenu.carriedItemSlot, i);
+								w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot] = null;	
 							}
+						}
+						
+						w.cursor.carryingItem = false;
+						w.cursor.setDefault();
+						w.inventoryMenu.carriedItemSlot = -1;
+					}
+					
+					if (playerInv.items[i] != []) {
+						if (w.inventoryMenu.inventoryDisplay[i] != null) {
+							w.inventoryMenu.carriedItemSlot = i;
+							w.cursor.carryingItem = true;
+							w.cursor.graphic = playerInv.items[i][0].graphic;
+							w.inventoryMenu.carriedItem = playerInv.items[i][0];
 						}
 					}
 				}

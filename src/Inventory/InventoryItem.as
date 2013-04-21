@@ -17,6 +17,7 @@ package Inventory {
 		public var scrapValue:int;
 		
 		private var useSound:Sfx;
+		private var w:GameWorld;
 		
 		public function InventoryItem(_graphic:Graphic=null) {
 			
@@ -30,6 +31,8 @@ package Inventory {
 			useSound = new Sfx(Assets.USE);
 			scrapValue = 10;
 			layer = -1010;
+
+			w = FP.world as GameWorld;
 		}
 		
 		public function onUse():void {	
@@ -44,9 +47,9 @@ package Inventory {
 		}
 		
 		private function destroy():void {
-			for (var i:int = 0; i < GameWorld(FP.world).player.inventoryLength; i++){
-				if (GameWorld(FP.world).player.getInventory().items[i][0].label == this.label){
-					GameWorld(FP.world).player.getInventory().removeItemFromInventory(i);
+			for (var i:int = 0; i < w.player.inventoryLength; i++){
+				if (w.player.inventory.items[i][0].label == this.label){
+					w.player.inventory.removeItemFromInventory(i);
 					FP.world.remove(this);
 					return;
 				}

@@ -10,7 +10,12 @@ package Inventory {
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 
-	public class Inventory extends Entity {
+	/**
+	 * A wrapper class for the player's inventory -- the 'items' array.
+	 * This class provides several functions for easily adding/removing
+	 * items from the inventory items array
+	 */
+	public class Inventory {
 		
 		public var items:Array;
 		private var inventoryItems:InventoryItems;
@@ -26,8 +31,6 @@ package Inventory {
 				items[i] = [];
 			}
 		}
-		
-		override public function update():void { }
 		
 		public function findSlot(e:InventoryItem):int{
 			for (var i:int = 0; i < items.length; i++){
@@ -65,6 +68,11 @@ package Inventory {
 			items[_fromSlot] = [];
 		}
 		
+		/**
+		 * TODO
+		 * 1. clean this function up as part of revamping the
+		 * way inventory items work
+		 */
 		public function addItemToInventory(_e:InventoryItem = null):void{
 			var e:InventoryItem = new InventoryItem();
 			if (_e){

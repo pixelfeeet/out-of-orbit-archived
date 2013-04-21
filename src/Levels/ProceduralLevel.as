@@ -52,6 +52,8 @@ package Levels {
 		private var islandDensity:int;
 		private var lowestIslandPoint:int;
 		private var islandPadding:int;
+		
+		private var generated:Boolean;
 		/**
 		 * TODO:
 		 * 1. Make numbers like treeNum and islandsNum indicate density of the element
@@ -94,17 +96,20 @@ package Levels {
 			islandPadding = 2;
 		
 			backTiles = new Tilemap(Assets.JUNGLE_TILESET, w * t, h * t, t, t);
+
+			generated = false;
 		}
 		
 		override public function added():void {
 			super.added();
+			
 			loadLevel();
-			generateDoors();
+			generateDoors();		
 			//player.position = new Point(0, Math.abs(h - (groundStartY * t)));
 		}
 		
 		override public function loadLevel():void {
-			generateTiles();
+			if (!generated) generateTiles();
 			//These are temporary: ideally these should be classes, not strings
 			var kinds:Array = ["enemy", "Dustball", "Amoeba", "Worm"]
 			for each (var kind:String in kinds) generateNPCs({"kind": kind});
@@ -130,7 +135,10 @@ package Levels {
 			buildForest();
 		}
 		
-		override public function update():void { if (Input.mousePressed) click(); }
+		override public function update():void {
+			super.update();
+			if (Input.mousePressed) click();
+		}
 		
 		/**
 		 * TODO: move add/remove tiles stuff to a weapon/inventory item

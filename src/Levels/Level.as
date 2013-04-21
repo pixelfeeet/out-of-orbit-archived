@@ -9,8 +9,10 @@ package Levels {
 	import net.flashpunk.Graphic;
 	import net.flashpunk.Mask;
 	import net.flashpunk.graphics.Graphiclist;
+	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
+	import net.flashpunk.tweens.misc.ColorTween;
 	
 	import utilities.Settings;
 	
@@ -46,6 +48,13 @@ package Levels {
 		protected var playerStart:Point;
 		
 		protected var dayNight:Boolean; //determines whether the lightMask is visible
+		
+		protected var fader:Entity;
+		protected var fadeMask:Graphic;
+		public var fadeTween:ColorTween;
+		
+		protected var destinationLevel:Level;
+		protected var destinationDoor:String;
 		
 		public function Level(params:Object = null) {
 			super();
@@ -116,7 +125,16 @@ package Levels {
 				Assets.ROCK2,
 				Assets.ROCK4,
 			];
-			
+		}
+		
+		override public function update():void {
+			fader.x = FP.camera.x;
+			fader.y = FP.camera.y;
+			if (fadeTween.active) {
+				Image(fader.graphic).alpha = fadeTween.alpha;
+				Image(fader.graphic).color = fadeTween.color;
+				trace(fadeTween.percent);
+			}
 		}
 		
 		override public function added():void {
@@ -130,6 +148,27 @@ package Levels {
 			
 			var b:Background = new Background(this);
 			gameworld.add(b);
+			
+			fadeMask = Image.createRect(FP.screen.width, FP.screen.height, 0xffffff, 0);
+			fader = new Entity(FP.camera.x, FP.camera.y, fadeMask);
+			fader.layer = -1000;
+			gameworld.add(fader);
+				
+			fadeTween = new ColorTween(fadedOut);
+		}
+		
+		protected function fadedOut():void {
+			gameworld.switchLevel(destinationLevel, destinationDoor);
+			//Image(fader.graphic).alpha = 0;
+			//this.clearTweens();
+		}
+		
+		public function switchLevel(_destinationLevel:Level, _destinationDoor:String):void {
+			destinationLevel = _destinationLevel;
+			destinationDoor = _destinationDoor;
+			//fadeTween.tween(1, 0x222222, 0x222222, 0, 1);
+			//addTween(fadeTween, true);
+			gameworld.switchLevel(destinationLevel, destinationDoor);
 		}
 		
 		protected function setGrid():void {

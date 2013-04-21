@@ -24,24 +24,21 @@ package Inventory {
 		}
 		
 		override public function update():void {
-			//super.update();
 			if (collidePoint(x, y, FP.world.mouseX, FP.world.mouseY))
 				if (Input.mouseReleased) click();
-			
 		}
 		
 		public function click():void{
-			if (w.cursor.carryingItem) {
-				var value:Number = Math.floor(w.inventoryMenu.carriedItem.scrapValue * GameWorld(FP.world).player.recycleRate);
-				GameWorld(FP.world).player.scraps += value;
-				GameWorld(FP.world).player.getInventory().items[w.inventoryMenu.carriedItemSlot] = [];
-				FP.world.remove(w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot]);
-				w.hud.update();
-				w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot] = null;
-				w.cursor.setDefault();
-				w.cursor.carryingItem = false;
-			}
-			trace("clickity")
+			if (!w.cursor.carryingItem) return;
+			
+			var value:Number = Math.floor(w.inventoryMenu.carriedItem.scrapValue * w.player.recycleRate);
+			w.player.scraps += value;
+			w.player.inventory.items[w.inventoryMenu.carriedItemSlot] = [];
+			FP.world.remove(w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot]);
+			w.hud.update();
+			w.inventoryMenu.inventoryDisplay[w.inventoryMenu.carriedItemSlot] = null;
+			w.cursor.setDefault();
+			w.cursor.carryingItem = false;
 		}
 	}
 }

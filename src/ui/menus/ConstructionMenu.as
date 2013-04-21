@@ -1,4 +1,4 @@
-package ui {
+package ui.menus {
 	import Inventory.InventoryItem;
 	
 	import data.InventoryItems;
@@ -11,6 +11,8 @@ package ui {
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Text;
+	import ui.components.Button;
+	import ui.components.ConstructionBox;
 	
 	public class ConstructionMenu extends Entity {
 		private var panel:Entity;
@@ -68,7 +70,7 @@ package ui {
 					var value:Number = Math.floor(availableItems[i].scrapValue * player.constructionRate);
 					if (player.scraps >= value) {
 						var item:InventoryItem = GameWorld(FP.world).inventoryItems.copyItem(availableItems[i]);
-						player.getInventory().addItemToInventory(item);
+						player.inventory.addItemToInventory(item);
 						player.scraps -= value;
 						w.hud.update();
 						captionText.text = availableItems[i].label + " constructed";

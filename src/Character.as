@@ -6,6 +6,7 @@ package
 	import net.flashpunk.FP;
 	
 	import utilities.Settings;
+	import Weapons.Projectile;
 
 	public class Character extends Entity {
 		
@@ -43,7 +44,6 @@ package
 		protected var player:Player;
 		
 		public var lightRadius:int;
-		public var facingLeft:Boolean;
 		
 		public var habitat:String;
 		
@@ -197,7 +197,7 @@ package
 				cLength(new Point(x, y), new Point(player.x, player.y)) < 100 &&
 				this.type != "Player") {
 				var dist:int = 0;
-				if (player.isFacingLeft()) {
+				if (player.facingLeft()) {
 					dist = player.x - x;
 					if (0 <= dist && dist < 100) takeDamage(player.weapon.getDamage());
 				} else {

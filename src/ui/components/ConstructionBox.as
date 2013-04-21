@@ -1,4 +1,4 @@
-package ui {
+package ui.components {
 	import flash.geom.Point;
 	
 	import net.flashpunk.Entity;

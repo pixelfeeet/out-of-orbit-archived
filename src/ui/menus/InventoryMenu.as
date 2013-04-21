@@ -1,4 +1,4 @@
-package ui {
+package ui.menus {
 	import Inventory.Inventory;
 	import Inventory.InventoryItem;
 	import Inventory.ScrapConverter;
@@ -18,8 +18,9 @@ package ui {
 	import net.flashpunk.graphics.Text;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import ui.components.Button;
+	import ui.HUD.HUD;
 	
-	import ui.Button;
 	
 	public class InventoryMenu extends Entity {
 		
@@ -83,7 +84,7 @@ package ui {
 		}
 		
 		private function getInventory():void {
-			inventory = player.getInventory().items;
+			inventory = player.inventory.items;
 		}
 		
 		public function show():void {
@@ -97,6 +98,7 @@ package ui {
 				FP.world.add(inventoryBoxes[i]["box"]);
 				display.add(inventoryBoxes[i]["text"]);
 			}
+			
 			for (var j:int = 0; j < inventoryDisplay.length; j++){
 				if (inventoryDisplay[j]) inventoryDisplay[j] = null;
 			}
@@ -114,7 +116,7 @@ package ui {
 				for (var y:int = 0; y < inventoryDisplay.length / 9; y++){
 					var boxGraphics:Object = {};
 					var box:InventoryBox = new InventoryBox(new Point(FP.screen.x + FP.camera.x + 5 + panel.x + (x * 55),
-						FP.screen.y + FP.camera.y + panel.y + 5 + (y * 60)), w, true);
+						FP.screen.y + FP.camera.y + panel.y + 5 + (y * 60)), true);
 					box.layer = -555;
 					box.setAlpha(1.0);
 					box.setColor(0x222222);
@@ -137,8 +139,8 @@ package ui {
 						inventoryBoxes[i]["box"].y = panel.y + 5 + (y * 60);
 					}
 					//if (inventory[i].length > 1) 
-					if (player.getInventory().items[i])
-						inventoryBoxes[i]["text"].text = player.getInventory().items[i].length;
+					if (player.inventory.items[i])
+						inventoryBoxes[i]["text"].text = player.inventory.items[i].length;
 					//else inventoryBoxes[i]["text"].text = "";
 					i++;
 				}
@@ -146,9 +148,8 @@ package ui {
 		}
 		
 		public function deselectAll():void{
-			for (var i:int = 0; i < inventoryBoxes.length; i++){
+			for (var i:int = 0; i < inventoryBoxes.length; i++)
 				if (inventoryBoxes[i]) inventoryBoxes[i]["box"].deselect();
-			}
 		}
 		
 		private function showInventoryBoxes():void {
