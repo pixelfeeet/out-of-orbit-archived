@@ -2,7 +2,7 @@ package ui.menus {
 	import Inventory.Inventory;
 	import Inventory.InventoryItem;
 	import Inventory.ScrapConverter;
-	import Inventory.InventoryBox;
+	import ui.HUD.InventoryBox;
 	
 	import flash.geom.Point;
 	

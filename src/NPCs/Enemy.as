@@ -32,9 +32,10 @@ package NPCs {
 		}
 
 		override protected function generateDropItems():Array{
-			var a:Class = Ammunition;
-			var s:Class = Scraps;
-			return [new a(), new a(), new s()];
+//			var a:Class = Ammunition;
+//			var s:Class = Scraps;
+//			return [new a(), new a(), new s()];
+			return [];
 		}
 		
 		override protected function updateMovement():void {

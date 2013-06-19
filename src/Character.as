@@ -161,11 +161,11 @@ package
 		}
 		
 		protected function updateMovement():void{
-			if (gameworld.currentLevel.tiles){
-				if (gameworld.currentLevel.tiles.getTile(x / t, (y / t) + 1) == gameworld.currentLevel.jungleTiles["water"])
-					isInWater = true;
-				else isInWater = false;
-			}
+//			if (gameworld.currentLevel.tiles){
+//				if (gameworld.currentLevel.tiles.getTile(x / t, (y / t) + 1) == gameworld.currentLevel.jungleTiles["water"])
+//					isInWater = true;
+//				else isInWater = false;
+//			}
 			
 			if (isInWater) {
 				vGravity = GRAVITY * 3;
@@ -256,7 +256,7 @@ package
 		}
 		
 		public function changeHealth(newHealth:int):void {
-			if(newHealth > 0) {
+			if (newHealth > 0) {
 				if (health < maxHealth && health + newHealth <= maxHealth) health += newHealth;
 				else health = maxHealth;
 			} else {

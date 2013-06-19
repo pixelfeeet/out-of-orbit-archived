@@ -48,7 +48,7 @@ package Inventory {
 		
 		private function destroy():void {
 			for (var i:int = 0; i < w.player.inventoryLength; i++){
-				if (w.player.inventory.items[i][0].label == this.label){
+				if (w.player.inventory.items[i].contents[0].label == this.label){
 					w.player.inventory.removeItemFromInventory(i);
 					FP.world.remove(this);
 					return;

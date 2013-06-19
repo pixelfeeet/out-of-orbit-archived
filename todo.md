@@ -1,12 +1,4 @@
 # Todo
-## General
-- Clean up/refactor entire project, especially Player.as
-- Sort out naming conventions in level (build, draw, generate) and Player
-- Get rid of the all the instances where player and world have to get passed into a function/entity
-- Sort out game design/flow -- develop a comprehensive list of interaction/inventory items, enemies, npcs and other game elements
-- Re-evaluate inventory system, both as far as UI and code structure (i.e, MVC).
-- Construction system might be better off without having a currency system (scraps) and more of an item requirement sort of sytem.
-- Fix the camera
 
 ## Weapons:
 ### Melee weapons

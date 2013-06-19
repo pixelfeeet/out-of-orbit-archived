@@ -82,6 +82,7 @@ package NPCs {
 		
 		public function destroy():void {
 			//Generate drop items
+			/*
 			for (var i:int = 0; i < dropItems.length; i++){
 				if (dropItems[i].type == "InteractionItem") {
 					var item:InteractionItem = new InteractionItem();
@@ -98,6 +99,7 @@ package NPCs {
 					FP.world.add(anItem);
 				}
 			}
+			*/
 			GameWorld(FP.world).player.gainExperience(expValue);
 			destroyed.play();
 			FP.world.remove(this);

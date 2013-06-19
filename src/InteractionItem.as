@@ -72,9 +72,9 @@ package {
 			if (!pickUpable) return;
 			
 			pickupSound.play();
-				if(player.inventory.findSlot(this.inventoryItem) != -1
-				&& inventoryItem != null
-				&& distanceFrom(player) <= player.reachDistance){
+				if (player.inventory.findSlot(this.inventoryItem) != -1
+				 && inventoryItem != null
+				 && distanceFrom(player) <= player.reachDistance) {
 					player.inventory.addItemToInventory(inventoryItem);
 					destroy();
 				}

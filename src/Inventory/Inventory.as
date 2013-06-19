@@ -18,54 +18,58 @@ package Inventory {
 	public class Inventory {
 		
 		public var items:Array;
-		private var inventoryItems:InventoryItems;
-		private var interactionItems:InteractionItems;
 		
 		public function Inventory(_inventoryLength:int) {
-			items = new Array(_inventoryLength);
-			initItems();
+			initItems(_inventoryLength);
 		}
  
-		private function initItems():void{
+		private function initItems(_inventoryLength:int):void{
+			items = new Array(_inventoryLength);
 			for (var i:int = 0; i < items.length; i++) {
-				items[i] = [];
+				items[i] = {
+					"active": false,
+					"contents": []
+				};
 			}
 		}
 		
 		public function findSlot(e:InventoryItem):int{
 			for (var i:int = 0; i < items.length; i++){
-				if (items[i].length == 0){
+				if (items[i].contents.length == 0){
 					return i;
-				} else if (items[i][0].label == e.label
-					&& items[i][0].isStackable()) {
+				} else if (items[i].contents[0].label == e.label
+					    && items[i].contents[0].isStackable()) {
 					return i;
 				}
 			}
+			
+			// Inventory is full
 			return -1;
 		}
 		
 		private function findLastInventoryItem():int {
 			if (items != null && items.length > 0) {
 				for (var i:int = items.length - 1; i > -1; i--){
-					if (items[i].length > 0) {
-						return i;
-					}
+					if (items[i].contents.length > 0) return i;
 				}
 			}
-			//Inventory is empty;
+			
+			//Inventory is empty
 			return -1;
 		}
 		
 		public function addItemToSlot(_e:InventoryItem, _slot:int):void {
-			items[_slot].push(_e);
+			items[_slot].contents.push(_e);
 		}
 		
+		/**
+		 * Transfer contents of one slot in the inventory to another slot
+		 */
 		public function transferItems(_fromSlot:int, _toSlot:int):void {
 			items[_toSlot] = [];
-			for (var i:int = 0; i < items[_fromSlot].length; i++){
-				items[_toSlot][i] = items[_fromSlot][i];
-			}
-			items[_fromSlot] = [];
+			for (var i:int = 0; i < items[_fromSlot].length; i++)
+				items[_toSlot].contents[i] = items[_fromSlot].contents[i];
+			items[_fromSlot].contents = [];
 		}
 		
 		/**
@@ -75,30 +79,22 @@ package Inventory {
 		 */
 		public function addItemToInventory(_e:InventoryItem = null):void{
 			var e:InventoryItem = new InventoryItem();
-			if (_e){
-				e.behavior = _e.behavior;
-				e.numOfUses = _e.numOfUses;
-				e.sourceImage = _e.sourceImage;
-				e.graphic = new Image(e.sourceImage);
-				e.label = _e.label;
-				e.scrapValue = _e.scrapValue;
-				e.stackable = _e.stackable;
-			} else {
-				//Some default values
-				e.behavior = GameWorld(FP.world).inventoryItems.food.behavior;
-				e.numOfUses = GameWorld(FP.world).inventoryItems.food.numOfUses;
-				e.graphic = GameWorld(FP.world).inventoryItems.food.graphic;
-			}
+			e.behavior = _e.behavior;
+			e.numOfUses = _e.numOfUses;
+			e.sourceImage = _e.sourceImage;
+			e.graphic = new Image(e.sourceImage);
+			e.label = _e.label;
+			e.scrapValue = _e.scrapValue;
+			e.stackable = _e.stackable;
 			
 			var slot:int = findSlot(e);
-			
-			if (slot != -1){
-				items[slot].push(e);
+			if (slot != -1) {
+				items[slot].contents.push(e);
 			}
 		}
 		
 		public function removeItemFromInventory(_slot:int):void {
-			if (items[_slot].length > 0) items[_slot].pop();
+			if (items[_slot].contents.length > 0) items[_slot].contents.pop();
 		}
 		
 		public function removeLastItemFromInventory():void {

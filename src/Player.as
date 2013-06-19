@@ -135,19 +135,19 @@ package {
 			 * Stats
 			 */
 			statsList = {
-				"Fuel Capacity": { "value": fuelCapacity, "points": 3 },
-				"Armor": { "value": 10, "points": 3 },
-				"Max Ammo": { "value": null, "points": 2 },
-				"Jump Height": { "value": null, "points": 3 },
+				"Fuel Capacity": 	  { "value": fuelCapacity, "points": 3 },
+				"Armor": 			  { "value": 10, "points": 3 },
+				"Max Ammo": 		  { "value": null, "points": 2 },
+				"Jump Height": 		  { "value": null, "points": 3 },
 				"Construction Skill": { "value": null, "points": 2 },
 				"Inventory Capacity": { "value": null, "points": 8 },
-				"Fuel Capacity": { "value": null, "points": 3 },
-				"Max Health": { "value": 100, "points": 5 },
-				"Max Hunger": { "value": 100, "points": 5 }
+				"Fuel Capacity": 	  { "value": null, "points": 3 }
 			};
 			
-			health = 100;
-			hunger = 100;
+			maxHealth = 100;
+			maxHunger = 100;
+			health = maxHealth;
+			hunger = maxHunger;
 			
 			//Input Definitions
 			Input.define("Left", Key.A);
@@ -262,7 +262,7 @@ package {
 			updateMovement();
 			updateGraphic();
 			checkForEnemyCollision();
-			inventoryButtons();
+			checkForInventorySelection();
 			updateSpeech();
 			
 			//combat
@@ -304,13 +304,21 @@ package {
 		/**
 		 * This shouldn't be here.
 		 */
-		public function inventoryButtons():void {
+		public function checkForInventorySelection():void {
 			var boxes:Array = gameworld.hud.inventoryBoxes;
 			for (var i:int = 0; i < inventoryKeys.length; i++) {
 				if (Input.pressed(inventoryKeys[i])) {
-					gameworld.hud.deselectAll();
-					gameworld.hud.inventoryBoxes[i]["box"].select();
+//					gameworld.hud.deselectAll();
+//					gameworld.hud.inventoryBoxes[i]["box"].select();
+					deselectAllInventoryItems();
+					inventory.items[i].active = true;
 				}
+			}
+		}
+		
+		private function deselectAllInventoryItems():void {
+			for (var i:int = 0; i < _inventory.items.length; i++) {
+				inventory.items[i].active = false;
 			}
 		}
 		
@@ -324,20 +332,17 @@ package {
 			weapon = _weapon;
 			gameworld.add(weapon);
 		}
-		
-		/**
-		 * TODO
-		 * 1. instead of checking which of the boxes in the display is highlighted
-		 * this information should be kept in the player's actual inventory,
-		 * 'active' item or whatever
-		 * 
-		 */
+
 		private function onUse():void {
-			for (var i:int = 0; i < gameworld.hud.inventoryBoxes.length; i++) {
-				if (gameworld.hud.inventoryBoxes[i]["box"].isSelected()) {
-					if (_inventory.items[i].length > 0) {
-						_inventory.items[i][_inventory.items[i].length - 1].onUse();
-						return;
+			var contents:Array;
+			for (var i:int = 0; i < inventory.items.length; i++) {
+				if (!inventory.items[i].active) continue;
+				contents = inventory.items[i].contents;
+				if (contents.length > 0) {
+					contents[0].onUse();
+					// This should be in the Inventory class
+					if (contents[0].isStackable()) {
+						contents.pop();
 					}
 				}
 			}
@@ -555,6 +560,7 @@ package {
 		
 		override public function changeHunger(h:int):void {
 			super.changeHunger(h);
+			
 			if (hunger <= 30 && !informedHunger) {
 				setSpeech("I'm getting very hungry.")
 				informedHunger = true;
@@ -613,6 +619,5 @@ package {
 		public function getPlayerExperience():int { return experience; }
 		public function getLevel():int { return level; }
 		public function getExperience():int { return experience; }
-		
 	}
 }
